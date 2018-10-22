@@ -976,7 +976,7 @@ void ADF7021_change_TXorRX(void)
        TIME_email_Repeat=9000;
        UART_send_count++;
        if(UART_send_count>10)FLAG_email_Repeat=0;
-       if(ID_DATA_PCS!=0)HA_uart_email_Repeat();
+       HA_uart_email_Repeat();
    }
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
@@ -1108,8 +1108,7 @@ AUTO_SEND_exit:
         #endif
  #endif
 #if defined(__Product_PIC32MX2_WIFI__)
-   //if(((FLAG_UART_ok==1)&&(TIME_APP_Inquiry_HA==0))||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
- if((((FLAG_UART_ok==1)&&(TIME_APP_Inquiry_HA==0))||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1))&&(time_APP_Start_up==0)){           //2015.04.27修正
+   if(((FLAG_UART_ok==1)&&(TIME_APP_Inquiry_HA==0))||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
  #endif
        if(FLAG_rssi_Freq==0){
            rssi_TIME=1;    //发射时10ms间隔搜索空信道

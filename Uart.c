@@ -102,7 +102,6 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
             case 0x0105:                                       //RTC_write
                         UART_DATA_i=20;
                         if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
-                        time_APP_Start_up=500;  //2015.04.27修正
                         break;
             case 0x0106:                                    //控制定时器设定要求
                         if(UART_DATA_cnt>=18){
@@ -194,7 +193,6 @@ void UART_Decode(void)
                             for(i=8;i<16;i++)  m+=UART1_DATA[i];
                             n=UART1_DATA[16]+UART1_DATA[17]*256;
                             if(m==n){
-
                                 ID_data.IDB[0]=UART1_DATA[11];
                                 ID_data.IDB[1]=UART1_DATA[12];
                                 ID_data.IDB[2]=UART1_DATA[13];
@@ -237,7 +235,6 @@ void UART_Decode(void)
                                         FLAG_IDCheck_OK=0;
                                         FLAG_UART_ok=1;
                                        }
-                                    time_APP_Start_up=0;  //2015.04.27修正
                                 }
                                 else {
                                     HA_uart_app[8]=UART1_DATA[8];
@@ -655,12 +652,10 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
     HA_uart[HA_uart_Length+1]=m/256;
 
     j=HA_uart_Length+2;
-    if(ID_DATA_PCS!=0){
         for(i=0;i<j;i++){
             U1TXREG=HA_uart[i];
             if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
         }
-    }
        Delay100us(300);
        TIME_email_Repeat=9000;
        FLAG_email_Repeat=1;
@@ -742,7 +737,7 @@ void HA_uart_send_APP(void)
     if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))
     {
         if((HA_uart_app[14]==5)&&(FG_Second==0));
-        else if(time_APP_Start_up==0){     //2015.04.27修正
+        else {
             for(i=0;i<18;i++){
                 U1TXREG=HA_uart_app[i];
                 if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO

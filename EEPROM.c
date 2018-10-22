@@ -169,7 +169,6 @@ void ID_learn(void)
      if(TIME_send_Faile_notice)--TIME_send_Faile_notice;   //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
      if(TIME_WIFI_LAN_SELECT)--TIME_WIFI_LAN_SELECT;
      if(TIME_one_hour)--TIME_one_hour;         //2015.1.30追加修改1小时查询一次HA状态
-     if(time_APP_Start_up)--time_APP_Start_up;     //2015.04.27修正
 
      if(FLAG_all_Erase==0)          //EEPROM所有数据擦出时，以下CODE不执行
      {

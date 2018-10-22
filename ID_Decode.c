@@ -273,8 +273,9 @@ void ID_Decode_IDCheck(void)
                     else {
                         if(((DATA_Packet_Control&0x20)==0x20)||((DATA_Packet_Control&0x40)==0x40))TIMER1s=500;
                         else if((DATA_Packet_Control&0x10)==0x10){
-                            if(HA_Status==0x82)TIMER1s=1000;//(TIMER_Semi_open+1)*1000;
-                            else {DATA_Packet_Control=0;TIMER1s=1000;}
+                            //if(HA_Status==0x82)TIMER1s=1000;//(TIMER_Semi_open+1)*1000;
+                            //else {DATA_Packet_Control=0;TIMER1s=1000;}
+                            TIMER1s=1000;
                         }
                         else  TIMER1s=1000;
                     }
