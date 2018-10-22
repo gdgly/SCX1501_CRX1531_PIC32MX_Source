@@ -388,9 +388,9 @@ void UART_Decode(void)
                                     U1TXREG=0x65;      //e
                                     U1TXREG=0x72;      //r
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-                                    U1TXREG=0x33;      //3              //2014.10.11修改
+                                    U1TXREG=0x34;      //4              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x33;      //3
+                                    U1TXREG=0x32;      //2
                                     U1TXREG=0xD1;     //0x16B+0x33+0x33
                                     U1TXREG=0x01;
                             }

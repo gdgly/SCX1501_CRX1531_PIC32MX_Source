@@ -590,8 +590,8 @@ unsigned int y;                    //延时T=(timer)100us
  for(x=0;x<timer;x++)
   {
 #if defined(__Product_PIC32MX2_Receiver__)
-     //for(y=0;y<=200;y++);   //特别说明：该行采用XC32的0级优化，即无优化
-     for(y=0;y<=600;y++);   //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+     for(y=0;y<=200;y++);   //特别说明：该行采用XC32的0级优化，即无优化
+     //for(y=0;y<=600;y++);   //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
      for(y=0;y<=400;y++);   //特别说明：该行采用XC32的0级优化，即无优化    时间=timer*0.9ms
@@ -603,8 +603,8 @@ void Delayus(UINT16 timer)
 {
   UINT16 x;            //延时T=(timer)us     //SYSCLK=20M
 #if defined(__Product_PIC32MX2_Receiver__)
-    // for(x=0;x<2*timer;x++);  //特别说明：该行采用XC32的0级优化，即无优化
-   for(x=0;x<10*timer;x++);  //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+     for(x=0;x<2*timer;x++);  //特别说明：该行采用XC32的0级优化，即无优化
+   //for(x=0;x<10*timer;x++);  //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
      for(x=0;x<4*timer;x++);    //特别说明：该行采用XC32的0级优化，即无优化    时间=0.7us+timer*1.2us
