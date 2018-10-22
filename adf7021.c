@@ -461,6 +461,11 @@ void dd_set_RX_mode(void)
         register_value.whole_reg = 0x00280294;
 	dd_write_7021_reg(&register_value.byte[0]);
 
+        	//write R9
+        register_value.whole_reg = 0x020631E9;  //0x000231E90
+	dd_write_7021_reg(&register_value.byte[0]);   
+        Delayus(122);		//delay 40us
+
 	//write R10, turn on PLL
 	register_value.whole_reg = 0x029668FA;
 	dd_write_7021_reg(&register_value.byte[0]);
