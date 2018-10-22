@@ -20,7 +20,9 @@
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 #endif
 
-
+#if defined(__32MX220F032D__)
+    #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
+#endif
 
     //============================================
     #define	UINT8		unsigned char

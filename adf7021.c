@@ -382,7 +382,7 @@ void ADF7021_change_TXorRX(void)
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
        FLAG_APP_RX=1;
-       Receiver_LED_OUT=0;
+       Receiver_LED_OUT=1;
        Receiver_LED_TX=0;
        Receiver_LED_RX=0;
        ADF7021_DATA_IO=1;
