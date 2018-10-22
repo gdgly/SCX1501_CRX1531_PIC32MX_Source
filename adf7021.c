@@ -495,39 +495,92 @@ void ADF7021_change_TXorRX(void)
     UINT8 Weekday_alarm;
     UINT16 Minutes_x;
  #if defined(__Product_PIC32MX2_Receiver__)
-   if((HA_L_signal==1)&&(HA_ERR_signal==1)){
-       TIMER60s=5;
-       if((DATA_Packet_Control==0x08)&&(FLAG_open==0)&&(FLAG_APP_TX==0)){
+//   if((HA_L_signal==1)&&(HA_ERR_signal==1)){
+//       TIMER60s=5;
+//       if((DATA_Packet_Control==0x08)&&(FLAG_open==0)&&(FLAG_APP_TX==0)){
+//           FLAG_open=1;
+//           FLAG_close=0;
+//           FLAG_HA_ERR=0;
+//           HA_Status=0x81;
+//           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+//           //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
+//       }
+//   }
+//   else if((TIMER60s==0)&&(HA_ERR_signal==1)){
+//       if((FLAG_close==0)&&(FLAG_APP_TX==0)){
+//           FLAG_close=1;
+//           FLAG_open=0;
+//           FLAG_HA_ERR=0;
+//           HA_Status=0x82;
+//           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+//           //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
+//       }
+//   }
+//   if((HA_ERR_signal==0)&&(HA_L_signal==1)&&(FLAG_APP_TX==0)){
+//       if(FLAG_HA_ERR==0){
+//           FLAG_HA_ERR=1;
+//           FLAG_close=0;
+//           FLAG_open=0;
+//           HA_Status=0x83;
+//           //FLAG_426MHz_Reply=1;    //在遥控板和APP控制下，EER都输出
+//           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+//           else FLAG_APP_Reply=1;
+//           //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
+//       }
+//   }
+
+    if(HA_L_signal==1){
+       TIMER60s=6000;
            FLAG_open=1;
            FLAG_close=0;
            FLAG_HA_ERR=0;
-           HA_Status=0x81;
-           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
-           //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
-       }
    }
-   else if((TIMER60s==0)&&(HA_ERR_signal==1)){
-       if((FLAG_close==0)&&(FLAG_APP_TX==0)){
+   else if(TIMER60s==0){
            FLAG_close=1;
            FLAG_open=0;
            FLAG_HA_ERR=0;
-           HA_Status=0x82;
-           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
-           //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
-       }
    }
-   if((HA_ERR_signal==0)&&(HA_L_signal==1)&&(FLAG_APP_TX==0)){
-       if(FLAG_HA_ERR==0){
-           FLAG_HA_ERR=1;
+    if(HA_ERR_signal==1){
+       TIMER_err_1s=100;
+   }
+   else if(TIMER_err_1s==0){
            FLAG_close=0;
            FLAG_open=0;
-           HA_Status=0x83;
-           //FLAG_426MHz_Reply=1;    //在遥控板和APP控制下，EER都输出
-           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
-           else FLAG_APP_Reply=1;
-           //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
+           FLAG_HA_ERR=1;
+   }
+    if(HA_Sensor_signal==1){
+       TIMER_Sensor_open_1s=100;
+       if(TIMER_Sensor_close_1s==0){
+            FLAG_open_Sensor=0;
+            FLAG_close_Sensor=1;
+            FLAG_HA_ERR_Sensor=0;
        }
    }
+    else {
+        TIMER_Sensor_close_1s=100;
+        if(TIMER_Sensor_open_1s==0){
+            if(DATA_Packet_Control_err==0x08){FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;FLAG_close_Sensor=0;}
+            if((DATA_Packet_Control_err==0x02)&&(FLAG_close_Sensor==1)){FLAG_open_Sensor=0;FLAG_HA_ERR_Sensor=1;FLAG_close_Sensor=0;}
+//            FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;
+//            FLAG_close_Sensor=0;
+        }
+    }
+    if(((FLAG_HA_ERR==1)||(FLAG_HA_ERR_Sensor==1))&&(HA_Status!=0x83)&&(FLAG_HA_ERR_bit==0)){
+           HA_Status=0x83;
+           FLAG_HA_ERR_bit=1;
+           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+           else FLAG_APP_Reply=1;
+    }
+    if(((FLAG_open==1)&&(FLAG_open_Sensor==1))&&(HA_Status!=0x81)){
+           HA_Status=0x81;
+           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+    }
+    if(((FLAG_close==1)||(FLAG_close_Sensor==1))&&(HA_Status!=0x82)&&((FLAG_HA_ERR==0)||(FLAG_HA_ERR_Sensor==0))&&(FLAG_HA_ERR_bit==0)){
+           HA_Status=0x82;
+           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+           else FLAG_APP_Reply=1;
+    }
+
 
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;

@@ -153,6 +153,8 @@ void ID_Decode_IDCheck(void)
                 if(Freq_Scanning_CH_bak==0){Freq_Scanning_CH_save=1;Freq_Scanning_CH_save_HA=0; }  //当前收到426M控制   但保存记录下收到信号的频率信道,0代表426M
                 else Freq_Scanning_CH_save_HA=1;  //                       1代表429M
                 DATA_Packet_Control_0=DATA_Packet_Control;
+                if(DATA_Packet_Control==0x08)DATA_Packet_Control_err=0x08;
+                if(DATA_Packet_Control==0x02){DATA_Packet_Control_err=0x02;FLAG_HA_ERR_bit=0;}
                 if(((DATA_Packet_Code[1]&0x0000FFFF)==0x5556)&&(Freq_Scanning_CH_bak==0)){
                     Signal_DATA_Decode(1);
                     if(FLAG_Signal_DATA_OK==1){
@@ -376,7 +378,8 @@ void ID_Decode_OUT(void)
              DATA_Packet_Control_0=0;
              FLAG_email_send=1;
              TIME_email_send=650;
-             if((HA_Change_email_Step==0)&&(HA_Change_send_email[0]==1)){HA_Change_email_time=18000;HA_Change_email_Step=1;}//3分钟
+             //if((HA_Change_email_Step==0)&&(HA_Change_send_email[0]==1)){HA_Change_email_time=18000;HA_Change_email_Step=1;}//3分钟
+             if(HA_Change_email_Step==0){HA_Change_email_time=18000;HA_Change_email_Step=1;}//3分钟     2014年4月24日文化修改
          }
      }
     if((FLAG_email_send==1)&&(TIME_email_send==0)){
@@ -386,7 +389,8 @@ void ID_Decode_OUT(void)
         else if(HA_Change_email_Step==2){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}     //HA状态变化通知  上次邮件发送内容和本次内容不一样
         else if((FLAG_Email_check==1)&&(HA_Change_send_email[0]==1)&&(FLAG_HA_Change_ERROR==1)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}
     }
-    if((HA_Change_send_email[0]==1)&&(HA_Change_email_time==0)&&(HA_Change_email_Step==1)){
+    //if((HA_Change_send_email[0]==1)&&(HA_Change_email_time==0)&&(HA_Change_email_Step==1)){
+    if((HA_Change_email_time==0)&&(HA_Change_email_Step==1)){    //3分钟     2014年4月24日文化修改
         Email_check_mail();
         if(FLAG_Email_check==1){
             HA_Change_email_Step=2;

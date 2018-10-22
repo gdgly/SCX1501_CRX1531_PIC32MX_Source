@@ -28,6 +28,7 @@ UINT8  DATA_Packet_Code_i=0;
 UINT32 DATA_Packet_ID=0;
 UINT8  DATA_Packet_Control=0;
 UINT8  DATA_Packet_Control_0=0;
+UINT8  DATA_Packet_Control_err=0;
 UINT8  Control_bak=0;
 UINT16  TIMER1s=0;
 UINT16  TIMER300ms=0;
@@ -85,6 +86,17 @@ UINT16 FLAG_all_Erase_time=0;
 
 UINT8 TIME_EMC=0;   //静电测试
 
+#if defined(__Product_PIC32MX2_Receiver__)
+UINT16  TIMER_err_1s=0;
+UINT16  TIMER_Sensor_open_1s=0;
+UINT16  TIMER_Sensor_close_1s=0;
+UINT8 FLAG_open_Sensor=0;
+UINT8 FLAG_close_Sensor=0;
+UINT8 FLAG_HA_ERR_Sensor=0;
+UINT8 FLAG_HA_ERR_bit=0;
+
+#endif
+
 #if defined(__Product_PIC32MX2_WIFI__)
     //UINT8  UART1_DATA[106]={0};
     //UINT8  UART_DATA_buffer[106]={0};
@@ -123,7 +135,7 @@ UINT8 TIME_EMC=0;   //静电测试
                    0x3A,0x00,0x00,       //分钟
                    0x00,      //标题结束符
                    //以下邮件内容
-                   //0x42,0x58,    //BX
+                   //0x42,0x58,0x0D,    //BX
                    0x68,0x74,0x74,0x70,0x3A,0x2F,0x2F,0x77,0x77,0x77,0x2E,0x62,0x75,0x6E,0x6B,0x61,0x2D,0x73,0x2E,0x63,0x6F,0x2E,0x6A,0x70,0x2F,//http://www.bunka-s.co.jp/
                    0x73,0x68,0x75,0x74,0x74,0x65,0x72,0x69,0x6E,0x66,0x6F,0x3F,0x73,0x74,0x61,0x74,0x75,0x73,0x3D,//shutterinfo?status=
                    0x49,0x44,0x3D,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x20,  //ID=xxxxxxxx
@@ -253,6 +265,8 @@ void VHF_GPIO_INIT(void){
       Receiver_OUT_STOP=0;
       Receiver_OUT_VENT_IO=0;
       Receiver_OUT_VENT=0;
+
+      Receiver_test_IO=1;
     #endif
 
    #if defined(__Product_PIC32MX2_WIFI__)

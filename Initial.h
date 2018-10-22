@@ -148,6 +148,7 @@ extern UINT8  DATA_Packet_Code_i;
 extern UINT32 DATA_Packet_ID;
 extern UINT8  DATA_Packet_Control;
 extern UINT8  DATA_Packet_Control_0;
+extern UINT8  DATA_Packet_Control_err;
 extern UINT8  Control_bak;
 extern UINT16  TIMER1s;
 extern UINT16  TIMER300ms;
@@ -220,6 +221,16 @@ extern UINT16 time_3sec;
 extern UINT16 FLAG_all_Erase_time;
 
 extern UINT8 TIME_EMC;
+
+#if defined(__Product_PIC32MX2_Receiver__)
+extern UINT16  TIMER_err_1s;
+extern UINT16  TIMER_Sensor_open_1s;
+extern UINT16  TIMER_Sensor_close_1s;
+extern UINT8 FLAG_open_Sensor;
+extern UINT8 FLAG_close_Sensor;
+extern UINT8 FLAG_HA_ERR_Sensor;
+extern UINT8 FLAG_HA_ERR_bit;
+#endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
     //extern UINT8  UART1_DATA[106];
@@ -298,6 +309,8 @@ extern void Delay100us(unsigned int timer);
     #define  Receiver_OUT_CLOSE_IO   TRISBbits.TRISB2  // Output 受信机继电器close 高电平有效
     #define  Receiver_OUT_STOP_IO    TRISCbits.TRISC0  // Output 受信机继电器STOP  高电平有效
     #define  Receiver_OUT_VENT_IO    TRISBbits.TRISB3  // Output 受信机继电器STOP  高电平有效
+
+    #define  Receiver_test_IO    TRISBbits.TRISB10  // INPUT 受信机测试脚  高电平有效
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
     /* ADF7021 register interface */
@@ -372,6 +385,8 @@ extern void Delay100us(unsigned int timer);
     #define  Receiver_OUT_CLOSE   LATBbits.LATB2  // Output   受信机继电器close  高电平有效
     #define  Receiver_OUT_STOP    LATCbits.LATC0  // Output   受信机继电器stop  高电平有效
     #define  Receiver_OUT_VENT    LATBbits.LATB3   // Output 受信机继电器STOP  高电平有效
+
+    #define  Receiver_test    PORTBbits.RB10   // Input 受信机测试脚  高电平有效
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
     /* ADF7021 register interface */

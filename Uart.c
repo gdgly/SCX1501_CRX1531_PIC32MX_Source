@@ -473,7 +473,7 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
     HA_uart[26]=0x00;   //邮件标题结束符
 
     HA_uart_Length=63+8;
-    //HA_uart_Length=63+8+2;
+    //HA_uart_Length=63+8+3;
     for(j=0;j<EMIAL_id_PCS_x;j++){                      //计算邮件内容的atatus=...部分
         if((EMIAL_id_HA[j]==0x81)||(EMIAL_id_HA[j]==0x85)){
             HA_uart[HA_uart_Length]=111;      //open

@@ -82,6 +82,9 @@ void ID_learn(void)
 
      if(rssi_TIME)--rssi_TIME;
      if(TIMER60s)--TIMER60s;
+     if(TIMER_err_1s)--TIMER_err_1s;
+     if(TIMER_Sensor_open_1s)--TIMER_Sensor_open_1s;
+     if(TIMER_Sensor_close_1s)--TIMER_Sensor_close_1s;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
        else if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
           else {TIME_Receiver_Login=0;COUNT_Receiver_Login=0;}
@@ -164,14 +167,14 @@ void ID_learn(void)
         //             FLAG_ID_Erase_Login_PCS=1;    //追加多次ID登录
         //             TIME_Login_EXIT_rest=6000;
         //         }
-                 if(TIME_Receiver_Login>=300){                  //取消擦出登录功能
-                     TIME_Receiver_Login=0;
-                     COUNT_Receiver_Login=0;
-                     WIFI_LED_TX=1;
-                     while(WIFI_L_Login==0)ClearWDT(); // Service the WDT
-                     uart_send_APP_allID();
-                    WIFI_LED_TX=0;
-                 }
+//                 if(TIME_Receiver_Login>=300){                  //取消擦出登录功能      2014年4月24日文化变更 取消全部ID获得
+//                     TIME_Receiver_Login=0;
+//                     COUNT_Receiver_Login=0;
+//                     WIFI_LED_TX=1;
+//                     while(WIFI_L_Login==0)ClearWDT(); // Service the WDT
+//                     uart_send_APP_allID();
+//                    WIFI_LED_TX=0;
+//                 }
                  if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
                      TIME_Receiver_Login_led++;
                      if(TIME_Receiver_Login_led>=30){
