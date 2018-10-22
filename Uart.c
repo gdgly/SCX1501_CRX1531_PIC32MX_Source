@@ -121,16 +121,17 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
                         UART_DATA_i=20;
                         if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
                         break;
-            case 0x010B:                                    //日出日落设定要求
-                        if(UART_DATA_cnt>=16){
-                            if(UART_DATA_cnt==16)UART_DATA_i=18+UART_DATA_buffer[15]*3;
-                            if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
-                        }
-                        break;
+//            case 0x010B:                                    //日出日落设定要求
+//                        if(UART_DATA_cnt>=16){
+//                            if(UART_DATA_cnt==16)UART_DATA_i=18+UART_DATA_buffer[15]*3;
+//                            if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
+//                        }
+//                        break;
             case 0x0103:                                      //APP获取卷帘门ID全部
             case 0x0104:                                      //RTC_read
             case 0x010C:                                    //日出日落取得要求
             case 0x010E:                                   //卷帘门状态变化是否邮件送信取得
+            case 0x010F:                                   //集中通讯机版本取得
             case 0x01F1:                                   //日出日落表格数据DATA取得
                         UART_DATA_i=13;
                         if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
@@ -139,10 +140,10 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
                         UART_DATA_i=16;
                         if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
                         break;
-            case 0x01F0:                                   //日出日落表格数据DATA设置
-                        UART_DATA_i=493;
-                        if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
-                        break;
+//            case 0x01F0:                                   //日出日落表格数据DATA设置
+//                        UART_DATA_i=493;
+//                        if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
+//                        break;
            default:
                         break;
         }
@@ -356,6 +357,29 @@ void UART_Decode(void)
                             }
                             else uart_send_APP_Public(0x03,1);
                             break;
+                case 0x010F:                                            //APP获取卷帘门ID全部
+                            for(i=8;i<11;i++)  m+=UART1_DATA[i];
+                            n=UART1_DATA[11]+UART1_DATA[12]*256;
+                            if(m==n){
+                                    uart_send_APP_Head();
+                                    U1TXREG=0x09;
+                                    U1TXREG=0x00;
+                                    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+                                    U1TXREG=0x0F;
+                                    U1TXREG=0x01;
+                                    U1TXREG=0x00;
+                                    U1TXREG=0x56;      //V
+                                    U1TXREG=0x65;      //e
+                                    U1TXREG=0x72;      //r
+                                    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+                                    U1TXREG=0x32;      //2
+                                    U1TXREG=0x2E;      //.
+                                    U1TXREG=0x33;      //3
+                                    U1TXREG=0xD0;     //0x16B+0x32+0x33
+                                    U1TXREG=0x01;      
+                            }
+                            else uart_send_APP_Public(0x0F,1);
+                            break;
                 case 0x0108:                                            //一齐操作
                             for(i=8;i<13+UART1_DATA[12]*3;i++)  m+=UART1_DATA[i];
                             n=UART1_DATA[13+UART1_DATA[12]*3]+UART1_DATA[14+UART1_DATA[12]*3]*256;
@@ -427,7 +451,7 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
     UINT16 m,i,j;
     UINT32 h0;
 
-    uart_send_APP_Public(0xFF,0);               //测试是否发送了邮件
+    //uart_send_APP_Public(0xFF,0);               //测试是否发送了邮件
     Delay100us(30);
 
 //    HA_uart[8]=HA_Change_send_email[1];       //调用该该函数之前  对接收邮件地址编号进行设置
@@ -625,7 +649,7 @@ void HA_uart_email_Repeat(void)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
     UINT8 i;
-        uart_send_APP_Public(0xFF,0);               //测试是否发送了邮件
+        //uart_send_APP_Public(0xFF,0);               //测试是否发送了邮件
         for(i=0;i<HA_uart_Length+2;i++){
             U1TXREG=HA_uart[i];
             if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO

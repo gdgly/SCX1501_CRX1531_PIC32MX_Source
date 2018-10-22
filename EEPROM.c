@@ -313,7 +313,7 @@ void ID_EEPROM_Initial(void)
     Read(&xm[0],0x7DC,4);       //0x7DC存储日出日落表格数据DATA来源   =0 RAM的数据    =1 EEPROM的数据
     if(xm[1]>1)xm[1]=0;
     if(xm[2]>1)xm[2]=0;
-    if(xm[3]>4)xm[3]=0;
+    if(xm[3]>10)xm[3]=0;
     SUN_ON_OFF_seat[0]=xm[1];   //0x7DD 日出ON/OFF  ON=1  OFF=0
     SUN_ON_OFF_seat[1]=xm[2];  //0x7DE 日落ON/OFF  ON=1  OFF=0
     SUN_ON_OFF_seat[2]=xm[3];  //0x7DF 日本地点  1=东北, 2=关东,3=关西,4=九州
