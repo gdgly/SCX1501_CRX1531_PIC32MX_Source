@@ -391,8 +391,8 @@ void UART_Decode(void)
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x34;      //4              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x38;      //8
-                                    U1TXREG=0xD7;     //0x16B+0x33+0x38
+                                    U1TXREG=0x39;      //9
+                                    U1TXREG=0xD8;     //0x16B+0x33+0x39
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -676,7 +676,7 @@ void HA_uart_send_APP(void)
         HA_uart_app[13]=b0.IDB[2];
         HA_uart_app[15]=0xFF;
         if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==0)) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
-        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1))FG_Second=1;
+        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1)){FG_Second=1;APP_check_char=0;}
         if(UART_DATA_buffer[8]==0x10){HA_uart_app[14]=0xFF;HA_uart_app[15]=0x00;}
     }
     else if(read_TIMER_Semi_open!=0){HA_uart_app[14]=read_TIMER_Semi_open-1;read_TIMER_Semi_open=0;HA_uart_app[15]=0x00;}
