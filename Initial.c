@@ -501,10 +501,6 @@ void RF_test_mode(void )
     if((HA_L_signal==0)||(HA_Sensor_signal==1))HA_Status=0x82;
 
     FLAG_426MHz_Reply=1;
-    dd_set_ADF7021_ReInitial();
-    Freq_Scanning_CH=1;
-    //dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
-    dd_set_RX_mode();
 #endif
 
 
