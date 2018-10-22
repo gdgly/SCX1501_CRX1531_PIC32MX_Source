@@ -25,4 +25,5 @@ extern void SUN_time_get(UINT8 value);
 extern void SUN_EEPROM_write(void);
 extern void Emial_time_EEPROM_write(void);
 extern void HA_Change_EEPROM_write(void);
+extern void eeprom_IDcheck_0x00(void);
 #endif

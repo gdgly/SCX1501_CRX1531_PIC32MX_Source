@@ -145,7 +145,20 @@ void ID_Decode_IDCheck(void)
         {
             eeprom_IDcheck();
             if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
-                if(FLAG_ID_Login_OK==0){FLAG_ID_Login_OK=1;ID_Receiver_Login=DATA_Packet_ID_buf;}
+                if(FLAG_ID_Login_OK==0){
+                    #if defined(__Product_PIC32MX2_WIFI__)
+                       if(ID_DATA_PCS>=32){
+                           eeprom_IDcheck_0x00();
+                           if(FLAG_IDCheck_OK_0x00==0)FLAG_ID_Login_OK=0;
+                           else {FLAG_ID_Login_OK=1;ID_Receiver_Login=DATA_Packet_ID_buf;}
+                       }
+                       else {FLAG_ID_Login_OK=1;ID_Receiver_Login=DATA_Packet_ID_buf;}
+                    #endif
+                    #if defined(__Product_PIC32MX2_Receiver__)
+                    FLAG_ID_Login_OK=1;
+                    ID_Receiver_Login=DATA_Packet_ID_buf;
+                    #endif
+                }
             }
             else if(FLAG_IDCheck_OK==1)
             {

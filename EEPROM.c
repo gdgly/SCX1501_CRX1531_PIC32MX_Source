@@ -69,6 +69,7 @@ void SUN_time_get(UINT8 value);
 void SUN_EEPROM_write(void);
 void Emial_time_EEPROM_write(void);
 void HA_Change_EEPROM_write(void);
+void EEPROM_write_0x00toID(void);
 #endif
 
 void ID_learn(void)
@@ -193,7 +194,11 @@ void ID_learn(void)
                          else{
                              BEEP_and_LED();
                              TIME_Login_EXIT_rest=6000;       //追加多次ID登录
-                             if(FLAG_ID_Login==1)ID_EEPROM_write();
+                             if(FLAG_IDCheck_OK_0x00==1){
+                                 FLAG_IDCheck_OK_0x00=0;
+                                 EEPROM_write_0x00toID();
+                             }
+                             else if(FLAG_ID_Login==1)ID_EEPROM_write();
                              else if(FLAG_ID_Erase_Login==1){
                                  if(FLAG_ID_Erase_Login_PCS==1){FLAG_ID_Erase_Login_PCS=0;ID_DATA_PCS=0;}      //追加多次ID登录
                                  ID_EEPROM_write();
@@ -403,6 +408,17 @@ void eeprom_IDcheck(void)
        if((FLAG_ID_Erase_Login==1)&&(FLAG_ID_Erase_Login_PCS==1)){i=ID_DATA_PCS;FLAG_IDCheck_OK=0;}         //追加多次ID登录
    }
 }
+
+#if defined(__Product_PIC32MX2_WIFI__)
+void eeprom_IDcheck_0x00(void)
+{
+    UINT16 i;
+   for(i=0;i<ID_DATA_PCS;i++){
+       if(ID_Receiver_DATA[i]==0x00){INquiry_0x00=i;i=ID_DATA_PCS;FLAG_IDCheck_OK_0x00=1;}
+   }
+}
+#endif
+
 void eeprom_IDcheck_UART(void)
 {
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -759,6 +775,7 @@ void ID_EEPROM_write(void)
     UINT8 xm[3]={0};
     UINT16 m1,m2,m3;
     uni_rom_id xn;
+
      ID_DATA_PCS++;
      xm[0]=ID_DATA_PCS%256;
      xm[1]=ID_DATA_PCS/256;
@@ -789,6 +806,28 @@ void ID_EEPROM_write_0x00(void)
      Write(&xm[0],32*n2+n3*3,3);//写入数据到24LC16
      Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
 }
+
+#if defined(__Product_PIC32MX2_WIFI__)
+void EEPROM_write_0x00toID(void)
+{
+    UINT8 xm[3]={0};
+    UINT16 m1,m2,m3;
+    uni_rom_id xn;
+
+     ID_Receiver_DATA[INquiry_0x00]=ID_Receiver_Login;
+     xn.IDL=ID_Receiver_Login;
+     xm[0]=xn.IDB[0];
+     xm[1]=xn.IDB[1];
+     xm[2]=xn.IDB[2];
+     m1=INquiry_0x00;
+     m2=m1/10;
+     m3=m1%10;
+     Write(&xm[0],32*m2+m3*3,3);//写入数据到24LC16
+     Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+
+}
+#endif
+
 //===================start_i2c()起动总线函数=======//
 void start_i2c(void)
 {

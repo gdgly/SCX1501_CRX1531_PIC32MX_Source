@@ -604,8 +604,16 @@ void ADF7021_change_TXorRX(void)
 #if defined(__Product_PIC32MX2_WIFI__)
     if(FLAG_WIFI_LAN_SELECT!=WIFI_LAN_SELECT){TIME_WIFI_LAN_SELECT=10;FLAG_WIFI_LAN_SELECT=WIFI_LAN_SELECT;}
     else if(TIME_WIFI_LAN_SELECT==0){
-        if(WIFI_LAN_SELECT==1){WIFI_POWER=0;LAN_POWER=1;}
-        else {LAN_POWER=0;WIFI_POWER=1;}
+        if(WIFI_LAN_SELECT==1){
+            //WIFI_POWER=0;
+            LATACLR=0x0400;
+            LAN_POWER=1;
+        }
+        else {
+            LAN_POWER=0;
+            //WIFI_POWER=1;
+            LATASET=0x0400;
+        }
     }
 
    if((FLAG_UART_R==1)&&(FLAG_APP_TX==0)){

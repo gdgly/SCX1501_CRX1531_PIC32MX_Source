@@ -213,6 +213,9 @@ UINT8 FG_auto_out=0;
 
     UINT8 TIME_WIFI_LAN_SELECT=0;
     UINT8 FLAG_WIFI_LAN_SELECT=0;
+
+    UINT16 INquiry_0x00=0;
+    UINT8 FLAG_IDCheck_OK_0x00=0;
 #endif
 
 
@@ -341,7 +344,8 @@ void VHF_GPIO_INIT(void){
 
      WIFI_LAN_SELECT_IO=1;  // Input   有线LAN、WIFI切换
      WIFI_POWER_IO=0;   // output  WIFI电源  低电平有效
-     WIFI_POWER=1;
+     //WIFI_POWER=1;
+     LATASET=0x0400;
      LAN_POWER_IO=0;// output  LAN电源  低电平有效
      LAN_POWER=1;
    #endif
@@ -362,8 +366,8 @@ unsigned int y;                    //延时T=(timer)100us
      for(y=0;y<=600;y++);   //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
-     //for(y=0;y<=400;y++);   //特别说明：该行采用XC32的0级优化，即无优化    时间=timer*0.9ms
-     for(y=0;y<=1800;y++);    //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。    时间=timer*0.9ms
+     for(y=0;y<=400;y++);   //特别说明：该行采用XC32的0级优化，即无优化    时间=timer*0.9ms
+     //for(y=0;y<=1800;y++);    //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。    时间=timer*0.9ms
 #endif
    }
 }
@@ -375,7 +379,7 @@ void Delayus(unsigned int timer)
    for(x=0;x<10*timer;x++);  //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
-    // for(x=0;x<4*timer;x++);    //特别说明：该行采用XC32的0级优化，即无优化    时间=0.7us+timer*1.2us
-    for(x=0;x<26*timer;x++);    //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。    时间=0.7us+timer*1.2us
+     for(x=0;x<4*timer;x++);    //特别说明：该行采用XC32的0级优化，即无优化    时间=0.7us+timer*1.2us
+    //for(x=0;x<26*timer;x++);    //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。    时间=0.7us+timer*1.2us
 #endif
 }

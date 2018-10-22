@@ -290,6 +290,9 @@ extern UINT8 FG_auto_out;
 
     extern UINT8 TIME_WIFI_LAN_SELECT;
     extern UINT8 FLAG_WIFI_LAN_SELECT;
+
+    extern UINT16 INquiry_0x00;
+    extern UINT8 FLAG_IDCheck_OK_0x00;
 #endif
 
 
@@ -415,6 +418,8 @@ extern void Delay100us(unsigned int timer);
     #define  Receiver_OUT_VENT    LATBbits.LATB3   // Output 受信机继电器STOP  高电平有效
 
     #define  Receiver_test    PORTBbits.RB10   // Input 受信机测试脚  高电平有效
+
+//特别注意，在追加I/O时，用到PA口，请不要用LATAbits寄存器，请使用LATACLR，LATASET。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
     /* ADF7021 register interface */
@@ -451,6 +456,9 @@ extern void Delay100us(unsigned int timer);
     #define  WIFI_LAN_SELECT  PORTCbits.RC6 // Input   有线LAN、WIFI切换
     #define  WIFI_POWER       LATAbits.LATA10  // output  WIFI电源  低电平有效
     #define  LAN_POWER        LATBbits.LATB13  // output  LAN电源  低电平有效
+
+//特别注意，在追加I/O时，用到PA口，请不要用LATAbits寄存器，请使用LATACLR，LATASET。
+
 #endif
 
 
