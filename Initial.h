@@ -257,6 +257,13 @@ extern UINT32 RF_SET_RX_test[6];
 extern UINT16 X_COUNT ;
 extern UINT16 X_ERR ;//记录错误的个数
 extern UINT8 X_HIS; //历史记录   误码率测试用
+extern UINT8 FLAG_TELEC_mode;
+extern UINT8 FLAG_TELEC_CH;
+extern UINT8 TIME_TELEC_mode;
+extern UINT8 TIME_TELEC_CH;
+extern UINT8 FLAG_TELEC_CH_dec;
+extern UINT8 TIME_TELEC_CH_dec;
+extern UINT8 TELEC_Frequency_CH;
 
 extern UINT16 TIME_Fine_Calibration;   //窄带下中频滤波器100KHz精校
 //*********************************************

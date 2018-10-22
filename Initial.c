@@ -92,16 +92,33 @@ UINT8 read_TIMER_Semi_open=0;
 UINT8 Tx_Rx_mode=0;
 FLAG FLAG_test;
                             /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
-UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000010F};     //天线是内部天线
-//UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00571882,0x00289A14,0x0000010F};       //天线是外置天线
+#if defined(__Product_PIC32MX2_Receiver__)
+UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x0056E882,0x00289A14,0x0000010F};     //天线是内部天线
+#endif
+#if defined(__Product_PIC32MX2_WIFI__)
+//UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x0056E882,0x00289A14,0x0000010F};     //天线是内部天线
+UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00571882,0x00289A14,0x0000010F};       //天线是外置天线
+#endif
                             /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
-UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000040F};    //天线是内部天线
-//UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00571882,0x00289A14,0x0000040F};      //天线是外置天线
+#if defined(__Product_PIC32MX2_Receiver__)
+UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x0056E882,0x00289A14,0x0000040F};    //天线是内部天线
+#endif
+#if defined(__Product_PIC32MX2_WIFI__)
+//UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x0056E882,0x00289A14,0x0000040F};    //天线是内部天线
+UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00571882,0x00289A14,0x0000040F};      //天线是外置天线
+#endif
                     /****说明 REG1      REG2        REG3        REG0    REG4    REGA******/
 UINT32 RF_SET_RX_test[6]={0x031B5011,0x00D00882,0x29920893,0x0954C7B0,0x8024E294,0x049668EA};
 UINT16 X_COUNT = 0;
 UINT16 X_ERR  = 0 ;//记录错误的个数
 UINT8 X_HIS=0; //历史记录   误码率测试用
+UINT8 FLAG_TELEC_mode=0;
+UINT8 FLAG_TELEC_CH=0;
+UINT8 TIME_TELEC_mode=0;
+UINT8 TIME_TELEC_CH=0;
+UINT8 FLAG_TELEC_CH_dec=0;
+UINT8 TIME_TELEC_CH_dec=0;
+UINT8 TELEC_Frequency_CH=2;
 
 UINT16 TIME_Fine_Calibration=0;   //窄带下中频滤波器100KHz精校
 //*********************************************
@@ -333,6 +350,7 @@ void VHF_GPIO_INIT(void){
        ADF7021_DATA_IO = 1;
        ADF7021_CLKOUT_IO=1;     // Input
        ADF7021_INT_LOCK_IO=1;   // Input
+       CNPUAbits.CNPUA8=1;
        SDAIO=0; // Input AND output
        SCLIO=0; // output
 
@@ -380,6 +398,7 @@ void VHF_GPIO_INIT(void){
        WIFI_test_IO=1;
        CNPUBbits.CNPUB4=1;
        ADF7021_INT_LOCK_IO=1;   // Input
+       CNPUAbits.CNPUA8=1;
        SDAIO=0; // Input AND output
        SCLIO=0; // output
 
@@ -427,14 +446,61 @@ void RF_test_mode(void )
         if(HA_Sensor_signal==0)Receiver_LED_TX=1;
         else Receiver_LED_TX=0;
 
-	if(HA_ERR_signal==0){
-	  if(HA_L_signal==0)Tx_Rx_mode=0;
-	  else Tx_Rx_mode=1;
-	}
-	else{
-	  if(HA_L_signal==0)Tx_Rx_mode=2;
-	  else Tx_Rx_mode=3;
-	}
+//	if(HA_ERR_signal==0){
+//	  if(HA_L_signal==0)Tx_Rx_mode=0;
+//	  else Tx_Rx_mode=1;
+//	}
+//	else{
+//	  if(HA_L_signal==0)Tx_Rx_mode=2;
+//	  else Tx_Rx_mode=3;
+//	}
+
+
+          if(FG_10ms){
+             FG_10ms = 0;
+             if(TIME_TELEC_CH)--TIME_TELEC_CH;
+             if(TIME_TELEC_mode)--TIME_TELEC_mode;
+             if(TIME_TELEC_CH_dec)--TIME_TELEC_CH_dec;
+         }
+
+       if((HA_ERR_signal==0)&&(FLAG_TELEC_mode==0)&&(TIME_TELEC_mode==0)){
+           FLAG_TELEC_mode=1;
+           Tx_Rx_mode++;
+           if(Tx_Rx_mode>3)Tx_Rx_mode=0;
+//           if((Tx_Rx_mode==0)||(Tx_Rx_mode==1))TELEC_Frequency_CH=2;
+//           else TELEC_Frequency_CH=1;
+       }
+       if(HA_ERR_signal==1){FLAG_TELEC_mode=0;TIME_TELEC_mode=5;}
+       if((HA_L_signal==0)&&(FLAG_TELEC_CH==0)&&(TIME_TELEC_CH==0)){
+           FLAG_TELEC_CH=1;
+           TELEC_Frequency_CH++;
+           if(FG_test_rx==0){
+               if(TELEC_Frequency_CH==1)TELEC_Frequency_CH=2;
+               if(TELEC_Frequency_CH>47)TELEC_Frequency_CH=2;
+           }
+           else {
+               if(TELEC_Frequency_CH>47)TELEC_Frequency_CH=1;
+           }
+           if(FG_test_rx==0)dd_set_ADF7021_Freq(1,TELEC_Frequency_CH);
+            else dd_set_ADF7021_Freq(0,TELEC_Frequency_CH);
+       }
+       if(HA_L_signal==1){FLAG_TELEC_CH=0;TIME_TELEC_CH=5;}
+
+
+       if((ADF7021_INT_LOCK==0)&&(FLAG_TELEC_CH_dec==0)&&(TIME_TELEC_CH_dec==0)){
+           FLAG_TELEC_CH_dec=1;
+           TELEC_Frequency_CH--;
+           if(FG_test_rx==0){
+               if(TELEC_Frequency_CH<=1)TELEC_Frequency_CH=47;
+           }
+           else {
+               if(TELEC_Frequency_CH<1)TELEC_Frequency_CH=47;
+           }
+           if(FG_test_rx==0)dd_set_ADF7021_Freq(1,TELEC_Frequency_CH);
+            else dd_set_ADF7021_Freq(0,TELEC_Frequency_CH);
+       }
+       if(ADF7021_INT_LOCK==1){FLAG_TELEC_CH_dec=0;TIME_TELEC_CH_dec=5;}
+
 	if((Tx_Rx_mode==0)||(Tx_Rx_mode==1)){
 	  FG_test_rx=0;
 	  Receiver_LED_RX=0;
@@ -463,7 +529,7 @@ void RF_test_mode(void )
 	  FG_test_mode=0;
 	  FG_test_tx_on=0;
 	  FG_test_tx_1010=0;
-	  if(FG_test_tx_off==0){FG_test_tx_off=1;dd_set_RX_mode_test();ADF7021_DATA_IO=1;}
+	  if(FG_test_tx_off==0){FG_test_tx_off=1;dd_set_RX_mode();ADF7021_DATA_IO=1;}   //dd_set_RX_mode_test();
 	  //if(HA_L_signal==0){
 	  if(Tx_Rx_mode==2)
 	    if(TIMER1s==0){
@@ -524,14 +590,59 @@ void RF_test_mode(void )
     while(WIFI_test==0){
         ClearWDT(); // Service the WDT
         //if(HA_ERR_signal==0){      //test ADF7021 TX
-	if(WIFI_L_Login==0){
-	  if(WIFI_USBLogin==0)Tx_Rx_mode=0;
-	  else Tx_Rx_mode=1;
-	}
-	else{
-	  if(WIFI_USBLogin==0)Tx_Rx_mode=2;
-	  else Tx_Rx_mode=3;
-	}
+//	if(WIFI_L_Login==0){
+//	  if(WIFI_USBLogin==0)Tx_Rx_mode=0;
+//	  else Tx_Rx_mode=1;
+//	}
+//	else{
+//	  if(WIFI_USBLogin==0)Tx_Rx_mode=2;
+//	  else Tx_Rx_mode=3;
+//	}
+
+         if(FG_10ms){
+             FG_10ms = 0;
+             if(TIME_TELEC_CH)--TIME_TELEC_CH;
+             if(TIME_TELEC_mode)--TIME_TELEC_mode;
+             if(TIME_TELEC_CH_dec)--TIME_TELEC_CH_dec;
+         }
+
+       if((WIFI_USBLogin==0)&&(FLAG_TELEC_mode==0)&&(TIME_TELEC_mode==0)){
+           FLAG_TELEC_mode=1;
+           Tx_Rx_mode++;
+           if(Tx_Rx_mode>3)Tx_Rx_mode=0;
+//           if((Tx_Rx_mode==0)||(Tx_Rx_mode==1))TELEC_Frequency_CH=2;
+//           else TELEC_Frequency_CH=1;
+       }
+       if(WIFI_USBLogin==1){FLAG_TELEC_mode=0;TIME_TELEC_mode=5;}
+       if((WIFI_L_Login==0)&&(FLAG_TELEC_CH==0)&&(TIME_TELEC_CH==0)){
+           FLAG_TELEC_CH=1;
+           TELEC_Frequency_CH++;
+           if(FG_test_rx==0){
+               if(TELEC_Frequency_CH==1)TELEC_Frequency_CH=2;
+               if(TELEC_Frequency_CH>47)TELEC_Frequency_CH=2;
+           }
+           else {
+               if(TELEC_Frequency_CH>47)TELEC_Frequency_CH=1;
+           }
+           if(FG_test_rx==0)dd_set_ADF7021_Freq(1,TELEC_Frequency_CH);
+            else dd_set_ADF7021_Freq(0,TELEC_Frequency_CH);
+       }
+       if(WIFI_L_Login==1){FLAG_TELEC_CH=0;TIME_TELEC_CH=5;}
+
+       if((ADF7021_INT_LOCK==0)&&(FLAG_TELEC_CH_dec==0)&&(TIME_TELEC_CH_dec==0)){
+           FLAG_TELEC_CH_dec=1;
+           TELEC_Frequency_CH--;
+           if(FG_test_rx==0){
+               if(TELEC_Frequency_CH<=1)TELEC_Frequency_CH=47;
+           }
+           else {
+               if(TELEC_Frequency_CH<1)TELEC_Frequency_CH=47;
+           }
+           if(FG_test_rx==0)dd_set_ADF7021_Freq(1,TELEC_Frequency_CH);
+            else dd_set_ADF7021_Freq(0,TELEC_Frequency_CH);
+       }
+       if(ADF7021_INT_LOCK==1){FLAG_TELEC_CH_dec=0;TIME_TELEC_CH_dec=5;}
+
 	if((Tx_Rx_mode==0)||(Tx_Rx_mode==1)){
 	  FG_test_rx=0;
 	  WIFI_LED_RX=0;
@@ -560,7 +671,7 @@ void RF_test_mode(void )
 	  FG_test_mode=0;
 	  FG_test_tx_on=0;
 	  FG_test_tx_1010=0;
-	  if(FG_test_tx_off==0){FG_test_tx_off=1;dd_set_RX_mode_test();ADF7021_DATA_IO=1;}
+	  if(FG_test_tx_off==0){FG_test_tx_off=1;dd_set_RX_mode();ADF7021_DATA_IO=1;}   //dd_set_RX_mode_test();
 	  //if(HA_L_signal==0){
 	  if(Tx_Rx_mode==2)
 	    if(TIMER1s==0){
