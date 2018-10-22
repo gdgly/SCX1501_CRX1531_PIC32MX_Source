@@ -19,10 +19,11 @@
 #if defined(__32MX210F016D__)
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 #endif
-
 #if defined(__32MX220F032D__)
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 #endif
+
+
 
     //============================================
     #define	UINT8		unsigned char
@@ -94,6 +95,10 @@ extern FLAG FLAG_APP;
 	#define		FLAG_AUTO_SEND_START		FLAG_APP.BIT.Bit0      
         #define		FLAG_AUTO_SEND_ok		FLAG_APP.BIT.Bit1      
         #define		Freq_Scanning_CH_save_HA	FLAG_APP.BIT.Bit2
+
+//        #define		FLAG_APP_SW1		FLAG_APP.BIT.Bit0      //test use
+//        #define		FLAG_APP_SW2		FLAG_APP.BIT.Bit1      //test use
+//        #define		FLAG_APP_SW3		FLAG_APP.BIT.Bit2      //test use
 
 	#define		FLAG_rssi_Freq		FLAG_APP.BIT.Bit3
 	#define		FLAG_Receiver_BEEP	FLAG_APP.BIT.Bit4
@@ -228,36 +233,10 @@ extern UINT8 TIME_EMC;
 
 extern UINT16 TIME_No_response;
 extern UINT8 FLAG_TIME_No_response;
-extern UINT8 read_TIMER_Semi_open;
 
-extern UINT32 RF_SET_TX_DATA[5];
-extern UINT32 RF_SET_TX_REGISTER_0[6];
-extern UINT32 RF_SET_RX_DATA[6];
-extern UINT32 RF_SET_RX_REGISTER_0[6];
-extern UINT32 RF_SET_RX_REGISTER_A[6];
-
-//*********以下为测试代码所用变量****************
-extern UINT8 Tx_Rx_mode;
-extern FLAG FLAG_test;
-	//************************************************
-	//************************************************
-	#define 	FLAG_test_BYTE		FLAG_test.BYTE
-	//------------------------------------------------
-        //#define		FLAG_Receiver_Scanning	FLAG_test.BIT.Bit0
-        #define		FG_test_tx_1010	        FLAG_test.BIT.Bit1
-        //#define		X_HIS	                FLAG_test.BIT.Bit2    //历史记录   误码率测试用
-        #define		FG_test_tx_on		FLAG_test.BIT.Bit3
-        #define		FG_test_tx_off	        FLAG_test.BIT.Bit4
-        #define		FG_test_mode	        FLAG_test.BIT.Bit5
-        //#define		FG_test1	        FLAG_test.BIT.Bit6
-        #define		FG_test_rx		FLAG_test.BIT.Bit7
-extern UINT32 RF_SET_TX_carrier_test[6];
-extern UINT32 RF_SET_TX_1010pattern[6];
-extern UINT32 RF_SET_RX_test[6];
-extern UINT16 X_COUNT ;
-extern UINT16 X_ERR ;//记录错误的个数
-extern UINT8 X_HIS; //历史记录   误码率测试用
-//*********************************************
+extern UINT16 RAM_rssi_SUM;
+extern UINT8 RAM_rssi_CNT;
+extern UINT8 RAM_rssi_AVG;
 
 #if defined(__Product_PIC32MX2_Receiver__)
 extern UINT16  TIMER_err_1s;
@@ -273,12 +252,6 @@ extern UINT8 FLAG__Semi_open_T;
 extern UINT16  TIME_auto_out;
 extern UINT16  TIME_auto_close;
 extern UINT8 FG_auto_out;
-extern UINT8 HA_Status_buf;
-extern UINT8 DIP_switch_data_bak;
-extern UINT8 DIP_switch_data;
-extern UINT8 FLAG_DIP_switch;
-extern UINT8 TIME_DIP_switch;
-extern UINT8 FLAG_POER_on;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -304,11 +277,6 @@ extern UINT8 FLAG_POER_on;
     extern UINT16 TIME_email_send;
     extern UINT32 Email_check_ID[64];
     extern UINT8  Emial_check_Control[64];
-    extern UINT32 SWITCH_DIP_id_data[64];
-    extern UINT8  SWITCH_DIP_id_DIP[64];
-    extern UINT8 SWITCH_DIP;
-    extern UINT8 SWITCH_DIP_bak;
-    extern UINT32 SWITCH_DIP_id_data_bak;
     extern UINT8  Sunrise_sunset_DATA[480];
     extern UINT8 SUN_ON_OFF_seat[3];
     extern UINT8 SUN_Weekdays_alarm;
@@ -333,16 +301,12 @@ extern UINT8 FLAG_POER_on;
 
     extern UINT16 INquiry_0x00;
     extern UINT8 FLAG_IDCheck_OK_0x00;
-
-    extern UINT8 FG_WIFI_SWITCH_DIP;
-    extern UINT16 TIME_APP_Inquiry_HA;
 #endif
 
 
 extern void VHF_GPIO_INIT(void);		// CPU端口设置
 extern void Delayus(unsigned int timer);
 extern void Delay100us(unsigned int timer);
-extern void RF_test_mode(void );
 
 
 //以下是IO 方向定义
@@ -375,19 +339,14 @@ extern void RF_test_mode(void );
     #define  Receiver_Login_IO     TRISCbits.TRISC7 // Input   受信机登录键   低电平有效
     #define  Receiver_Buzzer_IO    TRISBbits.TRISB13 // Output   受信机蜂鸣器  高电平有效
     #define  Receiver_LED_OUT_IO   TRISCbits.TRISC6 // Output   受信机继电器动作输出  低电平有效
-//    #define  Receiver_LED_TX_IO    TRISCbits.TRISC9 // Output   受信机送信指示  低电平有效
-//    #define  Receiver_LED_RX_IO    TRISCbits.TRISC8 // Output   受信机受信指示  低电平有效
-    #define  Receiver_LED_TX_IO    TRISCbits.TRISC8 // Output   受信机送信指示  低电平有效
-    #define  Receiver_LED_RX_IO    TRISCbits.TRISC9 // Output   受信机受信指示  低电平有效
+    #define  Receiver_LED_TX_IO    TRISCbits.TRISC9 // Output   受信机送信指示  低电平有效
+    #define  Receiver_LED_RX_IO    TRISCbits.TRISC8 // Output   受信机受信指示  低电平有效
     #define  Receiver_OUT_OPEN_IO    TRISAbits.TRISA1  // Output 受信机继电器OPEN  高电平有效
     #define  Receiver_OUT_CLOSE_IO   TRISBbits.TRISB2  // Output 受信机继电器close 高电平有效
     #define  Receiver_OUT_STOP_IO    TRISCbits.TRISC0  // Output 受信机继电器STOP  高电平有效
     #define  Receiver_OUT_VENT_IO    TRISBbits.TRISB3  // Output 受信机继电器STOP  高电平有效
 
-    #define  Receiver_test_IO    TRISBbits.TRISB10  // INPUT 受信机测试脚  低电平有效
-    #define  DIP_switch1_IO         TRISBbits.TRISB11 // Input   DIP_switch1  低电平有效
-    #define  DIP_switch2_IO         TRISBbits.TRISB5 // Input   DIP_switch2  低电平有效
-    #define  DIP_switch3_IO         TRISAbits.TRISA0 // Input   DIP_switch3  低电平有效
+    #define  Receiver_test_IO    TRISBbits.TRISB10  // INPUT 受信机测试脚  高电平有效
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
     /* ADF7021 register interface */
@@ -404,7 +363,7 @@ extern void RF_test_mode(void );
     #define ADF7021_DATA_CLK_IO           TRISCbits.TRISC3 // Input
     #define ADF7021_DATA_IO               TRISAbits.TRISA9 // Output
 
-    //#define ADF7021_CLKOUT_IO             TRISBbits.TRISB4 // Input
+    #define ADF7021_CLKOUT_IO             TRISBbits.TRISB4 // Input
     #define ADF7021_INT_LOCK_IO           TRISAbits.TRISA8 // Input
 
    #define	SDAIO                   TRISCbits.TRISC2 // Input AND output
@@ -416,16 +375,12 @@ extern void RF_test_mode(void );
     #define  WIFI_L_Login_IO      TRISAbits.TRISA7 // Input   wifi集中通讯机登录键   低电平有效
     #define  WIFI_USBLogin_IO     TRISCbits.TRISC7 // Input   wifi集中通讯机USB升级键   低电平有效
     #define  WIFI_USBOC_IO        TRISBbits.TRISB3 // Input   wifi集中USB保护监测   低电平有效
-//    #define  WIFI_LED_RX_IO       TRISCbits.TRISC8 // Input   wifi集中通讯机受信指示 低电平有效
-//    #define  WIFI_LED_TX_IO       TRISCbits.TRISC9 // Input   wifi集中通讯机送信指示 低电平有效
-    #define  WIFI_LED_RX_IO       TRISCbits.TRISC9 // Input   wifi集中通讯机受信指示 低电平有效
-    #define  WIFI_LED_TX_IO       TRISCbits.TRISC8 // Input   wifi集中通讯机送信指示 低电平有效
+    #define  WIFI_LED_RX_IO       TRISCbits.TRISC8 // Input   wifi集中通讯机受信指示 低电平有效
+    #define  WIFI_LED_TX_IO       TRISCbits.TRISC9 // Input   wifi集中通讯机送信指示 低电平有效
 
     #define  WIFI_LAN_SELECT_IO   TRISCbits.TRISC6 // Input   有线LAN、WIFI切换
     #define  WIFI_POWER_IO        TRISAbits.TRISA10 // output  WIFI电源  低电平有效
     #define  LAN_POWER_IO         TRISBbits.TRISB13 // output  LAN电源  低电平有效
-
-    #define WIFI_test_IO          TRISBbits.TRISB4  // INPUT WIFI测试脚  低电平有效
 
 #endif
 
@@ -463,19 +418,15 @@ extern void RF_test_mode(void );
     #define  Receiver_Login     PORTCbits.RC7   // Input   受信机登录键   低电平有效
     #define  Receiver_Buzzer    LATBbits.LATB13  // Output   受信机蜂鸣器  高电平有效
     #define  Receiver_LED_OUT   LATCbits.LATC6  // Output   受信机继电器动作输出  低电平有效
-//    #define  Receiver_LED_TX    LATCbits.LATC9 // Output   受信机送信指示  低电平有效
-//    #define  Receiver_LED_RX    LATCbits.LATC8  // Output   受信机受信指示  低电平有效
-    #define  Receiver_LED_TX    LATCbits.LATC8 // Output   受信机送信指示  低电平有效
-    #define  Receiver_LED_RX    LATCbits.LATC9  // Output   受信机受信指示  低电平有效
+    #define  Receiver_LED_TX    LATCbits.LATC9 // Output   受信机送信指示  低电平有效
+    #define  Receiver_LED_RX    LATCbits.LATC8  // Output   受信机受信指示  低电平有效
     #define  Receiver_OUT_OPEN    LATAbits.LATA1  // Output   受信机继电器OPEN  高电平有效
     #define  Receiver_OUT_CLOSE   LATBbits.LATB2  // Output   受信机继电器close  高电平有效
     #define  Receiver_OUT_STOP    LATCbits.LATC0  // Output   受信机继电器stop  高电平有效
     #define  Receiver_OUT_VENT    LATBbits.LATB3   // Output 受信机继电器STOP  高电平有效
 
-    #define  Receiver_test    PORTBbits.RB10   // Input 受信机测试脚  低电平有效
-    #define  DIP_switch1         PORTBbits.RB11 // Input   DIP_switch1  低电平有效
-    #define  DIP_switch2         PORTBbits.RB5 // Input   DIP_switch2  低电平有效
-    #define  DIP_switch3         PORTAbits.RA0 // Input   DIP_switch3  低电平有效
+    #define  Receiver_test    PORTBbits.RB10   // Input 受信机测试脚  高电平有效
+
 //特别注意，在追加I/O时，用到PA口，请不要用LATAbits寄存器，请使用LATACLR，LATASET。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -494,7 +445,7 @@ extern void RF_test_mode(void );
     #define ADF7021_DATA_tx           LATAbits.LATA9     // Output
     #define ADF7021_DATA_rx           PORTAbits.RA9     // Input
 
-    //#define ADF7021_CLKOUT             PORTBbits.RB4 // Input
+    #define ADF7021_CLKOUT             PORTBbits.RB4 // Input
     #define ADF7021_INT_LOCK           PORTAbits.RA8 // Input
 
     #define	SDA                     LATCbits.LATC2     // Output
@@ -507,16 +458,12 @@ extern void RF_test_mode(void );
     #define  WIFI_L_Login      PORTAbits.RA7 // Input   wifi集中通讯机登录键   低电平有效
     #define  WIFI_USBLogin     PORTCbits.RC7 // Input   wifi集中通讯机USB升级键   低电平有效
     #define  WIFI_USBOC        PORTBbits.RB3 // Input   wifi集中USB保护监测   低电平有效
-//    #define  WIFI_LED_RX       LATCbits.LATC8 // Output   wifi集中通讯机受信指示 低电平有效
-//    #define  WIFI_LED_TX       LATCbits.LATC9 // Output   wifi集中通讯机送信指示 低电平有效
-    #define  WIFI_LED_RX       LATCbits.LATC9 // Output   wifi集中通讯机受信指示 低电平有效
-    #define  WIFI_LED_TX       LATCbits.LATC8 // Output   wifi集中通讯机送信指示 低电平有效
+    #define  WIFI_LED_RX       LATCbits.LATC8 // Output   wifi集中通讯机受信指示 低电平有效
+    #define  WIFI_LED_TX       LATCbits.LATC9 // Output   wifi集中通讯机送信指示 低电平有效
 
     #define  WIFI_LAN_SELECT  PORTCbits.RC6 // Input   有线LAN、WIFI切换
     #define  WIFI_POWER       LATAbits.LATA10  // output  WIFI电源  低电平有效
     #define  LAN_POWER        LATBbits.LATB13  // output  LAN电源  低电平有效
-
-    #define  WIFI_test        PORTBbits.RB4   // Input WIFI测试脚  低电平有效
 
 //特别注意，在追加I/O时，用到PA口，请不要用LATAbits寄存器，请使用LATACLR，LATASET。
 

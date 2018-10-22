@@ -112,7 +112,6 @@ Note: make sure the boot loader and your application, both use the same fuse set
         #pragma config FPLLODIV = DIV_4 //DIV_4         // PLL Output Divider: Divide by 8    SYSCLK=10M
         #pragma config WDTPS = PS128 // WDT timeout period = 1ms
     #endif
-
     #if defined(__32MX220F032D__)
         #pragma config FPLLODIV = DIV_4 //DIV_4         // PLL Output Divider: Divide by 8    SYSCLK=10M
         #pragma config WDTPS = PS128 // WDT timeout period = 1ms
@@ -163,7 +162,31 @@ main_start:
     FLAG_HA_L_signal=1;
     FLAG_HA_ERR_signal=1;
 
-    RF_test_mode();
+#if defined(__Product_PIC32MX2_Receiver__)
+    Receiver_LED_OUT=1;
+    for(time_3sec=0;time_3sec<1000;time_3sec++){
+    Delay100us(10);
+    ClearWDT(); // Service the WDT
+    }
+    time_3sec=10;
+    Receiver_LED_OUT=0;
+
+    while(Receiver_test==1){
+        ClearWDT(); // Service the WDT
+        if(HA_L_signal==0)Receiver_LED_TX=1;
+        else Receiver_LED_TX=0;
+        if(HA_ERR_signal==0)Receiver_LED_RX=1;
+        else Receiver_LED_RX=0;
+        if(HA_Sensor_signal==0)Receiver_LED_OUT=1;
+        else Receiver_LED_OUT=0;
+    }
+    Receiver_LED_TX=0;
+    Receiver_LED_RX=0;
+    Receiver_LED_OUT=0;
+#endif
+#if defined(__Product_PIC32MX2_WIFI__)
+    TIME_WIFI_LAN_SELECT=10;
+#endif
     TIME_EMC=10;
     while(1)
     {

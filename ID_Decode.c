@@ -13,20 +13,7 @@
 #include "Timers.h"
 #include "Uart.h"
 #include "pcf8563.h"
-/******************无线DATA 数据说明******************************
- 通信机429MHz发送DATA
-    类型	        HEMS追加	      HEMS追加	    HEMS追加			   HEMS追加
-   byte7          byte6           byte5           byte4    byte3   byte2  byte1    byte0
-0：工作控制	   角度调整（关）    角度调整（开）	  半开	  OPEN	  STOP	CLOSE	 换气
-1	        0 ：设置	      半开信号T秒设置，范围：0～60秒
-1		0                0x3F  ：T秒查询
 
-
-通信机429MHz接收DATA
-   byte7          byte6           byte5          byte4    byte3   byte2  byte1    byte0
-    1 :HA和DIP开关     DIP开关（3 BIT）                        HA状态（4 BIT）
-    0              0：T秒返回值
-***************************************************************/
 
 void ID_Decode_function(void);
 void  Freq_Scanning(void);
@@ -37,7 +24,6 @@ void SendTxData(void);
 void ID_Decode_OUT(void);
 void Signal_DATA_Decode(UINT8 NUM_Type);
 void BEEP_and_LED(void);
-void SWITCH_DIP_check_app(void);
 void Email_check_app(void);
 void Email_check_mail(void);
 
@@ -67,21 +53,11 @@ void __ISR(_EXTERNAL_2_VECTOR, ipl6) ExternalHandler(void)
     if(FLAG_APP_RX==1)
         ID_Decode_function();
     else if(FLAG_APP_TX==1)ID_code_function();
-    else if(FG_test_rx==1){
-      X_COUNT ++;
-      if((ADF7021_DATA_rx== X_HIS)&&(X_COUNT != 1))X_ERR++;
-      X_HIS = ADF7021_DATA_rx;
-  }
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
     if(FLAG_APP_RX==1)
         ID_Decode_function();
     else if(FLAG_APP_TX==1)ID_code_function();
-    else if(FG_test_rx==1){
-      X_COUNT ++;
-      if((ADF7021_DATA_rx== X_HIS)&&(X_COUNT != 1))X_ERR++;
-      X_HIS = ADF7021_DATA_rx;
-  }
  #endif
     //ADF7021_CLKOUT=!ADF7021_CLKOUT;//测试，测试完后需要删除
     IFS0bits.INT2IF = 0;
@@ -109,7 +85,7 @@ void ID_code_function(void)
 
 void ID_Decode_function(void)
 {
-   UINT16 DATA_Packet_Syn_bak=0;
+    UINT16 DATA_Packet_Syn_bak=0;
      TIME_EMC=10;
      switch (rxphase){
         case 0:
@@ -189,19 +165,7 @@ void ID_Decode_IDCheck(void)
                 FLAG_IDCheck_OK=0;
                 if(Freq_Scanning_CH_bak==0){Freq_Scanning_CH_save=1;Freq_Scanning_CH_save_HA=0; }  //当前收到426M控制   但保存记录下收到信号的频率信道,0代表426M
                 else Freq_Scanning_CH_save_HA=1;  //                       1代表429M
-              #if defined(__Product_PIC32MX2_Receiver__)
-                 DATA_Packet_Control_0=DATA_Packet_Control;
-              #endif
-              #if defined(__Product_PIC32MX2_WIFI__)
-                //DATA_Packet_Control_0=DATA_Packet_Control;
-                if(DATA_Packet_Control>=0x80){
-                    SWITCH_DIP=(DATA_Packet_Control&0x70)>>4;
-                    DATA_Packet_Control_0=DATA_Packet_Control&0x8F;
-                    DATA_Packet_Control=DATA_Packet_Control_0;
-                }
-                else if((DATA_Packet_Control<0x3F)&&(DATA_Packet_Control>0)&&(Freq_Scanning_CH_save_HA==1))read_TIMER_Semi_open=DATA_Packet_Control;
-                else read_TIMER_Semi_open=0;
-             #endif
+                DATA_Packet_Control_0=DATA_Packet_Control;
              #if defined(__Product_PIC32MX2_Receiver__)
                 if(DATA_Packet_Control==0x08)DATA_Packet_Control_err=0x08;
                 if(DATA_Packet_Control==0x02){DATA_Packet_Control_err=0x02;FLAG_HA_ERR_bit=0;}
@@ -250,8 +214,7 @@ void ID_Decode_IDCheck(void)
                         else if((DATA_Packet_Control&0x10)==0x10){
                             if(HA_Status==0x81)TIMER1s=(TIMER_Semi_open+1)*1000;
                         }
-                        //else if(DATA_Packet_Control==0x00)TIMER1s=1000;
-                        else TIMER1s=1000;
+                        else  TIMER1s=1000;
                     }
                     TIMER300ms=500;
                     Receiver_LED_RX=1;
@@ -474,8 +437,7 @@ void ID_Decode_OUT(void)
                 //if((DATA_Packet_Control==0x00)&&(FLAG_APP_Reply==0)) FLAG_APP_Reply=1;
                 //if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x08))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1)) FLAG_APP_Reply=1;
                 if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)||(DATA_Packet_Control==0x10)
-                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0xBF)||(DATA_Packet_Control==0x40)||((DATA_Packet_Control>=0x81)&&(DATA_Packet_Control<=0xBD)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
-                     FLAG_APP_Reply=1;
+                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)||((DATA_Packet_Control>=0x81)&&(DATA_Packet_Control<=0xBD)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1)) FLAG_APP_Reply=1;
 //                if((DATA_Packet_Control&0x14)==0x14){
 //                    TIMER250ms_STOP=250;
 //                    if(TIMER1s<3550){Receiver_OUT_OPEN=1;Receiver_OUT_CLOSE=1;Receiver_BEEP();}
@@ -502,24 +464,8 @@ void ID_Decode_OUT(void)
            }
 
            FLAG__Semi_open_T=0;
-//           if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
-//           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status+4;FLAG_HA_START=1;}   //受信器自动发送HA状态码为实际HA码+4
-           if((FLAG_APP_Reply==1)||(FLAG_426MHz_Reply==1)){
-               if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status;}
-               if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;HA_Status_buf=HA_Status+4;}    //受信器自动发送HA状态码为实际HA码+4
-               ID_data.IDL=DATA_Packet_ID;
-               if(DATA_Packet_Control==0xBF)Control_code=TIMER_Semi_open+1;
-                 else {
-                   if(DIP_switch1==1)HA_Status_buf=HA_Status_buf&0xBF;
-                      else HA_Status_buf=HA_Status_buf|0x40;
-                   if(DIP_switch2==1)HA_Status_buf=HA_Status_buf&0xDF;
-                      else HA_Status_buf=HA_Status_buf|0x20;
-                   if(DIP_switch3==1)HA_Status_buf=HA_Status_buf&0xEF;
-                      else HA_Status_buf=HA_Status_buf|0x10;
-                   Control_code=HA_Status_buf;
-                 }
-               FLAG_HA_START=1;
-           }
+           if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status+4;FLAG_HA_START=1;}   //受信器自动发送HA状态码为实际HA码+4
            FLAG_Receiver_BEEP=0;
            //if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
            //else Receiver_LED_OUT=0;
@@ -540,10 +486,6 @@ void ID_Decode_OUT(void)
          HA_uart_send_APP();
          FLAG_TIME_No_response=0;
      }
-    if(((read_TIMER_Semi_open<0x3F)&&(read_TIMER_Semi_open>0))||(((SWITCH_DIP_bak!=SWITCH_DIP)||(SWITCH_DIP_id_data_bak!=DATA_Packet_ID))&&(Freq_Scanning_CH_save_HA==1))){
-        SWITCH_DIP_check_app(); //检测现在的值与缓存中SWITCH_DIP,如果变化FG_WIFI_SWITCH_DIP=1;
-        HA_uart_send_APP();
-    }
  #endif
  /********************以下是遥控板和APP一起邮件送信**********************/
       //if((FLAG_HA_Inquiry==1)||(DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x85)||(DATA_Packet_Control_0==0x86)||(DATA_Packet_Control_0==0x87)){
@@ -625,21 +567,7 @@ void ID_Decode_OUT(void)
 //     }
  #endif    
 }
-void SWITCH_DIP_check_app(void)
-{
- #if defined(__Product_PIC32MX2_WIFI__)
-    UINT8 i;
-        for(i=0;i<64;i++)
-        {
-            if(SWITCH_DIP_id_data[i]==0x00){SWITCH_DIP_id_data[i]=DATA_Packet_ID;SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
-            if(SWITCH_DIP_id_data[i]==DATA_Packet_ID)
-            {
-                if(SWITCH_DIP==SWITCH_DIP_id_DIP[i])break;
-                else {SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
-            }
-        }
- #endif
-}
+
 void Email_check_app(void)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
@@ -649,7 +577,7 @@ void Email_check_app(void)
             if(EMIAL_id_data[i]==0x00){EMIAL_id_data[i]=DATA_Packet_ID;EMIAL_id_HA[i]=DATA_Packet_Control;EMIAL_id_PCS++;break;}
             if(EMIAL_id_data[i]==DATA_Packet_ID)
             {
-                if(DATA_Packet_Control==EMIAL_id_HA[i])break;
+                if(DATA_Packet_Control==EMIAL_id_data[i])break;
                 else {EMIAL_id_HA[i]=DATA_Packet_Control;break;}
             }
         }
