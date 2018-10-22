@@ -206,7 +206,7 @@ void dd_set_TX_mode(void)
         
 	ADF70XX_REG_T register_value;
         //write R1, turn on VCO
-	register_value.whole_reg = 0x031BD011;
+	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
 	dd_write_7021_reg(&register_value.byte[0]);
 	Delayus(800);		//delay 800us
 
@@ -231,7 +231,7 @@ void dd_set_TX_mode(void)
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
-	register_value.whole_reg = 0x00289A14;//0x00268614;
+	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K（0x00289A14）-->2K（0x00268614）
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
@@ -254,7 +254,7 @@ void dd_set_RX_mode(void)
 	//	for ADF7021DB2 864M
 
 	//write R1, turn on VCO
-	register_value.whole_reg = 0x031BD011;
+	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
 	dd_write_7021_reg(&register_value.byte[0]);
         
 	register_value.whole_reg =0x00500882; //0x00680882;
@@ -294,7 +294,7 @@ void dd_set_RX_mode(void)
 	Delayus(40);		//delay 40us
 
 	//write R4, turn on demodulation
-	register_value.whole_reg = 0x00289A14;//0x00268614;
+	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K（0x00289A14）-->2K（0x00268614）
 	dd_write_7021_reg(&register_value.byte[0]);
 
 }
@@ -391,7 +391,7 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
         dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us 
         	//write R4, turn on demodulation
-	register_value.whole_reg = 0x00289A14;//0x00268614;
+	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K（0x00289A14）-->2K（0x00268614）
 	dd_write_7021_reg(&register_value.byte[0]);
     }
 }
@@ -462,8 +462,9 @@ void ADF7021_change_TXorRX(void)
            FLAG_open=1;
            FLAG_close=0;
            FLAG_HA_ERR=0;
-           HA_Status=1;
+           HA_Status=0x81;
            if(Freq_Scanning_CH_save==0){ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
        }
    }
    else if((TIMER60s==0)&&(HA_ERR_signal==1)){
@@ -471,8 +472,9 @@ void ADF7021_change_TXorRX(void)
            FLAG_close=1;
            FLAG_open=0;
            FLAG_HA_ERR=0;
-           HA_Status=2;
+           HA_Status=0x82;
            if(Freq_Scanning_CH_save==0){ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
        }
    }
    if((HA_ERR_signal==0)&&(HA_L_signal==1)&&(FLAG_APP_TX==0)){
@@ -480,11 +482,11 @@ void ADF7021_change_TXorRX(void)
            FLAG_HA_ERR=1;
            FLAG_close=0;
            FLAG_open=0;
-           HA_Status=3;
-           if(Freq_Scanning_CH_save==0){ID_data.IDL=DATA_Packet_ID;Control_code=0;FLAG_HA_START=1;}
+           HA_Status=0x83;
+           if(Freq_Scanning_CH_save==0){ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
        }
    }
-   else FLAG_HA_ERR=0;
 
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;

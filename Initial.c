@@ -27,6 +27,7 @@ UINT8  DATA_Packet_Code_g=0;
 UINT8  DATA_Packet_Code_i=0;
 UINT32 DATA_Packet_ID=0;
 UINT8  DATA_Packet_Control=0;
+UINT8  DATA_Packet_Control_0=0;
 UINT8  Control_bak=0;
 UINT16  TIMER1s=0;
 UINT16  TIMER300ms=0;
@@ -48,6 +49,7 @@ UINT8  UART_DATA_cnt=0;
 UINT8  UART1_DATA[18]={0};
 UINT8  UART_DATA_buffer[18]={0};
 UINT8  TIME_UART=0;
+UINT8  UART_send_count=0;
 
 UINT8  TIME_10ms=0;
 UINT8  COUNT_Receiver_Login=0;
@@ -64,6 +66,21 @@ UINT8  rssi_COUNT=0;
 UINT8  rssi_TIME=0;
 UINT8  TX_Freq_CH=0;
 
+UINT8 HA_uart[45]={0xBB,0x00,0x20,0x00,0x00,0x00,0x23,0x00,          //头
+                   0x32,0x30,0x00,0x00,       //年
+                   0x2E,0x00,0x00,          //月
+                   0x2E,0x00,0x00,         //日
+                   0x20,0x00,0x00,        //小时
+                   0x3A,0x00,0x00,       //分钟
+                   0x20,0x49,0x44,0x3D,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,  //ID=xxxxxxxx
+                   0x00,      //标题结束符
+                   0x00,0x00,0x00,0x00,0x00, //邮件内容   如：OPEN
+                   0x00,       //邮件内容结束符
+                   0x00,0x00   //校验码
+                   };
+UINT8 HA_uart_app[15]={0xBB,0x00,0x07,0x00,0x00,0x00,0x5,0x00,
+                   0x00,0x00,0x00,0x00,0x00,
+                   0x00,0x00};
 
 UINT8 FLAG_APP_TX=0;
 UINT8 FLAG_APP_RX=0;

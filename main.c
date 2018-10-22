@@ -142,8 +142,9 @@ int main(void)
     Uart1_Init();
     INTEnableSystemMultiVectoredInt();
 
-    dd_set_ADF7021_Power_on();
+    all_Erase_EEPROM();
     ID_EEPROM_Initial();
+    dd_set_ADF7021_Power_on();
     FLAG_HA_L_signal=1;
     FLAG_HA_ERR_signal=1;
     while(1)

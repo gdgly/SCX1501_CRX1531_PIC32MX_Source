@@ -10,3 +10,5 @@
 
 extern void Uart1_Init(void);
 extern void UART_Decode(void);
+extern void HA_uart_send(void);
+extern void HA_uart_send_APP(void);

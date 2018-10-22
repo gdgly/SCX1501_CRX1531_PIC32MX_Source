@@ -109,8 +109,15 @@ extern FLAG FLAG_APP;
         #define		FLAG_open    	        FLAG_APP.BIT.Bit17
         #define		FLAG_close    	        FLAG_APP.BIT.Bit18
         #define		FLAG_HA_ERR    	        FLAG_APP.BIT.Bit19
+        #define		FLAG_APP_Reply    	FLAG_APP.BIT.Bit20
+
+        #define		FLAG_HA_Emial    	FLAG_APP.BIT.Bit21
+        #define		FLAG_HA_Inquiry    	FLAG_APP.BIT.Bit22
 
         #define		FG_10ms 	        FLAG_APP.BIT.Bit24
+
+        #define		FLAG_all_Erase    	FLAG_APP.BIT.Bit25
+        #define		FLAG_all_Erase_OK    	FLAG_APP.BIT.Bit26
 	//************************************************
 
 
@@ -129,6 +136,7 @@ extern UINT8  DATA_Packet_Code_g;
 extern UINT8  DATA_Packet_Code_i;
 extern UINT32 DATA_Packet_ID;
 extern UINT8  DATA_Packet_Control;
+extern UINT8  DATA_Packet_Control_0;
 extern UINT8  Control_bak;
 extern UINT16  TIMER1s;
 extern UINT16  TIMER300ms;
@@ -168,6 +176,7 @@ extern UINT8  UART_DATA_cnt;
 extern UINT8  UART1_DATA[18];
 extern UINT8  UART_DATA_buffer[18];
 extern UINT8  TIME_UART;
+extern UINT8  UART_send_count;
 
 extern UINT8  TIME_10ms;
 extern UINT8  COUNT_Receiver_Login;
@@ -183,6 +192,9 @@ extern UINT16 INquiry;
 extern UINT8  rssi_COUNT;
 extern UINT8  rssi_TIME;
 extern UINT8  TX_Freq_CH;
+
+extern UINT8 HA_uart[45];
+extern UINT8 HA_uart_app[15];
 
 extern UINT8 FLAG_APP_TX;
 extern UINT8 FLAG_APP_RX;

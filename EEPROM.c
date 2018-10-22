@@ -142,7 +142,29 @@ void ID_Login_EXIT_Initial(void)
      WIFI_LED_RX=0;
 #endif
 }
-
+void all_Erase_EEPROM(void)
+{
+#if defined(__Product_PIC32MX2_WIFI__)
+    UINT8 xm[3]={0};
+    
+    TIMER1s=3000;
+    while((WIFI_L_Login==0)&&(WIFI_USBLogin==0)){
+        if((TIMER1s==0)&&(FLAG_all_Erase==0)){FLAG_all_Erase=1;TIMER1s=5000;TIMER300ms=300;WIFI_LED_TX=1;WIFI_LED_RX=0;break;}
+    }
+    while(FLAG_all_Erase==1){
+        if(TIMER300ms==0){TIMER300ms=300;WIFI_LED_TX=!WIFI_LED_TX;WIFI_LED_RX=!WIFI_LED_RX;}
+        if(FLAG_all_Erase_OK==0){
+            FLAG_all_Erase_OK=1;
+            xm[0]=0xFF;
+            xm[1]=0xFF;
+            Write(&xm[0],0x7FE,2);
+        }
+        if(TIMER1s==0){WIFI_LED_TX=0;WIFI_LED_RX=0;FLAG_all_Erase=0;break;}
+    }
+    TIMER300ms=0;
+    TIMER1s=0;
+#endif
+}
 void ID_EEPROM_Initial(void)
 {
     UINT16 i;

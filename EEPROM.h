@@ -14,3 +14,4 @@ extern void ID_EEPROM_Initial(void);
 extern void eeprom_IDcheck(void);
 extern void eeprom_IDcheck_UART(void);
 extern void ID_EEPROM_write_0x00(void);
+extern void all_Erase_EEPROM(void);
