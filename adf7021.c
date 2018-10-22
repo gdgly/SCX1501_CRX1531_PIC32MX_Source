@@ -364,11 +364,11 @@ void dd_set_RX_mode(void)
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(800);		//delay 800us
 
-        register_value.whole_reg =0x01080882;
+        register_value.whole_reg =0x00800882;  
 	dd_write_7021_reg(&register_value.byte[0]);
 
 	//write R3, turn on TX/RX clocks
-        register_value.whole_reg = 0x29920893;
+	register_value.whole_reg = 0x29920893;
 	dd_write_7021_reg(&register_value.byte[0]);
 
 //        register_value.whole_reg = 0x00001915;
@@ -386,11 +386,11 @@ void dd_set_RX_mode(void)
         dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
         	//write R4, turn on demodulation
-        register_value.whole_reg = 0x8023E814;
+        register_value.whole_reg = 0x00280294;
 	dd_write_7021_reg(&register_value.byte[0]);
 
 	//write R10, turn on PLL
-	register_value.whole_reg = 0x049668FA;
+	register_value.whole_reg = 0x029668FA;
 	dd_write_7021_reg(&register_value.byte[0]);
 	Delayus(40);		//delay 40us
 #endif
@@ -571,8 +571,8 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 //	dd_write_7021_reg(&register_value.byte[0]);
 //
 	//write R10, turn on PLL
-	if((CH==1)||(CH==3)||(CH==5))register_value.whole_reg = 0x049668FA;
-        else register_value.whole_reg = 0x049668EA;
+	if((CH==1)||(CH==3)||(CH==5))register_value.whole_reg = 0x029668FA;
+        else register_value.whole_reg = 0x029668EA;
 	dd_write_7021_reg(&register_value.byte[0]);
 	Delayus(40);		//delay 40us
      #else
