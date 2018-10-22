@@ -305,8 +305,8 @@ void dd_set_TX_mode(void)
 
 	//write R2, turn on PA
 #if defined(__Product_PIC32MX2_WIFI__)
-        register_value.whole_reg = 0x00566882;//天线是内部天线
-	//register_value.whole_reg = 0x00571882;//天线是外置天线
+        //register_value.whole_reg = 0x00566882;//天线是内部天线
+	register_value.whole_reg = 0x00571882;//天线是外置天线
 #endif
 #if defined(__Product_PIC32MX2_Receiver__)
 	register_value.whole_reg = 0x00566882;//天线是内部天线//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
@@ -460,11 +460,6 @@ void dd_set_RX_mode(void)
         	//write R4, turn on demodulation
         register_value.whole_reg = 0x00280294;
 	dd_write_7021_reg(&register_value.byte[0]);
-
-        	//write R9
-        register_value.whole_reg = 0x020631E9;  //0x000231E90
-	dd_write_7021_reg(&register_value.byte[0]);   
-        Delayus(122);		//delay 40us
 
 	//write R10, turn on PLL
 	register_value.whole_reg = 0x029668FA;

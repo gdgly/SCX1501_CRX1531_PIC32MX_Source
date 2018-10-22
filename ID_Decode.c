@@ -217,6 +217,7 @@ void ID_Decode_IDCheck(void)
                 if(DATA_Packet_Control==0x08)DATA_Packet_Control_err=0x08;
                 else if(DATA_Packet_Control==0x10)DATA_Packet_Control_err=0x10;
                 if(DATA_Packet_Control==0x02){DATA_Packet_Control_err=0x02;FLAG_HA_ERR_bit=0;}
+                else if(DATA_Packet_Control==0x01){DATA_Packet_Control_err=0x01;FLAG_HA_ERR_bit=0;}   //20150425追加
              #endif
                 if(((DATA_Packet_Code[1]&0x0000FFFF)==0x5556)&&(Freq_Scanning_CH_bak==0)){
                     Signal_DATA_Decode(1);
@@ -467,11 +468,19 @@ void ID_Decode_OUT(void)
                                 break;
                      case 0x01:                  //VENT
                                 Receiver_LED_OUT=1;
-                                Receiver_OUT_VENT=1;
-                                //Receiver_OUT_OPEN=0;
-                                LATACLR=0x0002;
-                                Receiver_OUT_STOP=0;
-                                Receiver_OUT_CLOSE=0;
+                                if(Freq_Scanning_CH_bak==1){             //429M   换气
+                                    //Receiver_OUT_OPEN=1;
+                                    LATASET=0x0002;
+                                    Receiver_OUT_STOP=0;
+                                    Receiver_OUT_CLOSE=1;
+                                }
+                                else {                   //426M  换气
+                                    Receiver_OUT_VENT=1;
+                                    //Receiver_OUT_OPEN=0;
+                                    LATACLR=0x0002;
+                                    Receiver_OUT_STOP=0;
+                                    Receiver_OUT_CLOSE=0;
+                                }
                                 break;
                      case 0x20:
                                 if(Freq_Scanning_CH_bak==1){          //429M  角度调整（开）

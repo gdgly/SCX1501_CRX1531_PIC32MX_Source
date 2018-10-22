@@ -23,7 +23,7 @@
 #if defined(__32MX220F032D__)
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 
-    #define		PIC32MX2_Receiver_mode   0              //模式选择  0=RX      1=TX and RX
+    #define		PIC32MX2_Receiver_mode   1              //模式选择  0=RX      1=TX and RX
 #endif
 
     //============================================
