@@ -184,7 +184,7 @@ void ID_Decode_IDCheck(void)
                 }
             #endif
             #if defined(__Product_PIC32MX2_Receiver__)
-               if((FLAG_ID_Login_OK==0)&&(DATA_Packet_Control!=0x40)&&(DATA_Packet_ID_buf!=0)){
+               if((FLAG_ID_Login_OK==0)&&(DATA_Packet_Control!=0x40)&&(DATA_Packet_ID_buf!=0)&&(Freq_Scanning_CH_bak==0)){
                     FLAG_ID_Login_OK=1;
                     ID_Receiver_Login=DATA_Packet_ID_buf;
                    
