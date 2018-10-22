@@ -281,6 +281,8 @@ UINT8 FG_auto_open_time=0;
     UINT32 HA_Cache_IDdata[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
     UINT8 HA_Cache_SWITCH_DIP_bak=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
     UINT8 HA_Cache_ha_bak=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    UINT8 HA_Cache_ha_1Hz[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    UINT8 HA_Cache_ha_1Hz_bak=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
     UINT8 FG_HA_Inquiry_NO_again_send=0;
 #endif
 

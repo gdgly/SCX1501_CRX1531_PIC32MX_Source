@@ -468,7 +468,7 @@ void Email_check_TO_APP(void)     //2015.4.1пчуЩ3 сисзAPP╡Ия╞йэпефВHAв╢л╛пХр╙╨эЁ
 {
     UINT16 i;
    for(i=0;i<35;i++){
-       if(HA_Cache_IDdata[i]==ID_data.IDL){Emial_Cache_HA=HA_Cache_ha[i]&0x0F;Emial_Cache_SWITCH=HA_Cache_SWITCH_DIP[i];i=64;}
+       if(HA_Cache_IDdata[i]==ID_data.IDL){Emial_Cache_HA=HA_Cache_ha[i]&0x0F;Emial_Cache_SWITCH=HA_Cache_SWITCH_DIP[i];i=64;}     //
    }
 }
 #endif

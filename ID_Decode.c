@@ -596,7 +596,6 @@ void ID_Decode_OUT(void)
   #if defined(__32MX250F128D__)
      if((FLAG_TIME_No_response==1)&&(TIME_No_response==0)){
          HA_uart_send_APP();
-         HA_Cache_ha_switch();  //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
          FLAG_TIME_No_response=0;
          if(FG_HA_Inquiry_NO_again_send==1)FG_mial_com_fail=0;
          else FG_mial_com_fail=1;
@@ -604,7 +603,6 @@ void ID_Decode_OUT(void)
     if(((read_TIMER_Semi_open<0x3F)&&(read_TIMER_Semi_open>0))||(((SWITCH_DIP_bak!=SWITCH_DIP)||(SWITCH_DIP_id_data_bak!=DATA_Packet_ID))&&(Freq_Scanning_CH_save_HA==1))){
         SWITCH_DIP_check_app(); //检测现在的值与缓存中SWITCH_DIP,如果变化FG_WIFI_SWITCH_DIP=1;
         HA_uart_send_APP();
-        HA_Cache_ha_switch();  //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
     }
  #endif
  /********************以下是遥控板和APP一起邮件送信**********************/
@@ -677,10 +675,10 @@ void HA_Cache_ha_switch(void)  //2015.4.1修正3 由于APP查询受信器HA状态需要很长的
     UINT8 i;
         for(i=0;i<35;i++)
         {
-//            if(HA_Cache_IDdata[i]==0x00){ HA_Cache_IDdata[i]=DATA_Packet_ID;HA_Cache_ha[i]=HA_Cache_ha_bak;HA_Cache_SWITCH_DIP[i]=HA_Cache_SWITCH_DIP_bak;break;}
-//            if(HA_Cache_IDdata[i]==DATA_Packet_ID){HA_Cache_ha[i]=HA_Cache_ha_bak;HA_Cache_SWITCH_DIP[i]=HA_Cache_SWITCH_DIP_bak;}
-            if(HA_Cache_IDdata[i]==0x00){ HA_Cache_IDdata[i]=DATA_Packet_ID;HA_Cache_ha[i]=DATA_Packet_Control;HA_Cache_SWITCH_DIP[i]=SWITCH_DIP;break;}
-            if(HA_Cache_IDdata[i]==DATA_Packet_ID){HA_Cache_ha[i]=DATA_Packet_Control;HA_Cache_SWITCH_DIP[i]=SWITCH_DIP;}
+            if(HA_Cache_IDdata[i]==0x00){ HA_Cache_IDdata[i]=DATA_Packet_ID;HA_Cache_ha[i]=HA_Cache_ha_bak;HA_Cache_ha_1Hz[i]=HA_Cache_ha_1Hz_bak;HA_Cache_SWITCH_DIP[i]=HA_Cache_SWITCH_DIP_bak;i=35;}
+            if(HA_Cache_IDdata[i]==DATA_Packet_ID){HA_Cache_ha[i]=HA_Cache_ha_bak;HA_Cache_ha_1Hz[i]=HA_Cache_ha_1Hz_bak;HA_Cache_SWITCH_DIP[i]=HA_Cache_SWITCH_DIP_bak;i=35;}
+//            if(HA_Cache_IDdata[i]==0x00){ HA_Cache_IDdata[i]=DATA_Packet_ID;HA_Cache_ha[i]=DATA_Packet_Control;HA_Cache_SWITCH_DIP[i]=SWITCH_DIP;break;}
+//            if(HA_Cache_IDdata[i]==DATA_Packet_ID){HA_Cache_ha[i]=DATA_Packet_Control;HA_Cache_SWITCH_DIP[i]=SWITCH_DIP;}
         }
 }
 

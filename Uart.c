@@ -422,8 +422,8 @@ void UART_Decode(void)
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x35;      //5              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x30;      //0
-                                    U1TXREG=0xD0;     //0x16B+0x33+0x39
+                                    U1TXREG=0x34;      //4
+                                    U1TXREG=0xD4;     //0x16B+0x33+0x39
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -721,8 +721,11 @@ void HA_uart_send_APP(void)
     else if((DATA_Packet_Control==0x83)||(DATA_Packet_Control==0x87)){HA_uart_app[14]=03;HA_uart_app[15]=SWITCH_DIP;}
     else if((DATA_Packet_Control==0x84)||(DATA_Packet_Control==0x88)){HA_uart_app[14]=04;HA_uart_app[15]=SWITCH_DIP;}
     //HA_uart_app[15]=0x00;
-    HA_Cache_ha_bak=HA_uart_app[14];
-    HA_Cache_SWITCH_DIP_bak=HA_uart_app[15];
+    HA_Cache_ha_1Hz_bak=HA_uart_app[14];
+    //if(HA_uart_app[14]!=5)
+        HA_Cache_ha_bak=HA_uart_app[14];
+    //if(HA_uart_app[15]!=0xFF)
+        HA_Cache_SWITCH_DIP_bak=HA_uart_app[15];
     SWITCH_DIP_bak=SWITCH_DIP;
     SWITCH_DIP_id_data_bak=DATA_Packet_ID;
     m=0;
@@ -745,6 +748,8 @@ void HA_uart_send_APP(void)
             FG_WIFI_SWITCH_DIP=0;
         }
     }
+
+   HA_Cache_ha_switch();  //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
  #endif
 }
 
