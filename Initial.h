@@ -23,7 +23,7 @@
 #if defined(__32MX220F032D__)
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 
-    #define		PIC32MX2_Receiver_mode   0              //模式选择  0=RX      1=TX and RX
+    #define		PIC32MX2_Receiver_mode   1              //模式选择  0=RX      1=TX and RX
 #endif
 
     //============================================
@@ -341,6 +341,7 @@ extern UINT8 FLAG_POER_on;
     extern UINT16 TIME_APP_Inquiry_HA;
 
     extern UINT8 FG_send_Faile_again;      //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
+    extern UINT8 FG_Second;      //2015.3.5追加修改自动某ID发送一次失败，追加再发送一次,第二次的标志位
     extern UINT32 TIME_one_hour;         //2015.1.30追加修改1小时查询一次HA状态
     extern UINT8 FG_mial_com_fail;   //在邮件中表示429MHz通讯失败，
 #endif

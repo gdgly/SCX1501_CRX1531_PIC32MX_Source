@@ -251,6 +251,7 @@ UINT8 FLAG_POER_on=0;
     UINT16 TIME_APP_Inquiry_HA=0;
 
     UINT8 FG_send_Faile_again=0;      //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
+    UINT8 FG_Second=0;      //2015.3.5追加修改自动某ID发送一次失败，追加再发送一次,第二次的标志位
     UINT32 TIME_one_hour=0;         //2015.1.30追加修改1小时查询一次HA状态
     UINT8 FG_mial_com_fail=0;   //在邮件中表示429MHz通讯失败，
 #endif
