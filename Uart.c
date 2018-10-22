@@ -186,8 +186,9 @@ void UART_Decode(void)
             switch(uart_y.ui){
                 case 0x0101:                                           //卷帘门依次单个HA状态取得
                 case 0x0110:
-                          APP_check_char=0;     //2014.10.11修改
+                          //APP_check_char=0;     //2014.10.11修改
                 case 0x0102:                                           //卷帘门依次单个操作
+                            APP_check_char=0;
                             for(i=8;i<16;i++)  m+=UART1_DATA[i];
                             n=UART1_DATA[16]+UART1_DATA[17]*256;
                             if(m==n){
@@ -722,7 +723,7 @@ void HA_uart_send_APP(void)
 
     HA_uart_app[9]=0x01;
     if(UART_DATA_buffer[8]==0x01)HA_uart_app[8]=0x01;
-    else if(UART_DATA_buffer[8]==0x02)HA_uart_app[8]=0x02;
+    else if(UART_DATA_buffer[8]==0x02){HA_uart_app[8]=0x02;UART_DATA_buffer[8]=0x00;}
     else if(UART_DATA_buffer[8]==0x10)HA_uart_app[8]=0x10;
     else HA_uart_app[8]=0x01;
     HA_uart_app[10]=0x00;

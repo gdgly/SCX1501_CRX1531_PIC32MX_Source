@@ -341,7 +341,8 @@ void VHF_GPIO_INIT(void){
       Receiver_LED_RX_IO=0;// Output   受信机受信指示  低电平有效
       Receiver_LED_RX=0;
       Receiver_OUT_OPEN_IO=0;  // Output   受信机继电器OPEN  高电平有效
-      Receiver_OUT_OPEN=0;
+      //Receiver_OUT_OPEN=0;
+      LATACLR=0x0002;
       Receiver_OUT_CLOSE_IO=0;  // Output   受信机继电器CLOSE  高电平有效
       Receiver_OUT_CLOSE=0;
       Receiver_OUT_STOP_IO=0;  // Output   受信机继电器STOP  高电平有效
@@ -415,7 +416,9 @@ void RF_test_mode(void )
 
     while(Receiver_test==0){
         ClearWDT(); // Service the WDT
-        //if(HA_ERR_signal==0){      //test ADF7021 TX
+        if(HA_Sensor_signal==0)Receiver_LED_TX=1;
+        else Receiver_LED_TX=0;
+
 	if(HA_ERR_signal==0){
 	  if(HA_L_signal==0)Tx_Rx_mode=0;
 	  else Tx_Rx_mode=1;
