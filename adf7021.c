@@ -773,7 +773,7 @@ void ADF7021_change_TXorRX(void)
    
 #if defined(__Product_PIC32MX2_WIFI__)
     if((TIME_one_hour==0)&&(FLAG_AUTO_SEND_START==0)&&(FLAG_UART_ok==0)){                 //2015.1.30追加修改1小时查询一次HA状态
-        TIME_one_hour=328000;
+        TIME_one_hour=1850;
         one_hour_HA_Inquiry_Function();
     }
 

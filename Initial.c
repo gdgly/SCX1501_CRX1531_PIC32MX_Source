@@ -586,7 +586,7 @@ void RF_test_mode(void )
 
     TIME_WIFI_LAN_SELECT=10;
     SWITCH_DIP_bak=0xFF;
-    TIME_one_hour=328000;    //1000     //2015.1.30追加修改1小时查询一次HA状态
+    TIME_one_hour=1850;    //1000     //2015.1.30追加修改1小时查询一次HA状态
 #endif
 }
 
