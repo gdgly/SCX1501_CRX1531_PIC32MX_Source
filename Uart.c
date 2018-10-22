@@ -168,7 +168,7 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
 void UART_Decode(void)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
-    UINT16 i;
+    UINT16 i,j;
     UINT16 m=0;
     UINT16 n=0;
     uni_rom_id y;
@@ -389,10 +389,10 @@ void UART_Decode(void)
                                     U1TXREG=0x65;      //e
                                     U1TXREG=0x72;      //r
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-                                    U1TXREG=0x34;      //4              //2014.10.11修改
+                                    U1TXREG=0x35;      //5              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x39;      //9
-                                    U1TXREG=0xD8;     //0x16B+0x33+0x39
+                                    U1TXREG=0x30;      //0
+                                    U1TXREG=0xD0;     //0x16B+0x33+0x39
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -407,7 +407,8 @@ void UART_Decode(void)
                                     uart_send_APP_Public(0x08,0);
                                     if((UART1_DATA[11]>=0x80)&&(UART1_DATA[11]<=0xbc))uart_Control_code=UART1_DATA[11]+1;
                                     else uart_Control_code=UART1_DATA[11];
-                                    for(i=0;i<UART1_DATA[12];i++) APP_UART_OUT(i);
+                                    //for(i=0;i<UART1_DATA[12];i++) APP_UART_OUT(i);
+                                    for(i=UART1_DATA[12];i>0;i--) APP_UART_OUT(i-1);
                                 }
                                 else uart_send_APP_Public(0x08,1);
                             }
@@ -491,7 +492,8 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
     }
     HA_uart[26]=0x00;   //邮件标题结束符
 
-    HA_uart_Length=63+8;
+    //HA_uart_Length=63+8;
+    HA_uart_Length=63+15;
     //HA_uart_Length=63+8+3;
     for(j=0;j<EMIAL_id_PCS_x;j++){                      //计算邮件内容的atatus=...部分
         if((EMIAL_id_HA[j]==0x81)||(EMIAL_id_HA[j]==0x85)){
@@ -675,8 +677,8 @@ void HA_uart_send_APP(void)
         HA_uart_app[12]=b0.IDB[1];
         HA_uart_app[13]=b0.IDB[2];
         HA_uart_app[15]=0xFF;
-        if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==0)&&(Control_code!=0)) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
-        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1)&&(Control_code!=0)){FG_Second=1;APP_check_char=0;}
+        if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==0)) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
+        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1)){FG_Second=1;APP_check_char=0;}
         if(UART_DATA_buffer[8]==0x10){HA_uart_app[14]=0xFF;HA_uart_app[15]=0x00;}
     }
     else if(read_TIMER_Semi_open!=0){HA_uart_app[14]=read_TIMER_Semi_open-1;read_TIMER_Semi_open=0;HA_uart_app[15]=0x00;}
@@ -693,9 +695,9 @@ void HA_uart_send_APP(void)
     HA_uart_app[17]=m/256;
 
     //if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(HA_uart_app[14]==5)||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))    //2014.10.11修改
-    if(((b0.IDL!=0)&&(APP_check_ID!=b0.IDL))||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))
+    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))
     {
-        if((FLAG_AUTO_SEND_START==1)&&(HA_uart_app[14]==5)&&(FG_Second==0));
+        if((HA_uart_app[14]==5)&&(FG_Second==0));
         else {
             for(i=0;i<18;i++){
                 U1TXREG=HA_uart_app[i];

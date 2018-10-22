@@ -191,19 +191,13 @@ void ID_Decode_IDCheck(void)
                }
             #endif
             }
-            #if defined(__Product_PIC32MX2_WIFI__)
             else if((FLAG_IDCheck_OK==1)||(DATA_Packet_ID_buf==0xFFFFFE))
-            #endif
-            #if defined(__Product_PIC32MX2_Receiver__)
-            else if((((FLAG_IDCheck_OK==1)||(DATA_Packet_ID_buf==0xFFFFFE))&&(Freq_Scanning_CH_bak==0))||((Freq_Scanning_CH_bak==1)&&(DATA_Packet_ID_buf!=0)&&(DATA_Packet_ID_buf!=0xFFFFFE)))
-            //else if((FLAG_IDCheck_OK==1)||(DATA_Packet_ID_buf==0xFFFFFE))
-            #endif
             {
                 FLAG_IDCheck_OK=0;
                 if(Freq_Scanning_CH_bak==0){Freq_Scanning_CH_save=1;Freq_Scanning_CH_save_HA=0; }  //当前收到426M控制   但保存记录下收到信号的频率信道,0代表426M
                 else Freq_Scanning_CH_save_HA=1;  //                       1代表429M
               #if defined(__Product_PIC32MX2_Receiver__)
-                if((DATA_Packet_ID_buf==0xFFFFFE)||(Freq_Scanning_CH_bak==1)){DATA_Packet_Control=DATA_Packet_Control_buf;DATA_Packet_ID=DATA_Packet_ID_buf;}
+                 if(DATA_Packet_ID_buf==0xFFFFFE)DATA_Packet_Control=DATA_Packet_Control_buf;
                  DATA_Packet_Control_0=DATA_Packet_Control;
               #endif
               #if defined(__Product_PIC32MX2_WIFI__)
