@@ -89,29 +89,29 @@ UINT8 TIME_EMC=0;   //静电测试
 
 UINT8 read_TIMER_Semi_open=0;
 
-                    /****说明 REG1     REG3     REG0      REG2     REG4******/
-UINT32 RF_SET_TX_DATA[5]={0x031B5011,0x29915CD3,0x00,0x00566882,0x00289A14};
-                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
-UINT32 RF_SET_TX_REGISTER_0[6]={0x0154DC30,0x01575710,0x0154DC30,0x01575C30,0x0154DC30,0x01576140};
-                    /****说明 REG1      REG2        REG3   REG0    REG4    REGA******/
-UINT32 RF_SET_RX_DATA[6]={0x031B5011,0x00500882,0x29915CD3,0x00,0x00289A14,0x0A};
-                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
-UINT32 RF_SET_RX_REGISTER_0[6]={0x0954C7B0,0x09574290,0x0954C7B0,0x095747B0,0x0954C7B0,0x09574CD0};
-                  /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
-UINT32 RF_SET_RX_REGISTER_A[6]={0x049668FA,0x049668EA,0x049668FA,0x049668EA,0x049668FA,0x049668EA};
-
-
-
 //                    /****说明 REG1     REG3     REG0      REG2     REG4******/
 //UINT32 RF_SET_TX_DATA[5]={0x031B5011,0x29915CD3,0x00,0x00566882,0x00289A14};
 //                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
 //UINT32 RF_SET_TX_REGISTER_0[6]={0x0154DC30,0x01575710,0x0154DC30,0x01575C30,0x0154DC30,0x01576140};
 //                    /****说明 REG1      REG2        REG3   REG0    REG4    REGA******/
-//UINT32 RF_SET_RX_DATA[6]={0x031B5011,0x00D00882,0x29920893,0x00,0x8024E294,0x0A};
+//UINT32 RF_SET_RX_DATA[6]={0x031B5011,0x00500882,0x29915CD3,0x00,0x00289A14,0x0A};
 //                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
 //UINT32 RF_SET_RX_REGISTER_0[6]={0x0954C7B0,0x09574290,0x0954C7B0,0x095747B0,0x0954C7B0,0x09574CD0};
 //                  /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
-//UINT32 RF_SET_RX_REGISTER_A[6]={0x049668FA,0x049668FA,0x049668FA,0x049668FA,0x049668FA,0x049668FA};
+//UINT32 RF_SET_RX_REGISTER_A[6]={0x049668FA,0x049668EA,0x049668FA,0x049668EA,0x049668FA,0x049668EA};
+
+
+
+                    /****说明 REG1     REG3     REG0      REG2     REG4******/
+UINT32 RF_SET_TX_DATA[5]={0x031B5011,0x29915CD3,0x00,0x00566882,0x00289A14};
+                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
+UINT32 RF_SET_TX_REGISTER_0[6]={0x0154DC30,0x01575710,0x0154DC30,0x01575C30,0x0154DC30,0x01576140};
+                    /****说明 REG1      REG2        REG3   REG0    REG4    REGA******/
+UINT32 RF_SET_RX_DATA[6]={0x031B5011,0x00D00882,0x29920893,0x00,0x8024E294,0x0A};
+                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
+UINT32 RF_SET_RX_REGISTER_0[6]={0x0954C7B0,0x09574290,0x0954C7B0,0x095747B0,0x0954C7B0,0x09574CD0};
+                  /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
+UINT32 RF_SET_RX_REGISTER_A[6]={0x049668FA,0x049668EA,0x049668FA,0x049668EA,0x049668FA,0x049668EA};
 
 //*********以下为测试代码所用变量****************
 UINT8 Tx_Rx_mode=0;
@@ -616,8 +616,8 @@ unsigned int y;                    //延时T=(timer)100us
  for(x=0;x<timer;x++)
   {
 #if defined(__Product_PIC32MX2_Receiver__)
-     //for(y=0;y<=200;y++);   //特别说明：该行采用XC32的0级优化，即无优化
-     for(y=0;y<=600;y++);   //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+     for(y=0;y<=200;y++);   //特别说明：该行采用XC32的0级优化，即无优化
+     //for(y=0;y<=600;y++);   //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
      for(y=0;y<=400;y++);   //特别说明：该行采用XC32的0级优化，即无优化    时间=timer*0.9ms
@@ -629,8 +629,8 @@ void Delayus(unsigned int timer)
 {
   unsigned int x;            //延时T=(timer)us     //SYSCLK=20M
 #if defined(__Product_PIC32MX2_Receiver__)
-     //for(x=0;x<2*timer;x++);  //特别说明：该行采用XC32的0级优化，即无优化
-   for(x=0;x<10*timer;x++);  //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+     for(x=0;x<2*timer;x++);  //特别说明：该行采用XC32的0级优化，即无优化
+   //for(x=0;x<10*timer;x++);  //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
      for(x=0;x<4*timer;x++);    //特别说明：该行采用XC32的0级优化，即无优化    时间=0.7us+timer*1.2us
