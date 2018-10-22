@@ -121,12 +121,12 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
                         UART_DATA_i=20;
                         if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
                         break;
-//            case 0x010B:                                    //日出日落设定要求
-//                        if(UART_DATA_cnt>=16){
-//                            if(UART_DATA_cnt==16)UART_DATA_i=18+UART_DATA_buffer[15]*3;
-//                            if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
-//                        }
-//                        break;
+            case 0x010B:                                    //日出日落设定要求
+                        if(UART_DATA_cnt>=16){
+                            if(UART_DATA_cnt==16)UART_DATA_i=18+UART_DATA_buffer[15]*3;
+                            if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
+                        }
+                        break;
             case 0x0103:                                      //APP获取卷帘门ID全部
             case 0x0104:                                      //RTC_read
             case 0x010C:                                    //日出日落取得要求
@@ -140,10 +140,10 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
                         UART_DATA_i=16;
                         if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
                         break;
-//            case 0x01F0:                                   //日出日落表格数据DATA设置
-//                        UART_DATA_i=493;
-//                        if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
-//                        break;
+            case 0x01F0:                                   //日出日落表格数据DATA设置
+                        UART_DATA_i=493;
+                        if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
+                        break;
            default:
                         break;
         }
@@ -167,7 +167,7 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
 void UART_Decode(void)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
-    UINT8 i;
+    UINT16 i;
     UINT16 m=0;
     UINT16 n=0;
     uni_rom_id y;
@@ -374,8 +374,8 @@ void UART_Decode(void)
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x32;      //2
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x33;      //3
-                                    U1TXREG=0xD0;     //0x16B+0x32+0x33
+                                    U1TXREG=0x34;      //4
+                                    U1TXREG=0xD1;     //0x16B+0x32+0x33
                                     U1TXREG=0x01;      
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -408,8 +408,8 @@ void UART_Decode(void)
                             n=UART1_DATA[11]+UART1_DATA[12]*256;
                             if(m==n){
                                     uart_send_APP_Head();
-                                    U1TXREG=0xC3;
-                                    U1TXREG=0x00;
+                                    U1TXREG=0xE3;
+                                    U1TXREG=0x01;
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0xF1;
                                     U1TXREG=0x01;

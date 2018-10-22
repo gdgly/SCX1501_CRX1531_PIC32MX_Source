@@ -565,7 +565,11 @@ void ADF7021_change_TXorRX(void)
     if(PCF8563_INT==0){
         Read_Time(&xmv[0]);
         Minutes_x=xmv[2]*60+xmv[1];
-        //if(SUN_Weekdays_alarm!=xmv[5]){SUN_time_get(SUN_ON_OFF_seat[2]);NEW_set_alarm_pcf8563(Minutes_x);}
+        if(SUN_Weekdays_alarm!=xmv[5]){
+            SUN_time_get(SUN_ON_OFF_seat[2]);
+            if((WIFI_alarm_Hours_Minutes[0]==xmv[2])&&(WIFI_alarm_Hours_Minutes[1]==xmv[1]));
+            else NEW_set_alarm_pcf8563(Minutes_x);
+        }
         if((WIFI_alarm_Hours_Minutes[0]==xmv[2])&&(WIFI_alarm_Hours_Minutes[1]==xmv[1])){
             for(i=0;i<22;i++){
                 if(i<12){

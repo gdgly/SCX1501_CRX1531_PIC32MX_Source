@@ -291,12 +291,22 @@ void ID_EEPROM_Initial(void)
 #if defined(__Product_PIC32MX2_WIFI__)
 //    Write(&Sunrise_sunset_DATA[0],0xD00,32);
 //    Delay100us(100);
+
+    Read(&xm[0],0x7DC,4);       //0x7DC存储日出日落表格数据DATA来源   =0 RAM的数据    =1 EEPROM的数据
+    if(xm[1]>1)xm[1]=0;
+    if(xm[2]>1)xm[2]=0;
+    if(xm[3]>10)xm[3]=0;
+    SUN_ON_OFF_seat[0]=xm[1];   //0x7DD 日出ON/OFF  ON=1  OFF=0
+    SUN_ON_OFF_seat[1]=xm[2];  //0x7DE 日落ON/OFF  ON=1  OFF=0
+    SUN_ON_OFF_seat[2]=xm[3];  //0x7DF 日本地点  1=东北, 2=关东,3=关西,4=九州
+
     Read(&xm[0],0xD80,32);
     Delay100us(100);
     for(i=0;i<13;i++){
        ClearWDT(); // Service the WDT
        if(i!=10){
-               Read(&xm[0],0x800+i*128,103);
+               if(i==11){Read(&xm[0],0x800+12*128,103);xm[0]=11;xm[1]=SUN_ON_OFF_seat[0];xm[2]=0x08;}
+               else Read(&xm[0],0x800+i*128,103);
                if(i>10)m1=i-1;
                else m1=i;
                if((xm[0]==0x00)||(xm[0]>12)||(xm[1]>1)||(xm[2]>8)||(xm[3]>24)||(xm[4]>60)||(xm[5]>0x80)||(xm[6]>0x20)){
@@ -311,12 +321,6 @@ void ID_EEPROM_Initial(void)
     }
 
     Read(&xm[0],0x7DC,4);       //0x7DC存储日出日落表格数据DATA来源   =0 RAM的数据    =1 EEPROM的数据
-    if(xm[1]>1)xm[1]=0;
-    if(xm[2]>1)xm[2]=0;
-    if(xm[3]>10)xm[3]=0;
-    SUN_ON_OFF_seat[0]=xm[1];   //0x7DD 日出ON/OFF  ON=1  OFF=0
-    SUN_ON_OFF_seat[1]=xm[2];  //0x7DE 日落ON/OFF  ON=1  OFF=0
-    SUN_ON_OFF_seat[2]=xm[3];  //0x7DF 日本地点  1=东北, 2=关东,3=关西,4=九州
     if(xm[0]==1){
              //Read(&Sunrise_sunset_DATA[0],0x5E0,480);
              for(i=0;i<15;i++){
@@ -515,6 +519,7 @@ void SUN_EEPROM_write(void)
 {
     UINT8 i,j;
     UINT8 xm[10]={0};
+    UINT8 xmmmmmm[103]={0};
     UINT16 m1,m2,m3;
     UINT16 RTC_Minutes;
 
@@ -535,22 +540,33 @@ void SUN_EEPROM_write(void)
     m2=16+UART1_DATA[15]*3;
     for(i=14;i<m2;i++){WIFI_alarm_data[10][i-9]=UART1_DATA[i];WIFI_alarm_data[11][i-9]=UART1_DATA[i];}
     for(i=m2-9;i<103;i++){WIFI_alarm_data[10][i]=0x00;WIFI_alarm_data[11][i]=0x00;}
-    Write(&WIFI_alarm_data[10][0],0x800+11*128,32);    //写入数据到24LC16
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Write(&WIFI_alarm_data[10][32],0x800+11*128+32,32);
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Write(&WIFI_alarm_data[10][64],0x800+11*128+64,32);
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Write(&WIFI_alarm_data[10][96],0x800+11*128+96,7);
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Write(&WIFI_alarm_data[11][0],0x800+12*128,32);    //写入数据到24LC16
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Write(&WIFI_alarm_data[11][32],0x800+12*128+32,32);
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Write(&WIFI_alarm_data[11][64],0x800+12*128+64,32);
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Write(&WIFI_alarm_data[11][96],0x800+12*128+96,7);
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//    Write(&WIFI_alarm_data[10][0],0x800+11*128,32);    //写入数据到24LC16
+//    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//    Write(&WIFI_alarm_data[10][32],0x800+11*128+32,32);
+//    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//    Write(&WIFI_alarm_data[10][64],0x800+11*128+64,32);
+//    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//    Write(&WIFI_alarm_data[10][96],0x800+11*128+96,7);
+//    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//    Write(&WIFI_alarm_data[11][0],0x800+12*128,32);    //写入数据到24LC16
+//    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//    Write(&WIFI_alarm_data[11][32],0x800+12*128+32,32);
+//    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//    Write(&WIFI_alarm_data[11][64],0x800+12*128+64,32);
+//    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//    Write(&WIFI_alarm_data[11][96],0x800+12*128+96,7);
+//    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+    for(i=11;i<13;i++){
+        Write(&WIFI_alarm_data[i-1][0],0x800+i*128,32);    //写入数据到24LC16
+        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        Write(&WIFI_alarm_data[i-1][32],0x800+i*128+32,32);
+        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        Write(&WIFI_alarm_data[i-1][64],0x800+i*128+64,32);
+        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        Write(&WIFI_alarm_data[i-1][96],0x800+i*128+96,7);
+        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms        
+    }
+
     SUN_time_get(SUN_ON_OFF_seat[2]);
     Read_Time(&xm[0]);
     RTC_Minutes=xm[2]*60+xm[1];
