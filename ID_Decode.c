@@ -273,9 +273,8 @@ void ID_Decode_IDCheck(void)
                     else {
                         if(((DATA_Packet_Control&0x20)==0x20)||((DATA_Packet_Control&0x40)==0x40))TIMER1s=500;
                         else if((DATA_Packet_Control&0x10)==0x10){
-                            //if(HA_Status==0x82)TIMER1s=1000;//(TIMER_Semi_open+1)*1000;
-                            //else {DATA_Packet_Control=0;TIMER1s=1000;}
-                            TIMER1s=1000;
+                            if(HA_Status==0x82)TIMER1s=1000;//(TIMER_Semi_open+1)*1000;
+                            else {DATA_Packet_Control=0;TIMER1s=1000;}
                         }
                         else  TIMER1s=1000;
                     }
@@ -645,7 +644,8 @@ void ID_Decode_OUT(void)
              FLAG_HA_Inquiry=0;
              FLAG_TIME_No_response=0;
              HA_uart_send_APP();
-             if(FG_mial_com_fail==1){FG_mial_com_fail=0;DATA_Packet_ID=ID_data.IDL;DATA_Packet_Control=0xFF;}
+             if(FG_mial_com_fail==1){FG_mial_com_fail=0;EMIAL_id_data_chek=ID_data.IDL;DATA_Packet_Control=0xFF;}
+             else EMIAL_id_data_chek=DATA_Packet_ID;
              Email_check_app();             
              if((DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x87)||(DATA_Packet_Control_0==0x84)||(DATA_Packet_Control_0==0x88))FLAG_HA_Change_ERROR=1;
              DATA_Packet_Control_0=0;
@@ -682,8 +682,8 @@ void SWITCH_DIP_check_app(void)
     UINT8 i;
         for(i=0;i<35;i++)
         {
-            if(SWITCH_DIP_id_data[i]==0x00){SWITCH_DIP_id_data[i]=DATA_Packet_ID;SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
-            if(SWITCH_DIP_id_data[i]==DATA_Packet_ID)
+            if(SWITCH_DIP_id_data[i]==0x00){SWITCH_DIP_id_data[i]=EMIAL_id_data_chek;SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
+            if(SWITCH_DIP_id_data[i]==EMIAL_id_data_chek)
             {
                 if(SWITCH_DIP==SWITCH_DIP_id_DIP[i])break;
                 else {SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}

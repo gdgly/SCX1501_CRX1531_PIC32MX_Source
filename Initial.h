@@ -300,6 +300,7 @@ extern UINT8 FG_auto_open_time;
     extern UINT8  UART_DATA_buffer[493];
     //extern UINT8 WIFI_alarm_data[200][10];
     extern UINT8 WIFI_alarm_data[12][103];
+    extern UINT8 WIFI_alarm_data_planning[103];
     extern UINT8 WIFI_alarm_data_PCS;
     extern UINT8 Emial_time_data[10][7];
     extern UINT8 Emial_time_data_PCS;
@@ -310,6 +311,7 @@ extern UINT8 FG_auto_open_time;
     extern UINT8 AUTO_HA_Inquiry;
     extern UINT8 HA_uart[1200];
     extern UINT32 EMIAL_id_data[35];
+    extern UINT32 EMIAL_id_data_chek;
     extern UINT8  EMIAL_id_HA[35];
     extern UINT8  EMIAL_id_PCS;
     extern UINT8  FLAG_email_send;
@@ -355,16 +357,20 @@ extern UINT8 FG_auto_open_time;
     extern UINT8 FG_mial_com_fail;   //在邮件中表示429MHz通讯失败，
     extern UINT8 FG_send_Faile_notice;  //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
     extern UINT16 TIME_send_Faile_notice; //2015.3.31追加修改   1Hz LED通知
-    extern UINT8 Emial_Cache_HA;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    extern UINT8 Emial_Cache_SWITCH;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    extern UINT8 HA_Cache_SWITCH_DIP[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    extern UINT8 HA_Cache_ha[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    extern UINT32 HA_Cache_IDdata[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    extern UINT8 HA_Cache_SWITCH_DIP_bak;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    extern UINT8 HA_Cache_ha_bak;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    extern UINT8 HA_Cache_ha_1Hz[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    extern UINT8 HA_Cache_ha_1Hz_bak;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+
+    extern UINT8 Emial_Cache_HA;   //Start       //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    extern UINT8 Emial_Cache_SWITCH;   
+    extern UINT8 HA_Cache_SWITCH_DIP[35];   
+    extern UINT8 HA_Cache_ha[35];   
+    extern UINT32 HA_Cache_IDdata[35];   
+    extern UINT8 HA_Cache_SWITCH_DIP_bak;   
+    extern UINT8 HA_Cache_ha_bak;   
+    extern UINT8 HA_Cache_ha_1Hz[35];  
+    extern UINT8 HA_Cache_ha_1Hz_bak;   //end
     extern UINT8 FG_HA_Inquiry_NO_again_send;
+
+    extern UINT16 time_APP_Start_up;   //2015.04.27修正
+
 #endif
 
 

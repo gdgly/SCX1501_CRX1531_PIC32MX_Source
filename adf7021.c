@@ -944,13 +944,13 @@ void ADF7021_change_TXorRX(void)
     if((FG_send_Faile_notice==1)&&(TIME_send_Faile_notice==0)){            //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
         TIME_send_Faile_notice=50;
         WIFI_LED_TX=!WIFI_LED_TX;
-        if((AUTO_SEND_DATA_pcs==0)&&(TIME_alarm_AUTO==0)){
+//        if((AUTO_SEND_DATA_pcs==0)&&(TIME_alarm_AUTO==0)){
                 for(i=0;i<35;i++)
                 {
                    if(HA_Cache_ha_1Hz[i]==0x05)i=100;
                 }
                 if(i==35){FG_send_Faile_notice=0;WIFI_LED_TX=0;}
-        }
+//        }
     }
 
     if(FLAG_WIFI_LAN_SELECT!=WIFI_LAN_SELECT){TIME_WIFI_LAN_SELECT=10;FLAG_WIFI_LAN_SELECT=WIFI_LAN_SELECT;}
@@ -976,7 +976,7 @@ void ADF7021_change_TXorRX(void)
        TIME_email_Repeat=9000;
        UART_send_count++;
        if(UART_send_count>10)FLAG_email_Repeat=0;
-       HA_uart_email_Repeat();
+       if(ID_DATA_PCS!=0)HA_uart_email_Repeat();
    }
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
@@ -1108,7 +1108,8 @@ AUTO_SEND_exit:
         #endif
  #endif
 #if defined(__Product_PIC32MX2_WIFI__)
-   if(((FLAG_UART_ok==1)&&(TIME_APP_Inquiry_HA==0))||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
+   //if(((FLAG_UART_ok==1)&&(TIME_APP_Inquiry_HA==0))||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
+ if((((FLAG_UART_ok==1)&&(TIME_APP_Inquiry_HA==0))||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1))&&(time_APP_Start_up==0)){           //2015.04.27修正
  #endif
        if(FLAG_rssi_Freq==0){
            rssi_TIME=1;    //发射时10ms间隔搜索空信道

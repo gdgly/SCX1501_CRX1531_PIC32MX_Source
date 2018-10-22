@@ -153,6 +153,7 @@ UINT8 FG_auto_open_time=0;
     UINT8  UART_DATA_buffer[493]={0};
     //UINT8 WIFI_alarm_data[200][10]={0};
     UINT8 WIFI_alarm_data[12][103]={0};
+    UINT8 WIFI_alarm_data_planning[103];
     UINT8 WIFI_alarm_data_PCS=0;
     UINT8 Emial_time_data[10][7]={0};
     UINT8 Emial_time_data_PCS=0;
@@ -194,6 +195,7 @@ UINT8 FG_auto_open_time=0;
                    0x00,0x00   //校验码
                    };
     UINT32 EMIAL_id_data[35];
+    UINT32 EMIAL_id_data_chek;
     UINT8  EMIAL_id_HA[35];
     UINT8  EMIAL_id_PCS=0;
     UINT8  FLAG_email_send=0;
@@ -274,16 +276,20 @@ UINT8 FG_auto_open_time=0;
     UINT8 FG_mial_com_fail=0;   //在邮件中表示429MHz通讯失败，
     UINT8 FG_send_Faile_notice=0;  //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
     UINT16 TIME_send_Faile_notice=0;  //2015.3.31追加修改   1Hz LED通知
-    UINT8 Emial_Cache_HA=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 Emial_Cache_SWITCH=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_SWITCH_DIP[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_ha[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT32 HA_Cache_IDdata[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_SWITCH_DIP_bak=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_ha_bak=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_ha_1Hz[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_ha_1Hz_bak=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+
+    UINT8 Emial_Cache_HA=0;   //Start        //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    UINT8 Emial_Cache_SWITCH=0;   
+    UINT8 HA_Cache_SWITCH_DIP[35];  
+    UINT8 HA_Cache_ha[35];  
+    UINT32 HA_Cache_IDdata[35];   
+    UINT8 HA_Cache_SWITCH_DIP_bak=0;  
+    UINT8 HA_Cache_ha_bak=0;  
+    UINT8 HA_Cache_ha_1Hz[35];  
+    UINT8 HA_Cache_ha_1Hz_bak=0;   //end
     UINT8 FG_HA_Inquiry_NO_again_send=0;
+
+    UINT16 time_APP_Start_up=0;   //2015.04.27修正
+
 #endif
 
 
