@@ -12,6 +12,10 @@
     #define __Product_PIC32MX2_WIFI__            //"0"代表DIV8  CPU Freq=10MHz  受信机
 #endif
 
+#if defined(__32MX250F128D__)
+    #define __Product_PIC32MX2_WIFI__            //"0"代表DIV8  CPU Freq=10MHz  受信机
+#endif
+
 #if defined(__32MX210F016D__)
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 #endif
@@ -109,7 +113,6 @@ extern FLAG FLAG_APP;
 extern UINT32 EEPROM_Receiver_ID;
 
 extern UINT16 rssi;
-extern UINT16 rssi_read_value;
 extern UINT8 Frequency_CH;
 extern UINT8 test_TRX;
 

@@ -12,7 +12,7 @@
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <itemPath>../linker_scripts/btl_32MX230F064D_generic.ld</itemPath>
+      <itemPath>../linker_scripts/app_32MX250F128D.ld</itemPath>
     </logicalFolder>
     <logicalFolder name="ObjectFiles"
                    displayName="Object Files"
@@ -46,7 +46,7 @@
     <conf name="default" type="2">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <targetDevice>PIC32MX230F064D</targetDevice>
+        <targetDevice>PIC32MX250F128D</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>

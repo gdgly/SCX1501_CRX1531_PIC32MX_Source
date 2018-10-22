@@ -102,6 +102,10 @@ Note: make sure the boot loader and your application, both use the same fuse set
         #pragma config FPLLODIV = DIV_2         // PLL Output Divider: Divide by 2  SYSCLK=40M
     #endif
 
+    #if defined(__32MX250F128D__)
+        #pragma config FPLLODIV = DIV_2         // PLL Output Divider: Divide by 2  SYSCLK=40M
+    #endif
+
     #if defined(__32MX210F016D__)
         #pragma config FPLLODIV = DIV_4         // PLL Output Divider: Divide by 8    SYSCLK=10M
     #endif
