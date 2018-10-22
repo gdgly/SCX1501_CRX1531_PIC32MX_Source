@@ -109,6 +109,7 @@ extern FLAG FLAG_APP;
 extern UINT32 EEPROM_Receiver_ID;
 
 extern UINT16 rssi;
+extern UINT16 rssi_read_value;
 extern UINT8 Frequency_CH;
 extern UINT8 test_TRX;
 

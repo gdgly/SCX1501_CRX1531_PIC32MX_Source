@@ -702,8 +702,10 @@ void ADF7021_change_TXorRX(void)
    }
    if(WIFI_L_Login==1)FLAG_APP_SW3=0;
 
-//    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1))
-//       rssi=130-dd_read_rssi_7021_reg(0x14);
+    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1))
+       //rssi=130-dd_read_rssi_7021_reg(0x14);
+        dd_read_RSSI();
+        rssi_read_value=rssi;
 }
 
 

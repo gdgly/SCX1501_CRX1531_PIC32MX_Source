@@ -51,7 +51,7 @@ void __ISR(_EXTERNAL_2_VECTOR, ipl6) ExternalHandler(void)
     else if(FLAG_APP_TX==1)ID_code_function();
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
-    if(FLAG_APP_RX==1) 
+    if(FLAG_APP_RX==1) //模式选择 由  硬件 保证
         ID_Decode_function();
     else if(FLAG_APP_TX==1)ID_code_function();
  #endif
@@ -75,58 +75,87 @@ void ID_code_function(void)
 //    }
 }
 
+UINT16 X_COUNT = 0;
+UINT16 X_ERR  = 0 ;//记录错误的个数
+UINT8  X_HIS  = 0 ;//历史记录
+
+
 void ID_Decode_function(void)
 {
-    UINT16 DATA_Packet_Syn_bak=0;
-     switch (rxphase){
-        case 0:
-                DATA_Packet_Syn=DATA_Packet_Syn<<1;
-                if(ADF7021_DATA_rx)DATA_Packet_Syn+=1;
-                //if(DATA_Packet_Syn==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;break;}
-                //Receiver_LED_OUT=ADF7021_DATA_rx;//测试，测试完后需要删除
-                if(TIMER18ms==0){
-                                 DATA_Packet_Syn_bak=DATA_Packet_Syn&0x0000FFFF;
-                                 if((DATA_Packet_Syn_bak==0x5555)||(DATA_Packet_Syn_bak==0xAAAA));
-                                 else FLAG_Receiver_Scanning=1;
-                                }
-                //if(DATA_Packet_Syn==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;}
-                if((DATA_Packet_Syn&0xFFFFFFFF)==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;
- #if defined(__Product_PIC32MX2_Receiver__)
-                                                             Receiver_LED_RX=1;
-                                                             TIMER300ms=500; //if(TIMER300ms==0)TIMER300ms=100;
- #endif
-                                                             }
-                break;
-	case 1:
-                //Receiver_LED_TX=0;//测试，测试完后需要删除
-                //if(TIMER18ms==0)rxphase=0;  //Scanning  测试
-                DATA_Packet_Head=DATA_Packet_Head<<1;
-                if(ADF7021_DATA_rx)DATA_Packet_Head+=1;
-                //DATA_Packet_Head=DATA_Packet_Head&0x0000FFFF;
-                if(DATA_Packet_Head==0x5515){rxphase=2;DATA_Packet_Syn=0;DATA_Packet_Head=0;DATA_Packet_Code_i=0;}
-		break;
-        case 2:
-                DATA_Packet_Code_g=DATA_Packet_Code_i/32;
-                DATA_Packet_Code[DATA_Packet_Code_g]=DATA_Packet_Code[DATA_Packet_Code_g]<<1;
-                if(ADF7021_DATA_rx)DATA_Packet_Code[DATA_Packet_Code_g]+=1;
-                DATA_Packet_Code_i++;
-                if(DATA_Packet_Code_i==96){
-                    if((DATA_Packet_Code[1]&0x0000FFFF)==0x5556);
-                    else rxphase=3;
-                }
-                else if(DATA_Packet_Code_i>=192)rxphase=3;
-                //Receiver_LED_TX=0;//测试，测试完后需要删除
-                break;
-        case 3:
-                //Receiver_LED_TX=0;//测试，测试完后需要删除
-                FLAG_Receiver_IDCheck=1;
-                rxphase=0;
-                DATA_Packet_Syn=0;
-                TIMER18ms=0;
-                break;
-        default:
-               break;
-	}
+     X_COUNT ++;
+
+   if((ADF7021_DATA_rx== X_HIS)&&(X_COUNT != 1))
+       X_ERR++;
+
+
+    X_HIS = ADF7021_DATA_rx;
+
+    if(X_COUNT >= 1200)
+    {
+        X_COUNT = 0;
+        
+        U1TXREG = (X_ERR/1000) + 48;//48;//（X_ERR/1000) + 48;
+        X_ERR = X_ERR%1000;
+        U1TXREG = (X_ERR/100) + 48;//X_ERR/256;
+        X_ERR = X_ERR%100;
+        U1TXREG =(X_ERR/10) + 48;
+        X_ERR = X_ERR%10;
+        U1TXREG = X_ERR +48;
+        U1TXREG = 13;//|字符
+
+        X_ERR = 0;
+    }
+
+  //  UINT16 DATA_Packet_Syn_bak=0;
+  //   switch (rxphase){
+  //      case 0:
+  //              DATA_Packet_Syn=DATA_Packet_Syn<<1;
+  //              if(ADF7021_DATA_rx)DATA_Packet_Syn+=1;
+  //              //if(DATA_Packet_Syn==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;break;}
+  //              //Receiver_LED_OUT=ADF7021_DATA_rx;//测试，测试完后需要删除
+  //              if(TIMER18ms==0){
+  //                               DATA_Packet_Syn_bak=DATA_Packet_Syn&0x0000FFFF;
+  //                               if((DATA_Packet_Syn_bak==0x5555)||(DATA_Packet_Syn_bak==0xAAAA));
+  //                               else FLAG_Receiver_Scanning=1;
+  //                              }
+  //              //if(DATA_Packet_Syn==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;}
+  //              if((DATA_Packet_Syn&0xFFFFFFFF)==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;
+ //#if defined(__Product_PIC32MX2_Receiver__)
+ //                                                            Receiver_LED_RX=1;
+ //                                                            TIMER300ms=500; //if(TIMER300ms==0)TIMER300ms=100;
+ //#endif
+ //                                                            }
+ //               break;
+//	case 1:
+//                //Receiver_LED_TX=0;//测试，测试完后需要删除
+//                //if(TIMER18ms==0)rxphase=0;  //Scanning  测试
+//                DATA_Packet_Head=DATA_Packet_Head<<1;
+//                if(ADF7021_DATA_rx)DATA_Packet_Head+=1;
+//                //DATA_Packet_Head=DATA_Packet_Head&0x0000FFFF;
+//                if(DATA_Packet_Head==0x5515){rxphase=2;DATA_Packet_Syn=0;DATA_Packet_Head=0;DATA_Packet_Code_i=0;}
+//		break;
+//        case 2:
+//                DATA_Packet_Code_g=DATA_Packet_Code_i/32;
+//                DATA_Packet_Code[DATA_Packet_Code_g]=DATA_Packet_Code[DATA_Packet_Code_g]<<1;
+ //               if(ADF7021_DATA_rx)DATA_Packet_Code[DATA_Packet_Code_g]+=1;
+ //               DATA_Packet_Code_i++;
+ //               if(DATA_Packet_Code_i==96){
+ //                   if((DATA_Packet_Code[1]&0x0000FFFF)==0x5556);
+ //                   else rxphase=3;
+ //               }
+ //               else if(DATA_Packet_Code_i>=192)rxphase=3;
+ //               //Receiver_LED_TX=0;//测试，测试完后需要删除
+ //               break;
+ //       case 3:
+ //               //Receiver_LED_TX=0;//测试，测试完后需要删除
+ //               FLAG_Receiver_IDCheck=1;
+ //               rxphase=0;
+ //               DATA_Packet_Syn=0;
+ //               TIMER18ms=0;
+ //               break;
+ //       default:
+ //              break;
+ //	}
 }
 void ID_Decode_IDCheck(void)
 {
