@@ -430,14 +430,14 @@ void RF_test_mode(void )
   UINT8 uart_data,Boot_i;
 
 #if defined(__Product_PIC32MX2_Receiver__)
-//  Receiver_LED_OUT=1;
-//  for(Boot_i=0;Boot_i<6;Boot_i++){
-//      for(time_3sec=0;time_3sec<600;time_3sec++){
-//         Delayus(240);   //80us
-//         ClearWDT(); // Service the WDT
-//      }
-//      Receiver_LED_OUT=!Receiver_LED_OUT;
-//  }
+  Receiver_LED_OUT=1;
+  for(Boot_i=0;Boot_i<2;Boot_i++){
+      for(time_3sec=0;time_3sec<1500;time_3sec++){
+         Delayus(240);   //80us
+         ClearWDT(); // Service the WDT
+      }
+      Receiver_LED_OUT=!Receiver_LED_OUT;
+  }
   Receiver_LED_OUT=0;
 
 

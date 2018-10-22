@@ -401,6 +401,7 @@ void ID_Decode_OUT(void)
                                 Receiver_LED_OUT=1;
                                 TIMER250ms_STOP=250;
                                 Receiver_OUT_STOP=1;
+                                Receiver_OUT_VENT=0;
                                 if(TIMER1s<3550){//Receiver_OUT_OPEN=1;
                                                  LATASET=0x0002;
                                                  Receiver_OUT_CLOSE=1;Receiver_BEEP();}
@@ -409,6 +410,7 @@ void ID_Decode_OUT(void)
                                 Receiver_LED_OUT=1;
                                 //Receiver_OUT_OPEN=0;
                                 LATACLR=0x0002;
+                                Receiver_OUT_VENT=0;
                                 Receiver_OUT_STOP=0;
                                 Receiver_OUT_CLOSE=1;
                                 break;
@@ -416,6 +418,7 @@ void ID_Decode_OUT(void)
                                 Receiver_LED_OUT=1;
                                 //Receiver_OUT_OPEN=0;
                                 LATACLR=0x0002;
+                                Receiver_OUT_VENT=0;
                                 Receiver_OUT_CLOSE=0;
                                 Receiver_OUT_STOP=1;
                                 break;
@@ -423,13 +426,31 @@ void ID_Decode_OUT(void)
                                 Receiver_LED_OUT=1;
                                 Receiver_OUT_STOP=0;
                                 Receiver_OUT_CLOSE=0;
+                                Receiver_OUT_VENT=0;
                                 //Receiver_OUT_OPEN=1;
                                 LATASET=0x0002;
+                                break;
+                    case 0x09:                       //vent+OPEN
+                                Receiver_LED_OUT=1;
+                                Receiver_OUT_STOP=0;
+				Receiver_OUT_CLOSE=0;
+                                //Receiver_OUT_OPEN=1;
+                                LATASET=0x0002;
+                                Receiver_OUT_VENT=1;
+                                break;
+                     case 0x03:                       //vent+close
+                                Receiver_LED_OUT=1;
+                                Receiver_OUT_STOP=0;
+				//Receiver_OUT_OPEN=0;
+                                LATACLR=0x0002;
+                                Receiver_OUT_CLOSE=1;
+                                Receiver_OUT_VENT=1;
                                 break;
                      case 0x0C:                    //open+stop
                                 Receiver_LED_OUT=1;
                                 TIMER250ms_STOP=250;
                                 Receiver_OUT_CLOSE=0;
+                                Receiver_OUT_VENT=0;
                                 Receiver_OUT_STOP=1;
 				if(FG_OUT_OPEN_CLOSE==0){FG_OUT_OPEN_CLOSE=1;TIME_OUT_OPEN_CLOSE=25;}          //2015.3.23修改
                                 if(TIME_OUT_OPEN_CLOSE==0)LATASET=0x0002;  //Receiver_OUT_OPEN=1;
@@ -439,16 +460,18 @@ void ID_Decode_OUT(void)
                                 TIMER250ms_STOP=250;
                                 //Receiver_OUT_OPEN=0;
                                 LATACLR=0x0002;
+                                Receiver_OUT_VENT=0;
                                 Receiver_OUT_STOP=1;
 				if(FG_OUT_OPEN_CLOSE==0){FG_OUT_OPEN_CLOSE=1;TIME_OUT_OPEN_CLOSE=25;}       //2015.3.23修改
                                 if(TIME_OUT_OPEN_CLOSE==0)Receiver_OUT_CLOSE=1;
                                 break;
                      case 0x01:                  //VENT
                                 Receiver_LED_OUT=1;
-                                //Receiver_OUT_OPEN=1;
-                                LATASET=0x0002;
+                                Receiver_OUT_VENT=1;
+                                //Receiver_OUT_OPEN=0;
+                                LATACLR=0x0002;
                                 Receiver_OUT_STOP=0;
-                                Receiver_OUT_CLOSE=1;
+                                Receiver_OUT_CLOSE=0;
                                 break;
                      case 0x20:
                                 if(Freq_Scanning_CH_bak==1){          //429M  角度调整（开）
@@ -462,7 +485,7 @@ void ID_Decode_OUT(void)
                      case 0x0A:                       //close+OPEN
                                 Receiver_LED_OUT=1;
                                 Receiver_OUT_STOP=0;
-				//Receiver_OUT_VENT=FG_NOT_allow_out;
+				Receiver_OUT_VENT=0;
                                 //Receiver_OUT_OPEN=1;
                                 LATASET=0x0002;
                                 Receiver_OUT_CLOSE=1;
@@ -479,7 +502,7 @@ void ID_Decode_OUT(void)
                                     if((FG_auto_out==0)&&(Manual_override_TIMER==0)){                  //自动送信
                                         Receiver_LED_OUT=1;
                                         TIMER250ms_STOP=0;
-                                        //Receiver_OUT_VENT=FG_NOT_allow_out;
+                                        Receiver_OUT_VENT=0;
                                         Receiver_OUT_CLOSE=0;
                                         if(TIMER1s>2000){Receiver_OUT_STOP=1;LATACLR=0x0002;}
                                         else if(TIMER1s>1000){Receiver_OUT_STOP=0;LATACLR=0x0002;}
@@ -549,6 +572,7 @@ void ID_Decode_OUT(void)
                else   {FG_auto_manual_mode=0;Receiver_OUT_CLOSE=0;}
                FG_First_auto=0;
                LATACLR=0x0002;
+               Receiver_OUT_VENT=0;
                if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)||(TIME_auto_close));
                else  if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=1;    //2015.3.23修改
 	       else Receiver_LED_OUT=0;
