@@ -90,6 +90,7 @@
         <property key="preprocessor-macros" value="PIC32_STARTER_KITS"/>
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
+        <property key="use-cci" value="false"/>
         <property key="use-indirect-calls" value="false"/>
       </C32>
       <C32-AS>
@@ -159,8 +160,6 @@
       </C32CPP>
       <C32Global>
         <property key="legacy-libc" value="false"/>
-        <property key="save-temps" value="false"/>
-        <property key="wpo-lto" value="false"/>
       </C32Global>
       <ICD3PlatformTool>
         <property key="firmware.download.all" value="false"/>

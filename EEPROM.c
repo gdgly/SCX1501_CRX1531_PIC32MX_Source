@@ -33,10 +33,11 @@ void ID_learn(void)
  if(FG_10ms){
      FG_10ms = 0;
      if(rssi_TIME)--rssi_TIME;
+     if(TIMER60s)--TIMER60s;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
        else if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
           else {TIME_Receiver_Login=0;COUNT_Receiver_Login=0;}
-     
+
          if(Receiver_Login==0){
              TIME_Receiver_Login++;
              TIME_Receiver_Login_restrict=350;
@@ -78,6 +79,7 @@ void ID_learn(void)
  if(FG_10ms){
      FG_10ms = 0;
      if(rssi_TIME)--rssi_TIME;
+     if(TIME_UART)--TIME_UART;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
        else if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
           else {TIME_Receiver_Login=0;COUNT_Receiver_Login=0;}

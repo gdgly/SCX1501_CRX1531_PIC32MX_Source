@@ -103,7 +103,7 @@ Note: make sure the boot loader and your application, both use the same fuse set
     #endif
 
     #if defined(__32MX210F016D__)
-        #pragma config FPLLODIV = DIV_4         // PLL Output Divider: Divide by 8    SYSCLK=10M
+        #pragma config FPLLODIV = DIV_4 //DIV_4         // PLL Output Divider: Divide by 8    SYSCLK=10M
     #endif
 #elif defined(__PIC32MX3XX_7XX__)
     // For PIC32MX3xx, PIC32MX4xx, PIC32MX5xx, PIC32MX6xx and PIC32MX7xx
@@ -144,7 +144,8 @@ int main(void)
 
     dd_set_ADF7021_Power_on();
     ID_EEPROM_Initial();
-    //Set_Time(number_time);
+    FLAG_HA_L_signal=1;
+    FLAG_HA_ERR_signal=1;
     while(1)
     {
         ADF7021_change_TXorRX();
@@ -153,7 +154,6 @@ int main(void)
         Freq_Scanning();
         ID_learn();
 
-// Read_Time(number_time);
      }
 	return 0;
 }

@@ -12,6 +12,7 @@
 #include "adf7021.h"
 #include "Timers.h"
 #include "Uart.h"
+#include "pcf8563.h"
 
 void ID_Decode_function(void);
 void  Freq_Scanning(void);
@@ -35,7 +36,7 @@ void ID_Decode_Initial_INT(void)
     
     INT2Rbits.INT2R=7;   //INT4-->RCP5
     IEC0bits.INT2IE = 0; // disable INT3
-    INTCONbits.INT2EP = 1; // clear the bit for falling edge trigger
+    INTCONbits.INT2EP = 0; // clear the bit for falling edge trigger
     IPC2bits.INT2IP= 6; // Set priority level=6
     IPC2bits.INT2IS = 3; // Set Subpriority level=3
     IFS0bits.INT2IF = 0; // clear the interrupt flag
@@ -51,20 +52,25 @@ void __ISR(_EXTERNAL_2_VECTOR, ipl6) ExternalHandler(void)
     else if(FLAG_APP_TX==1)ID_code_function();
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
-    if(FLAG_APP_RX==1) 
+    if(FLAG_APP_RX==1)
         ID_Decode_function();
     else if(FLAG_APP_TX==1)ID_code_function();
  #endif
-    //Receiver_LED_TX=!Receiver_LED_TX;//测试，测试完后需要删除
+    //ADF7021_CLKOUT=!ADF7021_CLKOUT;//测试，测试完后需要删除
     IFS0bits.INT2IF = 0;
     asm ("ei");
 }
 
 void ID_code_function(void)
 {
+    //UINT8 ID_INT_VALUE;
     if(txphase%8==0)ID_INT_CODE=m_RFNormalBuf[txphase/8];
-    if	( (ID_INT_CODE & 0b10000000)==0b10000000 )ADF7021_DATA_tx=1;
-    else ADF7021_DATA_tx=0;
+//    ID_INT_VALUE=ID_INT_CODE>>7;
+//    if(ID_INT_VALUE)ADF7021_DATA_tx=1;
+//      else ADF7021_DATA_tx=0;
+    if	( (ID_INT_CODE & 0b10000000)==0b10000000 )LATASET=0x0200;//ADF7021_DATA_tx=1;
+    else LATACLR=0x0200;//ADF7021_DATA_tx=0;
+//   ADF7021_DATA_tx=!ADF7021_DATA_tx;
     ID_INT_CODE<<=1;
     txphase++;
     if(txphase>=280){
@@ -81,15 +87,13 @@ void ID_Decode_function(void)
         case 0:
                 DATA_Packet_Syn=DATA_Packet_Syn<<1;
                 if(ADF7021_DATA_rx)DATA_Packet_Syn+=1;
-                //if(DATA_Packet_Syn==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;break;}
-                //Receiver_LED_OUT=ADF7021_DATA_rx;//测试，测试完后需要删除
                 if(TIMER18ms==0){
                                  DATA_Packet_Syn_bak=DATA_Packet_Syn&0x0000FFFF;
                                  if((DATA_Packet_Syn_bak==0x5555)||(DATA_Packet_Syn_bak==0xAAAA));
                                  else FLAG_Receiver_Scanning=1;
                                 }
                 //if(DATA_Packet_Syn==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;}
-                if((DATA_Packet_Syn&0xFFFFFFFF)==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;
+                if((DATA_Packet_Syn&0xFFFFFFFF)==0x55555555){rxphase=1;TIMER18ms=2000;DATA_Packet_Syn=0;DATA_Packet_Head=0;
  #if defined(__Product_PIC32MX2_Receiver__)
                                                              Receiver_LED_RX=1;
                                                              TIMER300ms=500; //if(TIMER300ms==0)TIMER300ms=100;
@@ -97,11 +101,10 @@ void ID_Decode_function(void)
                                                              }
                 break;
 	case 1:
-                //Receiver_LED_TX=0;//测试，测试完后需要删除
-                //if(TIMER18ms==0)rxphase=0;  //Scanning  测试
                 DATA_Packet_Head=DATA_Packet_Head<<1;
                 if(ADF7021_DATA_rx)DATA_Packet_Head+=1;
                 //DATA_Packet_Head=DATA_Packet_Head&0x0000FFFF;
+                if(TIMER18ms==0)rxphase=0;
                 if(DATA_Packet_Head==0x5515){rxphase=2;DATA_Packet_Syn=0;DATA_Packet_Head=0;DATA_Packet_Code_i=0;}
 		break;
         case 2:
@@ -114,14 +117,14 @@ void ID_Decode_function(void)
                     else rxphase=3;
                 }
                 else if(DATA_Packet_Code_i>=192)rxphase=3;
-                //Receiver_LED_TX=0;//测试，测试完后需要删除
                 break;
         case 3:
-                //Receiver_LED_TX=0;//测试，测试完后需要删除
                 FLAG_Receiver_IDCheck=1;
+                if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))Freq_Scanning_CH_bak=0;   //暂时记录下收到信号的频率信道,0代表426M
+                else Freq_Scanning_CH_bak=1;                                                                                 //                       1代表429M
                 rxphase=0;
                 DATA_Packet_Syn=0;
-                TIMER18ms=0;
+                TIMER18ms=0;   //0ms，接受可靠稳定
                 break;
         default:
                break;
@@ -143,7 +146,9 @@ void ID_Decode_IDCheck(void)
             else if(FLAG_IDCheck_OK==1)
             {
                 FLAG_IDCheck_OK=0;
-                if((DATA_Packet_Code[1]&0x0000FFFF)==0x5556){
+                if(Freq_Scanning_CH_bak==0)Freq_Scanning_CH_save=0;   //保存记录下收到信号的频率信道,0代表426M
+                else Freq_Scanning_CH_save=1;                                                                                 //                       1代表429M
+                if(((DATA_Packet_Code[1]&0x0000FFFF)==0x5556)&&(Freq_Scanning_CH_bak==0)){
                     Signal_DATA_Decode(1);
                     if(FLAG_Signal_DATA_OK==1){
                             eeprom_IDcheck();
@@ -170,7 +175,10 @@ void ID_Decode_IDCheck(void)
                     TIMER1s=1000;
 #endif
 #if defined(__Product_PIC32MX2_Receiver__)
-                    if((DATA_Packet_Control&0x14)==0x14)TIMER1s=3800;
+                    if(Freq_Scanning_CH_bak==0){
+                        if((DATA_Packet_Control&0x14)==0x14)TIMER1s=3800;
+                        else TIMER1s=1000;
+                    }
                     else TIMER1s=1000;
                     TIMER300ms=500;
                     Receiver_LED_RX=1;
@@ -205,6 +213,8 @@ void Signal_DATA_Decode(UINT8 NUM_Type)
           FLAG_Signal_DATA_OK=1;
           DATA_Packet_ID=(data_NRZ[1]&0x00FF)*65536+data_NRZ[0];
           DATA_Packet_Control=(data_NRZ[1]&0xFF00)>>8;
+          if(Freq_Scanning_CH_bak==1)
+              Control_bak=DATA_Packet_Control;
       }
       else FLAG_Signal_DATA_OK=0;
 }
@@ -256,24 +266,76 @@ void Receiver_BEEP(void)
 
 void ID_Decode_OUT(void)
 {
+    UINT8 Control_i,data0,data_sum;
  #if defined(__Product_PIC32MX2_Receiver__)
+    if(Freq_Scanning_CH_bak==0) Control_i=DATA_Packet_Control&0xFF;
+    else Control_i=DATA_Packet_Control&0x0E;
     if(TIMER1s){
-                Receiver_LED_OUT=1;
-                if((DATA_Packet_Control&0x14)==0x14){
-                    TIMER250ms_STOP=250;
-                    if(TIMER1s<3550){Receiver_OUT_OPEN=1;Receiver_OUT_CLOSE=1;Receiver_BEEP();}
-                }
-                if((DATA_Packet_Control&0x08)==0x08)Receiver_OUT_OPEN=1;
-                if((DATA_Packet_Control&0x04)==0x04)Receiver_OUT_STOP=1;
-                if((DATA_Packet_Control&0x02)==0x02)Receiver_OUT_CLOSE=1;
-                if((DATA_Packet_Control&0x0C)==0x0C)TIMER250ms_STOP=250;
-                if((DATA_Packet_Control&0x06)==0x06)TIMER250ms_STOP=250;
+                switch (Control_i){
+                     case 0x14:
+                                Receiver_LED_OUT=1;
+                                TIMER250ms_STOP=250;
+                                Receiver_OUT_STOP=1;
+                                if(TIMER1s<3550){//Receiver_OUT_OPEN=1;
+                                                 LATACLR=0x0002;
+                                                 Receiver_OUT_CLOSE=1;Receiver_BEEP();}
+                                break;
+                     case 0x02:
+                                Receiver_LED_OUT=1;
+                                //Receiver_OUT_OPEN=0;
+                                LATACLR=0x0002;
+                                Receiver_OUT_STOP=0;
+                                Receiver_OUT_CLOSE=1;
+                                break;
+                     case 0x04:
+                                Receiver_LED_OUT=1;
+                                //Receiver_OUT_OPEN=0;
+                                LATACLR=0x0002;
+                                Receiver_OUT_CLOSE=0;
+                                Receiver_OUT_STOP=1;
+                                break;
+                     case 0x08:
+                                Receiver_LED_OUT=1;
+                                Receiver_OUT_STOP=0;
+                                Receiver_OUT_CLOSE=0;
+                                //Receiver_OUT_OPEN=1;
+                                LATASET=0x0002;
+                                break;
+                     case 0x0C:
+                                Receiver_LED_OUT=1;
+                                TIMER250ms_STOP=250;
+                                Receiver_OUT_CLOSE=0;
+                                Receiver_OUT_STOP=1;
+                                //Receiver_OUT_OPEN=1;
+                                LATASET=0x0002;
+                                break;
+                     case 0x06:
+                                Receiver_LED_OUT=1;
+                                TIMER250ms_STOP=250;
+                                //Receiver_OUT_OPEN=0;
+                                LATACLR=0x0002;
+                                Receiver_OUT_STOP=1;
+                                Receiver_OUT_CLOSE=1;   
+                                break;
+                     default:
+                                break;
+                     }
+//                if((DATA_Packet_Control&0x14)==0x14){
+//                    TIMER250ms_STOP=250;
+//                    if(TIMER1s<3550){Receiver_OUT_OPEN=1;Receiver_OUT_CLOSE=1;Receiver_BEEP();}
+//                }
+//                if((DATA_Packet_Control&0x08)==0x08)Receiver_OUT_OPEN=1;
+//                if((DATA_Packet_Control&0x04)==0x04)Receiver_OUT_STOP=1;
+//                if((DATA_Packet_Control&0x02)==0x02)Receiver_OUT_CLOSE=1;
+//                if((DATA_Packet_Control&0x0C)==0x0C)TIMER250ms_STOP=250;
+//                if((DATA_Packet_Control&0x06)==0x06)TIMER250ms_STOP=250;
                }       
      else {
            FLAG_Receiver_BEEP=0;
            if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
            else Receiver_LED_OUT=0;
-           Receiver_OUT_OPEN=0;
+           //Receiver_OUT_OPEN=0;
+           LATACLR=0x0002;
            Receiver_OUT_CLOSE=0;
            if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
           }
@@ -283,6 +345,115 @@ void ID_Decode_OUT(void)
      if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
      else if(TIMER1s) WIFI_LED_RX=1;
      else WIFI_LED_RX=0;
+
+//     if((Freq_Scanning_CH_bak==1)&&((Control_bak==0x10)||(Control_bak==0x20)||(Control_bak==0x30))){
+//         Freq_Scanning_CH_bak=0;
+//         Control_bak=0x00;
+//     }
+
+//     if((Freq_Scanning_CH_save==1)&&(Emial_Control!=DATA_Packet_Control)){
+//        Read_Time(number_time);
+//        data_sum=0;
+//        U1TXREG=0xBB;
+//        U1TXREG=0x00;
+//        U1TXREG=0x20;
+//        U1TXREG=0x00;
+//        U1TXREG=0x00;
+//        U1TXREG=0x00;
+//        U1TXREG=15;
+//        U1TXREG=0x00;
+//        Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+//        data0=number_time[2]&0xF0;
+//        data0=data0>>4;
+//        data0=data0+0x30;
+//        U1TXREG= data0;   //小时
+//        data_sum+=data0;
+//        data0=number_time[2]&0x0F+0x30;
+//        U1TXREG= data0;   //小时
+//        data_sum+=data0;
+//        data0=58;    //：
+//        U1TXREG= data0;
+//        data_sum+=data0;
+//        data0=number_time[1]&0xF0;
+//        data0=data0>>4;
+//        data0=data0+0x30;
+//        U1TXREG= data0;
+//        data_sum+=data0;
+//        data0=number_time[1]&0x0F+0x30;
+//        U1TXREG= data0;
+//        data_sum+=data0;
+//        data0=58;                             //：
+//        U1TXREG= data0;
+//        data_sum+=data0;
+//        data0=number_time[0]&0xF0;
+//        data0=data0>>4;
+//        data0=data0+0x30;
+//        U1TXREG= data0;
+//        data_sum+=data0;
+//        data0=number_time[0]&0x0F+0x30;
+//        U1TXREG= data0;
+//        data_sum+=data0;
+//        Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+//        U1TXREG=0;
+//        if(DATA_Packet_Control==1){
+//            data0=79;         //OPEN
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=80;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=69;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=78;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=32;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            U1TXREG=00;
+//        }
+//        else if(DATA_Packet_Control==2){
+//            data0=67;         //CLOSE
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=76;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=79;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=83;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=69;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            U1TXREG=00;
+//        }
+//        else if(DATA_Packet_Control==3){
+//            data0=69;         //ERR
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=82;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=82;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=32;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            data0=32;
+//            U1TXREG= data0;
+//            data_sum+=data0;
+//            U1TXREG=00;
+//        }
+//       Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+//       U1TXREG=data_sum%256;
+//       U1TXREG=data_sum/256;
+//       Emial_Control=DATA_Packet_Control;
+//     }
  #endif    
 }
 
@@ -299,7 +470,6 @@ void  Freq_Scanning(void)
 
     }
 }
-
 
 void SendTxData(void)
 {
@@ -330,6 +500,7 @@ void SetTxData(void)
 {
   uni_i unii,unij,unik;
   	/*	ID set	*/
+        m_RFNormalBuf[22]=0x15;
 	unii.ui = SetFixedLengthCode(ID_data.IDB[0]) ;
 	m_RFNormalBuf[23] = unii.uc[1] ;
 	m_RFNormalBuf[24] = unii.uc[0] ;

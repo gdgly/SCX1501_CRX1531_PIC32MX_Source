@@ -101,6 +101,14 @@ extern FLAG FLAG_APP;
 
         #define		FLAG_ID_Login_OK 	FLAG_APP.BIT.Bit12
         #define		FLAG_ID_Login_OK_bank 	FLAG_APP.BIT.Bit13
+        #define		FLAG_HA_START    	FLAG_APP.BIT.Bit14
+
+        #define		FLAG_HA_L_signal    	FLAG_APP.BIT.Bit15
+        #define		FLAG_HA_ERR_signal    	FLAG_APP.BIT.Bit16
+
+        #define		FLAG_open    	        FLAG_APP.BIT.Bit17
+        #define		FLAG_close    	        FLAG_APP.BIT.Bit18
+        #define		FLAG_HA_ERR    	        FLAG_APP.BIT.Bit19
 
         #define		FG_10ms 	        FLAG_APP.BIT.Bit24
 	//************************************************
@@ -121,11 +129,17 @@ extern UINT8  DATA_Packet_Code_g;
 extern UINT8  DATA_Packet_Code_i;
 extern UINT32 DATA_Packet_ID;
 extern UINT8  DATA_Packet_Control;
+extern UINT8  Control_bak;
 extern UINT16  TIMER1s;
 extern UINT16  TIMER300ms;
-extern UINT8   TIMER18ms;
+extern UINT16  TIMER18ms;
 extern UINT8   TIMER250ms_STOP;
+extern UINT16  TIMER60s;
+extern UINT8   HA_Status;
+extern UINT8   Emial_Control;
 extern UINT8  Freq_Scanning_CH;
+extern UINT8  Freq_Scanning_CH_bak;
+extern UINT8  Freq_Scanning_CH_save;
 extern UINT8  m_RFNormalBuf[35]; // Buffer for data
                                /* m_RFNormalBuf[0] 帧间隔时间10ms(LSB)
                                 * m_RFNormalBuf[1] 帧间隔时间10ms(MSB)
@@ -151,8 +165,10 @@ extern UINT8 ID_INT_CODE;
 
 extern UINT16 UART_DATA_i;
 extern UINT8  UART_DATA_cnt;
-extern UINT8  UART1_DATA[15];
-extern UINT8  UART_DATA_buffer[15];
+extern UINT8  UART1_DATA[18];
+extern UINT8  UART_DATA_buffer[18];
+extern UINT8  TIME_UART;
+
 extern UINT8  TIME_10ms;
 extern UINT8  COUNT_Receiver_Login;
 extern UINT16  TIME_Receiver_Login;
@@ -269,7 +285,8 @@ extern void Delay100us(unsigned int timer);
     #define ADF7021_DATA_tx           LATAbits.LATA9     // Output
     #define ADF7021_DATA_rx           PORTAbits.RA9     // Input
 
-    #define ADF7021_CLKOUT             PORTBbits.RB4 // Input
+    //#define ADF7021_CLKOUT             PORTBbits.RB4 // Input
+    #define ADF7021_CLKOUT             LATBbits.LATB4 // Output  测试
     #define ADF7021_INT_LOCK           PORTAbits.RA8 // Input
 
     #define	SDA                     LATCbits.LATC2     // Output
