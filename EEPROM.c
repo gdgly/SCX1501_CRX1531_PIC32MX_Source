@@ -221,7 +221,7 @@ void ID_Login_EXIT_Initial(void)
      FLAG_ID_Login_OK_bank=0;
      FLAG_ID_Login=0;
      FLAG_ID_Erase_Login=0;
-     Receiver_LED_OUT=1;
+     Receiver_LED_OUT=0;
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
      FLAG_ID_Login_EXIT=1;
