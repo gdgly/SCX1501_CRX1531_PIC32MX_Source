@@ -1,3 +1,4 @@
+
 /***********************************************************************/
 /*  FILE        :ADF7021.c                                             */
 /*  DATE        :Mar, 2013                                             */
@@ -216,13 +217,16 @@ void dd_set_TX_mode(void)
 
 	//write R0, turn on PLL
 	//register_value.whole_reg = 0x0154DC30;       //CH=426.075MHz
-        register_value.whole_reg = 0x01575710;   //CH=429.175MHz
+        //register_value.whole_reg = 0x01575710;   //CH=429.175MHz
         //register_value.whole_reg = 0x01576140;//CH=429.225MHz
+        if(TX_Freq_CH==2)register_value.whole_reg = 0x01575710;   //CH=429.175MHz
+        else if(TX_Freq_CH==4)register_value.whole_reg = 0x01575C30;  //CH=429.200MHz
+        else if(TX_Freq_CH==6)register_value.whole_reg = 0x01576140;//CH=429.225MHz
 	dd_write_7021_reg(&register_value.byte[0]);
 	Delayus(40);		//delay 40us
 
 	//write R2, turn on PA
-	register_value.whole_reg = 0x00536882;//0x006B6882;			//Ramp Rate = 16 codes/bit, TX level = 2;
+	register_value.whole_reg = 0x00564882;//0x00536882;//0x006B6882;			//Ramp Rate = 16 codes/bit, TX level = 2;
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
@@ -299,34 +303,34 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
     if(Mode==1)     //ADF7021 TX Mode
     {
     	switch (CH){
-            case 1:
-                    register_value.whole_reg = 0x0154DC30; //CH=426.075MHz
-                    break;
+//            case 1:
+//                    register_value.whole_reg = 0x0154DC30; //CH=426.075MHz
+//                    break;
             case 2:
                     register_value.whole_reg = 0x01575710;   //CH=429.175MHz
                     break;
-            case 3:
-                    register_value.whole_reg = 0x015759A0;  //CH=429.1875MHz
-                    break;
+//            case 3:
+//                    register_value.whole_reg = 0x015759A0;  //CH=429.1875MHz
+//                    break;
             case 4:
                     register_value.whole_reg = 0x01575C30;  //CH=429.200MHz
                     break;
-            case 5:
-                    register_value.whole_reg = 0x01575EC0; //CH=429.2125MHz
-                    break;
+//            case 5:
+//                    register_value.whole_reg = 0x01575EC0; //CH=429.2125MHz
+//                    break;
             case 6:
                     register_value.whole_reg = 0x01576140;//CH=429.225MHz
                     break;
-            case 7:
-                    register_value.whole_reg = 0x015763D0;//CH=429.2375MHz
-                    break;
+//            case 7:
+//                    register_value.whole_reg = 0x015763D0;//CH=429.2375MHz
+//                    break;
             default:
                    break;
 	}
         dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
         	//write R2, turn on PA
-	register_value.whole_reg = 0x00536882;//0x006B6882;			//Ramp Rate = 16 codes/bit, TX level = 2;
+	register_value.whole_reg = 0x00564882;//0x00536882;//0x006B6882;			//Ramp Rate = 16 codes/bit, TX level = 2;
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
     }
@@ -353,9 +357,9 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
             case 6:
                     register_value.whole_reg = 0x09574CD0;//CH=429.225MHz
                     break;
-            case 7:
-                    register_value.whole_reg = 0x09574F60;//CH=429.2375MHz
-                    break;
+//            case 7:
+//                    register_value.whole_reg = 0x09574F60;//CH=429.2375MHz
+//                    break;
             default:
                    break;
 	}
@@ -415,12 +419,11 @@ void ADF7021_change_TXorRX(void)
 {
     UINT8 i;
  #if defined(__Product_PIC32MX2_Receiver__)
-   if((HA_ERR_signal==0)&&(FLAG_APP_TX==0)&&(FLAG_APP_SW1==0)){
-       FLAG_APP_SW1=1;
-       ID_data.IDL=12345678;
-       SendTxData();
-   }
-   if(HA_ERR_signal==1)FLAG_APP_SW1=0;
+//   if((HA_Sensor_signal==1)&&(FLAG_APP_TX==0)&&(FLAG_APP_SW1==0)){
+//       FLAG_APP_SW1=1;
+//       SendTxData();
+//   }
+//   if(HA_Sensor_signal==0)FLAG_APP_SW1=0;
 
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
@@ -446,8 +449,8 @@ void ADF7021_change_TXorRX(void)
 
    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
        rssi=dd_read_rssi_7021_reg(0x14);
-       if(rssi>25);//TIMER300ms=200;//Receiver_LED_OUT=0;
-       else ;//Receiver_LED_OUT=1;
+//       if(rssi>25);//TIMER300ms=200;//Receiver_LED_OUT=0;
+//       else ;//Receiver_LED_OUT=1;
    }
 //   if((Receiver_Login==0)&&(FLAG_APP_SW3==0)){
 //       FLAG_APP_SW3=1;
@@ -476,9 +479,7 @@ void ADF7021_change_TXorRX(void)
        FLAG_UART_R=0;
        //WIFI_Useless1=1;
        UART_Decode();
-       if(FLAG_UART_ok==1){FLAG_UART_ok=0;SendTxData();}
    }
-
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
        FLAG_APP_RX=1;
@@ -500,11 +501,7 @@ void ADF7021_change_TXorRX(void)
 //       dd_set_RX_mode();
 //   }
 //   if(WIFI_Useless0==1)FLAG_APP_SW2=0;
-//   if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
-//       rssi=dd_read_rssi_7021_reg(0x14);
-//       if(rssi>15);//WIFI_Useless1=0;
-//       else; //WIFI_Useless1=1;
-//   }
+
 //   if((Receiver_Login==0)&&(FLAG_APP_SW3==0)){
 //       FLAG_APP_SW3=1;
 //       Frequency_CH++;
@@ -519,6 +516,30 @@ void ADF7021_change_TXorRX(void)
 //   }
 //       if(TIMER1s==0)WIFI_LED_RX=0;           //测试，测试完后需要删除
  #endif
+
+   if(FLAG_UART_ok==1){
+       if(FLAG_rssi_Freq==0){
+           rssi_TIME=1;    //发射时10ms间隔搜索空信道
+           FLAG_rssi_Freq=1;
+           rssi_COUNT=0;
+           TX_Freq_CH=TX_Freq_CH+2;
+           if(TX_Freq_CH>6)TX_Freq_CH=2;
+           dd_set_ADF7021_Freq(0,TX_Freq_CH);
+       }
+       if(rssi_TIME==0){
+           FLAG_rssi_Freq=0;
+           if(rssi_COUNT>=10){FLAG_UART_ok=0;SendTxData();TX_Freq_CH=0;}
+       }
+   }
+
+    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
+       rssi=dd_read_rssi_7021_reg(0x14);
+       if(rssi<=34){
+           rssi_COUNT++;
+           if(rssi_COUNT>10)rssi_COUNT=10;
+       }
+       //else rssi_COUNT=0;
+   }
 
 }
 

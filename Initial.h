@@ -88,10 +88,11 @@ extern FLAG FLAG_APP;
 	#define		FLAG_APP_SW1		FLAG_APP.BIT.Bit0      //test use
         #define		FLAG_APP_SW2		FLAG_APP.BIT.Bit1      //test use
         #define		FLAG_APP_SW3		FLAG_APP.BIT.Bit2      //test use
-	//#define		FLAG_APP_TX		FLAG_APP.BIT.Bit3
-	//#define		FLAG_APP_RX		FLAG_APP.BIT.Bit4
 
-	#define		FLAG_Receiver_OK	FLAG_APP.BIT.Bit5
+	#define		FLAG_rssi_Freq		FLAG_APP.BIT.Bit3
+	#define		FLAG_Receiver_BEEP	FLAG_APP.BIT.Bit4
+
+	#define		FLAG_Signal_DATA_OK	FLAG_APP.BIT.Bit5
         #define		FLAG_Receiver_IDCheck 	FLAG_APP.BIT.Bit6
         #define		FLAG_Receiver_Scanning 	FLAG_APP.BIT.Bit7
         #define		FLAG_ID_Login 	        FLAG_APP.BIT.Bit8
@@ -115,7 +116,7 @@ extern UINT8 txphase_Repeat;
 extern UINT8 Syn_count;
 extern UINT32 DATA_Packet_Syn;    //A部
 extern UINT16 DATA_Packet_Head;   //B部
-extern UINT32 DATA_Packet_Code[3];  //C部
+extern UINT32 DATA_Packet_Code[6];  //C部
 extern UINT8  DATA_Packet_Code_g;
 extern UINT8  DATA_Packet_Code_i;
 extern UINT32 DATA_Packet_ID;
@@ -157,9 +158,15 @@ extern UINT8  COUNT_Receiver_Login;
 extern UINT16  TIME_Receiver_Login;
 extern UINT16 TIME_Receiver_Login_led;
 extern UINT16 TIME_Receiver_Login_restrict;
+extern UINT16 TIME_Login_EXIT_rest;
 extern UINT32 ID_Receiver_Login;
 extern UINT32 ID_Receiver_DATA[256];//写入EEPROM ID的数据
 extern UINT16 ID_DATA_PCS;
+extern UINT16 INquiry;
+
+extern UINT8  rssi_COUNT;
+extern UINT8  rssi_TIME;
+extern UINT8  TX_Freq_CH;
 
 extern UINT8 FLAG_APP_TX;
 extern UINT8 FLAG_APP_RX;

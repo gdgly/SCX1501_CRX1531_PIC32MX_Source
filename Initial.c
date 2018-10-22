@@ -1,3 +1,4 @@
+
 /***********************************************************************/
 /*  FILE        :initial.C                                             */
 /*  DATE        :Mar, 2013                                             */
@@ -21,7 +22,7 @@ UINT8 txphase_Repeat=0;
 UINT8 Syn_count=0;
 UINT32 DATA_Packet_Syn=0;     //A部
 UINT16 DATA_Packet_Head=0;    //B部
-UINT32 DATA_Packet_Code[3]={0};   //C部
+UINT32 DATA_Packet_Code[6]={0};   //C部
 UINT8  DATA_Packet_Code_g=0;
 UINT8  DATA_Packet_Code_i=0;
 UINT32 DATA_Packet_ID=0;
@@ -46,9 +47,16 @@ UINT8  COUNT_Receiver_Login=0;
 UINT16 TIME_Receiver_Login=0;
 UINT16 TIME_Receiver_Login_led=0;
 UINT16 TIME_Receiver_Login_restrict=0;
+UINT16 TIME_Login_EXIT_rest=0;
 UINT32 ID_Receiver_Login=0;
 UINT32 ID_Receiver_DATA[256] = {0};//写入EEPROM ID的数据
 UINT16 ID_DATA_PCS=0;
+UINT16 INquiry=0;
+
+UINT8  rssi_COUNT=0;
+UINT8  rssi_TIME=0;
+UINT8  TX_Freq_CH=0;
+
 
 UINT8 FLAG_APP_TX=0;
 UINT8 FLAG_APP_RX=0;
@@ -191,7 +199,8 @@ unsigned int y;                    //延时T=(timer)100us
  for(x=0;x<timer;x++)
   {
 #if defined(__Product_PIC32MX2_Receiver__)
-     for(y=0;y<=200;y++);
+     //for(y=0;y<=200;y++);   //特别说明：该行采用XC32的0级优化，即无优化
+     for(y=0;y<=600;y++);   //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
      for(y=0;y<=400;y++);
@@ -202,7 +211,8 @@ void Delayus(unsigned int timer)
 {
   unsigned int x;            //延时T=(timer)us     //SYSCLK=20M
 #if defined(__Product_PIC32MX2_Receiver__)
-     for(x=0;x<2*timer;x++);
+    // for(x=0;x<2*timer;x++);  //特别说明：该行采用XC32的0级优化，即无优化
+   for(x=0;x<10*timer;x++);  //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
      for(x=0;x<4*timer;x++);

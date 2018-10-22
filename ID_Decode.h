@@ -18,3 +18,4 @@ extern void ID_code_IDCheck(void);
 extern void  Freq_Scanning(void);
 extern void SetTxData(void);
 extern void SendTxData(void);
+extern void BEEP_and_LED(void);

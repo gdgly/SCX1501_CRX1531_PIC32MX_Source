@@ -1,6 +1,6 @@
 /****************************************************************************
-/*                    eeprom #define Functions                             */
-/*  FILE        :EEPROM.h                                                  */
+/*                    #define Functions                             */
+/*  FILE        :pcf8563 .h                                                  */
 /*  DATE        :Mar, 2013                                                  */
 /*  Programmer	:xiang 'R                                                   */
 /*  CPU TYPE    :PIC32MX2     Crystal: 10/40M                               */
@@ -9,8 +9,11 @@
 #include <stdlib.h>
 #include <plib.h>				// 常用C定义
 
-extern void ID_learn(void);
-extern void ID_EEPROM_Initial(void);
-extern void eeprom_IDcheck(void);
-extern void eeprom_IDcheck_UART(void);
-extern void ID_EEPROM_write_0x00(void);
+#if defined(__Product_PIC32MX2_WIFI__)
+extern unsigned char number_time[7];
+void PCF8563_Init(void);
+#endif
+
+extern unsigned char number_time[7];
+extern void Read_Time(unsigned char *time_arr);
+extern void Set_Time(unsigned char *time_arr);

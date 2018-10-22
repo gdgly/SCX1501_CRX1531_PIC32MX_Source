@@ -1,3 +1,4 @@
+
 /***********************************************************************/
 /*  FILE        :EEPROM.c                                              */
 /*  DATE        :Mar, 2013                                             */
@@ -22,6 +23,7 @@ void Read(UINT8 *s,UINT16 suba,UINT8 n);
 void eeprom_IDcheck(void);
 void eeprom_IDcheck_UART(void);
 void ID_EEPROM_write(void);
+void ID_Login_EXIT_Initial(void);
 
 void ID_learn(void)
 {
@@ -30,16 +32,17 @@ void ID_learn(void)
  #if defined(__Product_PIC32MX2_Receiver__)
  if(FG_10ms){
      FG_10ms = 0;
+     if(rssi_TIME)--rssi_TIME;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
        else if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
           else {TIME_Receiver_Login=0;COUNT_Receiver_Login=0;}
-
+     
          if(Receiver_Login==0){
              TIME_Receiver_Login++;
              TIME_Receiver_Login_restrict=350;
-             if(COUNT_Receiver_Login>=2)FLAG_ID_Login=1;
+             if(COUNT_Receiver_Login>=2){FLAG_ID_Login=1;TIME_Login_EXIT_rest=6000;}
              if(((FLAG_ID_Erase_Login==1)&&(COUNT_Receiver_Login>=1))||
-                ((FLAG_ID_Login==1)&&(COUNT_Receiver_Login>=3))){FLAG_ID_Login_EXIT=1;FLAG_ID_Login_OK=0;FLAG_ID_Login_OK_bank=0;FLAG_ID_Login=0;FLAG_ID_Erase_Login=0;Receiver_LED_OUT=0;}
+                ((FLAG_ID_Login==1)&&(COUNT_Receiver_Login>=3)))ID_Login_EXIT_Initial();
          }
          if(Receiver_Login==1){
              if(TIME_Receiver_Login>3)COUNT_Receiver_Login++;
@@ -49,6 +52,7 @@ void ID_learn(void)
          if(TIME_Receiver_Login>=300){
              TIME_Receiver_Login=0;
              FLAG_ID_Erase_Login=1;
+             TIME_Login_EXIT_rest=6000;
          }
          if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
              TIME_Receiver_Login_led++;
@@ -60,23 +64,20 @@ void ID_learn(void)
                  FLAG_ID_Login_OK_bank=1;
                  if(FLAG_IDCheck_OK==1)FLAG_IDCheck_OK=0;
                  else{
-                     Receiver_LED_OUT=1;
-                     for(i=0;i<4160;i++){
-                         Receiver_Buzzer=!Receiver_Buzzer;   //蜂鸣器频率4.17KHZ
-                         Delayus(190);
-                     }
-                     Receiver_Buzzer=0;
-                     Receiver_LED_OUT=0;
+                     BEEP_and_LED();
                      if(FLAG_ID_Login==1)ID_EEPROM_write();
                      else if(FLAG_ID_Erase_Login==1){ID_DATA_PCS=0;ID_EEPROM_write();}
                  }//end else
              }//  end  if((FLAG_ID_Login_OK==1)&&(FLAG_ID_Login_OK_bank==0))
+             if(TIME_Login_EXIT_rest)--TIME_Login_EXIT_rest;
+              else ID_Login_EXIT_Initial();
          } //end if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))
  }
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
  if(FG_10ms){
      FG_10ms = 0;
+     if(rssi_TIME)--rssi_TIME;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
        else if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
           else {TIME_Receiver_Login=0;COUNT_Receiver_Login=0;}
@@ -84,9 +85,9 @@ void ID_learn(void)
          if(WIFI_L_Login==0){
              TIME_Receiver_Login++;
              TIME_Receiver_Login_restrict=350;
-             if(COUNT_Receiver_Login>=2)FLAG_ID_Login=1;
+             if(COUNT_Receiver_Login>=2){FLAG_ID_Login=1;TIME_Login_EXIT_rest=6000;}
              if(((FLAG_ID_Erase_Login==1)&&(COUNT_Receiver_Login>=1))||
-                ((FLAG_ID_Login==1)&&(COUNT_Receiver_Login>=3))){FLAG_ID_Login_EXIT=1;FLAG_ID_Login_OK=0;FLAG_ID_Login_OK_bank=0;FLAG_ID_Login=0;FLAG_ID_Erase_Login=0;WIFI_LED_RX=0;}
+                ((FLAG_ID_Login==1)&&(COUNT_Receiver_Login>=3)))ID_Login_EXIT_Initial();
          }
          if(WIFI_L_Login==1){
              if(TIME_Receiver_Login>3)COUNT_Receiver_Login++;
@@ -96,6 +97,7 @@ void ID_learn(void)
          if(TIME_Receiver_Login>=300){
              TIME_Receiver_Login=0;
              FLAG_ID_Erase_Login=1;
+             TIME_Login_EXIT_rest=6000;
          }
          if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
              TIME_Receiver_Login_led++;
@@ -105,22 +107,39 @@ void ID_learn(void)
              }
              if((FLAG_ID_Login_OK==1)&&(FLAG_ID_Login_OK_bank==0)){
                  FLAG_ID_Login_OK_bank=1;
-                     WIFI_LED_RX=1;
-                     for(i=0;i<8000;i++){        //4160
-                         Delayus(190);       //4.17KHZ
-                     }
-                     WIFI_LED_RX=0;
+                 BEEP_and_LED();
                  if(FLAG_IDCheck_OK==1)FLAG_IDCheck_OK=0;
                  else{
                      if(FLAG_ID_Login==1)ID_EEPROM_write();
                      else if(FLAG_ID_Erase_Login==1){ID_DATA_PCS=0;ID_EEPROM_write();}
                  }//end else
              }//  end  if((FLAG_ID_Login_OK==1)&&(FLAG_ID_Login_OK_bank==0))
+             if(TIME_Login_EXIT_rest)--TIME_Login_EXIT_rest;
+              else ID_Login_EXIT_Initial();
          } //end if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))
  }
 #endif
 }
 
+void ID_Login_EXIT_Initial(void)
+{
+ #if defined(__Product_PIC32MX2_Receiver__)
+     FLAG_ID_Login_EXIT=1;
+     FLAG_ID_Login_OK=0;
+     FLAG_ID_Login_OK_bank=0;
+     FLAG_ID_Login=0;
+     FLAG_ID_Erase_Login=0;
+     Receiver_LED_OUT=0;
+#endif
+#if defined(__Product_PIC32MX2_WIFI__)
+     FLAG_ID_Login_EXIT=1;
+     FLAG_ID_Login_OK=0;
+     FLAG_ID_Login_OK_bank=0;
+     FLAG_ID_Login=0;
+     FLAG_ID_Erase_Login=0;
+     WIFI_LED_RX=0;
+#endif
+}
 
 void ID_EEPROM_Initial(void)
 {
@@ -145,7 +164,7 @@ void eeprom_IDcheck(void)
 {
     UINT16 i;
    for(i=0;i<ID_DATA_PCS;i++){
-       if(ID_Receiver_DATA[i]==DATA_Packet_ID){i=ID_DATA_PCS;FLAG_IDCheck_OK=1;}
+       if(ID_Receiver_DATA[i]==DATA_Packet_ID){INquiry=i;i=ID_DATA_PCS;FLAG_IDCheck_OK=1;}
        if(FLAG_ID_Erase_Login==1){i=ID_DATA_PCS;FLAG_IDCheck_OK=0;}
    }
 }
@@ -175,7 +194,16 @@ void ID_EEPROM_write(void)
      Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
 
 }
-
+void ID_EEPROM_write_0x00(void)
+{
+   UINT8 xm[3]={0};
+     xm[0]=0;
+     xm[1]=0;
+     xm[2]=0;
+     ID_Receiver_DATA[INquiry]=0x00;
+     Write(&xm[0],INquiry*3,3);//写入数据到24LC16
+     Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+}
 //===================start_i2c()起动总线函数=======//
 void start_i2c(void)
 {
@@ -243,11 +271,19 @@ void Write(UINT8 *s,UINT16 suba,UINT8 n)                //24LC16B
 {
  UINT8 i;
  start_i2c(); //启动总线
- i=suba/256;
- i=i*2+0xa0;
- send_byte(i); //发送器件地址
- i=suba%256;
- send_byte(i); //发送字地址
+ /*************以下是24LC16对应的SOFT*************/
+// i=suba/256;
+// i=i*2+0xa0;
+// send_byte(i); //发送器件地址
+// i=suba%256;
+// send_byte(i); //发送字地址
+ /************************************************/
+ /*************以下是24LC32对应的SOFT*************/
+ send_byte(0xa0); //发送器件地址
+ i=suba;
+ send_byte(i/256); //发送字高地址
+ send_byte(i%256); //发送字低地址
+ /************************************************/
  for (i = 0;i < n;i++)
      {
       send_byte(*s); //发送字节数据
@@ -294,14 +330,24 @@ void Read(UINT8 *s,UINT16 suba,UINT8 n)
 {
  UINT8 i ,j;
  start_i2c(); //启动总线
- i=suba/256;
- i=i*2+0xa0;
- send_byte(i);//发送器件地址
- j=suba%256;
- send_byte(j); //发送字地址
+ /*************以下是24LC16对应的SOFT*************/
+// i=suba/256;
+// i=i*2+0xa0;
+// send_byte(i);//发送器件地址
+// j=suba%256;
+// send_byte(j); //发送字地址
+// start_i2c(); //重新启动总线
+// i=i+1;
+// send_byte(i); //发送读命令和器件地址
+ /************************************************/
+ /*************以下是24LC32对应的SOFT*************/
+ send_byte(0xa0); //发送器件地址
+ i=suba;
+ send_byte(i/256); //发送字高地址
+ send_byte(i%256); //发送字低地址
  start_i2c(); //重新启动总线
- i=i+1;
- send_byte(i); //发送读命令和器件地址
+ send_byte(0xa1); //发送读命令
+ /************************************************/
  for(i = 0;i < n - 1;i++)
      {
       SDAIO = 1;

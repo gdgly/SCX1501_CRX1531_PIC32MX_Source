@@ -1,3 +1,4 @@
+
 /***********************************************************************/
 /*  FILE        :ID_Decode.c                                           */
 /*  DATE        :Mar, 2013                                             */
@@ -19,6 +20,8 @@ void SetTxData(void);
 UINT16 SetFixedLengthCode(UINT8 data );
 void SendTxData(void);
 void ID_Decode_OUT(void);
+void Signal_DATA_Decode(UINT8 NUM_Type);
+void BEEP_and_LED(void);
 
 void ID_Decode_Initial_INT(void)
 {
@@ -106,7 +109,11 @@ void ID_Decode_function(void)
                 DATA_Packet_Code[DATA_Packet_Code_g]=DATA_Packet_Code[DATA_Packet_Code_g]<<1;
                 if(ADF7021_DATA_rx)DATA_Packet_Code[DATA_Packet_Code_g]+=1;
                 DATA_Packet_Code_i++;
-                if(DATA_Packet_Code_i>=96)rxphase=3;
+                if(DATA_Packet_Code_i==96){
+                    if((DATA_Packet_Code[1]&0x0000FFFF)==0x5556);
+                    else rxphase=3;
+                }
+                else if(DATA_Packet_Code_i>=192)rxphase=3;
                 //Receiver_LED_TX=0;//测试，测试完后需要删除
                 break;
         case 3:
@@ -122,16 +129,68 @@ void ID_Decode_function(void)
 }
 void ID_Decode_IDCheck(void)
 {
-    UINT32 data_in;
-    UINT16 data_out;
-    UINT16 data_NRZ[3];
-    UINT i,j;
+   UINT8 i;
     if(FLAG_Receiver_IDCheck)
     {
         FLAG_Receiver_IDCheck=0;
+        Signal_DATA_Decode(0);
+        if(FLAG_Signal_DATA_OK==1)
+        {
+            eeprom_IDcheck();
+            if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
+                if(FLAG_ID_Login_OK==0){FLAG_ID_Login_OK=1;ID_Receiver_Login=DATA_Packet_ID;}
+            }
+            else if(FLAG_IDCheck_OK==1)
+            {
+                FLAG_IDCheck_OK=0;
+                if((DATA_Packet_Code[1]&0x0000FFFF)==0x5556){
+                    Signal_DATA_Decode(1);
+                    if(FLAG_Signal_DATA_OK==1){
+                            eeprom_IDcheck();
+                            if(DATA_Packet_Control==0xFF){
+                                if(FLAG_IDCheck_OK==1)FLAG_IDCheck_OK=0;
+                                 else{
+                                     BEEP_and_LED();
+                                     ID_Receiver_Login=DATA_Packet_ID;
+                                     ID_EEPROM_write();
+                                 }//end else
+                            }
+                            else if(DATA_Packet_Control==0x00){
+                                if(FLAG_IDCheck_OK==1){
+                                     FLAG_IDCheck_OK=0;
+                                     BEEP_and_LED();
+                                     ID_EEPROM_write_0x00();
+                                 }
+                            }
+                    }
+                }
+                else
+                   {
+#if defined(__Product_PIC32MX2_WIFI__)
+                    TIMER1s=1000;
+#endif
+#if defined(__Product_PIC32MX2_Receiver__)
+                    if((DATA_Packet_Control&0x14)==0x14)TIMER1s=3800;
+                    else TIMER1s=1000;
+                    TIMER300ms=500;
+                    Receiver_LED_RX=1;
+#endif
+                   }
+            }
+        }   
+    }
+}
+
+void Signal_DATA_Decode(UINT8 NUM_Type)
+{
+    UINT32 data_in;
+    UINT16 data_out;
+    UINT16 data_NRZ[3];
+    UINT8 i,j;
         for(i=0;i<3;i++)
         {
-            data_in=DATA_Packet_Code[i];
+            if(NUM_Type==0)data_in=DATA_Packet_Code[i];
+            else data_in=DATA_Packet_Code[i+3];
             data_out=0;
             data_in=data_in>>1;
             for(j=0;j<16;j++)
@@ -142,34 +201,57 @@ void ID_Decode_IDCheck(void)
             }
            data_NRZ[i] =data_out;
         }
-        if(data_NRZ[2]==((data_NRZ[0]+data_NRZ[1])&0xFFFF))
-        {
-            FLAG_Receiver_OK=1;
-            DATA_Packet_ID=(data_NRZ[1]&0x00FF)*65536+data_NRZ[0];
-            eeprom_IDcheck();
-            if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
-                if(FLAG_ID_Login_OK==0){FLAG_ID_Login_OK=1;ID_Receiver_Login=DATA_Packet_ID;}
-            }
-            else if(FLAG_IDCheck_OK==1)
-            {
-                FLAG_IDCheck_OK=0;
-// #if defined(__Product_PIC32MX2_Receiver__)
-//                   Receiver_LED_OUT=1;           //测试，测试完后需要删除
-// #endif
-// #if defined(__Product_PIC32MX2_WIFI__)
-//                   WIFI_LED_RX=1;
-// #endif
-                DATA_Packet_Control=(data_NRZ[1]&0xFF00)>>8;
-                TIMER1s=1000;
-#if defined(__Product_PIC32MX2_Receiver__)
-                TIMER300ms=500;
-                Receiver_LED_RX=1;
+      if(data_NRZ[2]==((data_NRZ[0]+data_NRZ[1])&0xFFFF)){
+          FLAG_Signal_DATA_OK=1;
+          DATA_Packet_ID=(data_NRZ[1]&0x00FF)*65536+data_NRZ[0];
+          DATA_Packet_Control=(data_NRZ[1]&0xFF00)>>8;
+      }
+      else FLAG_Signal_DATA_OK=0;
+}
+void BEEP_and_LED(void)
+{
+   UINT16 i;
+ #if defined(__Product_PIC32MX2_Receiver__)
+     Receiver_LED_OUT=1;
+     for(i=0;i<4160;i++){
+         Receiver_Buzzer=!Receiver_Buzzer;   //蜂鸣器频率2.08KHZ
+         //Delayus(190);     //特别说明：该行采用XC32的0级优化，即无优化
+         Delayus(240);//特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+     }
+     Receiver_Buzzer=0;
+     Receiver_LED_OUT=0;
 #endif
-                //FLAG_ADF7021_ReInitial=0;                   //弥补Microchip DC-DC纹波太大，变压器动作中重新复位FSK IC
-            }
-        }
-        else FLAG_Receiver_OK=0;     
-    }
+#if defined(__Product_PIC32MX2_WIFI__)
+     WIFI_LED_RX=1;
+     for(i=0;i<8000;i++){        
+         Delayus(190);       //2.08KHZ
+     }
+     WIFI_LED_RX=0;
+#endif
+}
+
+void Receiver_BEEP(void)
+{
+#if defined(__Product_PIC32MX2_Receiver__)
+   UINT16 i,j;
+   if(FLAG_Receiver_BEEP==0)
+   {
+       FLAG_Receiver_BEEP=1;
+       for(j=0;j<3;j++){
+         for(i=0;i<1800;i++){
+             Receiver_Buzzer=!Receiver_Buzzer;   //蜂鸣器频率2.08KHZ
+             //Delayus(190);     //特别说明：该行采用XC32的0级优化，即无优化
+             Delayus(240);//特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+         }
+         for(i=0;i<1800;i++){
+             Receiver_Buzzer=0;   //蜂鸣器频率2.08KHZ
+             //Delayus(190);     //特别说明：该行采用XC32的0级优化，即无优化
+             Delayus(240);//特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+         }
+       }
+       Receiver_Buzzer=0;
+   }
+#endif
 }
 
 void ID_Decode_OUT(void)
@@ -177,14 +259,18 @@ void ID_Decode_OUT(void)
  #if defined(__Product_PIC32MX2_Receiver__)
     if(TIMER1s){
                 Receiver_LED_OUT=1;
+                if((DATA_Packet_Control&0x14)==0x14){
+                    TIMER250ms_STOP=250;
+                    if(TIMER1s<3550){Receiver_OUT_OPEN=1;Receiver_OUT_CLOSE=1;Receiver_BEEP();}
+                }
                 if((DATA_Packet_Control&0x08)==0x08)Receiver_OUT_OPEN=1;
                 if((DATA_Packet_Control&0x04)==0x04)Receiver_OUT_STOP=1;
                 if((DATA_Packet_Control&0x02)==0x02)Receiver_OUT_CLOSE=1;
                 if((DATA_Packet_Control&0x0C)==0x0C)TIMER250ms_STOP=250;
                 if((DATA_Packet_Control&0x06)==0x06)TIMER250ms_STOP=250;
-                //if((TIMER1s==995)&&(FLAG_ADF7021_ReInitial==0)){FLAG_ADF7021_ReInitial=1;dd_set_ADF7021_ReInitial();}  //弥补Microchip DC-DC纹波太大，变压器动作中重新复位FSK IC
                }       
      else {
+           FLAG_Receiver_BEEP=0;
            if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
            else Receiver_LED_OUT=0;
            Receiver_OUT_OPEN=0;
@@ -203,7 +289,7 @@ void ID_Decode_OUT(void)
 
 void  Freq_Scanning(void)
 {
-    if((FLAG_Receiver_Scanning==1)&&(FLAG_APP_RX==1))
+    if((FLAG_Receiver_Scanning==1)&&(FLAG_APP_RX==1)&&(FLAG_UART_ok==0))
     {
         FLAG_Receiver_Scanning=0;
         Freq_Scanning_CH++;
