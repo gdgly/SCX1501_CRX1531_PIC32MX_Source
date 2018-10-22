@@ -55,6 +55,7 @@ void __ISR(_TIMER_2_VECTOR,ipl1)Timer1Handler(void)
     if(TIMER18ms)--TIMER18ms;
     if(TIMER250ms_STOP)--TIMER250ms_STOP;
     if (TIME_10ms)--TIME_10ms;
+    if (rssi_Wait_T)--rssi_Wait_T;
     else{                            // 10mS FLAG
 	  TIME_10ms = 10;
 	  FG_10ms = 1;

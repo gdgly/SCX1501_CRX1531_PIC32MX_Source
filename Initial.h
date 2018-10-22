@@ -20,10 +20,6 @@
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 #endif
 
-#if defined(__32MX220F032D__)
-    #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
-#endif
-
 
 
     //============================================
@@ -214,6 +210,7 @@ extern UINT16 INquiry;
 
 extern UINT8  rssi_COUNT;
 extern UINT8  rssi_TIME;
+extern UINT8  rssi_Wait_T;
 extern UINT8  TX_Freq_CH;
 
 extern UINT8 HA_uart_app[18];

@@ -729,16 +729,17 @@ void ADF7021_change_TXorRX(void)
 
    if((FLAG_UART_ok==1)||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
        if(FLAG_rssi_Freq==0){
-           rssi_TIME=1;    //发射时10ms间隔搜索空信道
+           rssi_TIME=2;    //发射时10ms间隔搜索空信道   //1
            FLAG_rssi_Freq=1;
            rssi_COUNT=0;
            TX_Freq_CH=TX_Freq_CH+2;
            if(TX_Freq_CH>6)TX_Freq_CH=2;
            dd_set_ADF7021_Freq(0,TX_Freq_CH);
+           rssi_Wait_T=10;
        }
        if(rssi_TIME==0){
            FLAG_rssi_Freq=0;
-           if(rssi_COUNT>=10){FLAG_UART_ok=0;FLAG_HA_START=0;FLAG_AUTO_SEND_ok=0;SendTxData();TX_Freq_CH=0;
+           if(rssi_COUNT>=20){FLAG_UART_ok=0;FLAG_HA_START=0;FLAG_AUTO_SEND_ok=0;SendTxData();TX_Freq_CH=0;
                               #if defined(__Product_PIC32MX2_WIFI__)
                               TIME_No_response=300;FLAG_TIME_No_response=1;      //2014.10.11修改   150
                               #endif
@@ -748,11 +749,11 @@ void ADF7021_change_TXorRX(void)
 //       FLAG_UART_ok=0;FLAG_HA_START=0;SendTxData();TX_Freq_CH=0;
    }
 
-    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
+    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)&&(rssi_Wait_T==0)){
        rssi=dd_read_rssi_7021_reg(0x14);
-       if(rssi<=34){
+       if(rssi<=24){          //34
            rssi_COUNT++;
-           if(rssi_COUNT>10)rssi_COUNT=10;
+           if(rssi_COUNT>20)rssi_COUNT=20;    //10
        }
        else rssi_COUNT=0;
    }

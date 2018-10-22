@@ -68,6 +68,7 @@ UINT16 INquiry=0;
 
 UINT8  rssi_COUNT=0;
 UINT8  rssi_TIME=0;
+UINT8  rssi_Wait_T=0;
 UINT8  TX_Freq_CH=0;
 
 UINT8 HA_uart_app[18]={0xBB,0x00,0x07,0x00,0x00,0x00,0x08,0x00,
@@ -87,6 +88,7 @@ UINT16 time_3sec=0;
 UINT16 FLAG_all_Erase_time=0;
 
 UINT8 TIME_EMC=0;   //æ≤µÁ≤‚ ‘
+
 
 #if defined(__Product_PIC32MX2_Receiver__)
 UINT16  TIMER_err_1s=0;
