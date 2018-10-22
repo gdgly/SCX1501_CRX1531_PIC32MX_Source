@@ -45,7 +45,7 @@
     <conf name="default" type="2">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <targetDevice>PIC32MX210F016D</targetDevice>
+        <targetDevice>PIC32MX220F032D</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
@@ -166,6 +166,7 @@
         <property key="wpo-lto" value="false"/>
       </C32Global>
       <ICD3PlatformTool>
+        <property key="firmware.download.all" value="false"/>
       </ICD3PlatformTool>
     </conf>
   </confs>

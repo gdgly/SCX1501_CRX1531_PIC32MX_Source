@@ -613,7 +613,7 @@ void  Freq_Scanning(void)
 
 
 //        TIMER18ms=18;//18;
-        if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))TIMER18ms=36;
+        if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))TIMER18ms=36;//TIMER18ms=36;
         else TIMER18ms=18;
     }
 }
