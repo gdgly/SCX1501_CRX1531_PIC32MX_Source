@@ -541,7 +541,7 @@ void ADF7021_change_TXorRX(void)
            FLAG_HA_ERR=0;
    }
     if(HA_ERR_signal==1){
-       TIMER_err_1s=100;
+       TIMER_err_1s=120;
    }
    else if(TIMER_err_1s==0){
            FLAG_close=0;
@@ -549,7 +549,7 @@ void ADF7021_change_TXorRX(void)
            FLAG_HA_ERR=1;
    }
     if(HA_Sensor_signal==1){
-       TIMER_Sensor_open_1s=100;
+       TIMER_Sensor_open_1s=120;
        if(TIMER_Sensor_close_1s==0){
             FLAG_open_Sensor=0;
             FLAG_close_Sensor=1;
@@ -557,7 +557,7 @@ void ADF7021_change_TXorRX(void)
        }
    }
     else {
-        TIMER_Sensor_close_1s=100;
+        TIMER_Sensor_close_1s=120;
         if(TIMER_Sensor_open_1s==0){
             if(DATA_Packet_Control_err==0x08){FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;FLAG_close_Sensor=0;}
             if((DATA_Packet_Control_err==0x02)&&(FLAG_close_Sensor==1)){FLAG_open_Sensor=0;FLAG_HA_ERR_Sensor=1;FLAG_close_Sensor=0;}
@@ -574,6 +574,7 @@ void ADF7021_change_TXorRX(void)
     if(((FLAG_open==1)&&(FLAG_open_Sensor==1))&&(HA_Status!=0x81)){
            HA_Status=0x81;
            if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+           else FLAG_APP_Reply=1;     //ver2.12×·¼Ó
     }
     if(((FLAG_close==1)||(FLAG_close_Sensor==1))&&(HA_Status!=0x82)&&((FLAG_HA_ERR==0)||(FLAG_HA_ERR_Sensor==0))&&(FLAG_HA_ERR_bit==0)){
            HA_Status=0x82;

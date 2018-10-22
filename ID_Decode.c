@@ -382,7 +382,7 @@ void ID_Decode_OUT(void)
              FLAG_email_send=1;
              TIME_email_send=650;
              //if((HA_Change_email_Step==0)&&(HA_Change_send_email[0]==1)){HA_Change_email_time=18000;HA_Change_email_Step=1;}//3分钟
-             if(HA_Change_email_Step==0){HA_Change_email_time=18000;HA_Change_email_Step=1;}//3分钟     2014年4月24日文化修改
+             if((HA_Change_email_Step==0)&&(HA_Change_send_email[0]==1)){HA_Change_email_time=16530;HA_Change_email_Step=1;}//3分钟     2014年4月24日文化修改
          }
      }
     if((FLAG_email_send==1)&&(TIME_email_send==0)){
@@ -394,12 +394,13 @@ void ID_Decode_OUT(void)
     }
     //if((HA_Change_send_email[0]==1)&&(HA_Change_email_time==0)&&(HA_Change_email_Step==1)){
     if((HA_Change_email_time==0)&&(HA_Change_email_Step==1)){    //3分钟     2014年4月24日文化修改
-        Email_check_mail();
-        if(FLAG_Email_check==1){
+        //Email_check_mail();
+        //if(FLAG_Email_check==1){
+            //WIFI_LED_RX=1;
             HA_Change_email_Step=2;
             for(i_xm=0;i_xm<ID_DATA_PCS;i_xm++)Emial_time_OUT(i_xm);
-        }
-        else HA_Change_email_Step=0;
+        //}
+        //else HA_Change_email_Step=0;
     }
 
 

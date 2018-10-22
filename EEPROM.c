@@ -139,7 +139,7 @@ void ID_learn(void)
      if(TIME_UART)--TIME_UART;
      if(TIME_alarm_AUTO)--TIME_alarm_AUTO;
      if(TIME_email_Repeat)--TIME_email_Repeat;
-     if(TIME_email_send)--TIME_email_send;
+     if((TIME_email_send)&&(HA_Change_email_time==0))--TIME_email_send;
      if(FLAG_all_Erase_time)--FLAG_all_Erase_time;
      if(HA_Change_email_time)--HA_Change_email_time;
 
