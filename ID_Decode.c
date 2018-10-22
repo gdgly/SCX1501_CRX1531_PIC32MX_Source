@@ -37,7 +37,6 @@ void SendTxData(void);
 void ID_Decode_OUT(void);
 void Signal_DATA_Decode(UINT8 NUM_Type);
 void BEEP_and_LED(void);
-void SWITCH_DIP_check_app(void);
 void Email_check_app(void);
 void Email_check_mail(void);
 
@@ -103,50 +102,36 @@ void ID_code_function(void)
     if(txphase>=280){
         txphase=0;
         txphase_Repeat++;
-        if(txphase_Repeat>=4){FLAG_APP_TX=0; FLAG_SendTxData=0;}   //4
+        if(txphase_Repeat>=4){FLAG_APP_TX=0; FLAG_SendTxData=0;}
     }
 }
 
 void ID_Decode_function(void)
 {
-   UINT16 DATA_Packet_Syn_bak=0;
+    UINT16 DATA_Packet_Syn_bak=0;
      TIME_EMC=10;
      switch (rxphase){
         case 0:
                 DATA_Packet_Syn=DATA_Packet_Syn<<1;
                 if(ADF7021_DATA_rx)DATA_Packet_Syn+=1;
-
                 if(TIMER18ms==0){
-                                 DATA_Packet_Syn_bak=DATA_Packet_Syn&0x000000FF;
-                                 if((DATA_Packet_Syn_bak==0x55)||(DATA_Packet_Syn_bak==0xAA));
-                                 else {FLAG_Receiver_Scanning=1;}
+                                 DATA_Packet_Syn_bak=DATA_Packet_Syn&0x0000FFFF;
+                                 if((DATA_Packet_Syn_bak==0x5555)||(DATA_Packet_Syn_bak==0xAAAA));
+                                 else FLAG_Receiver_Scanning=1;
                                 }
                 //if(DATA_Packet_Syn==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;}
-                if((DATA_Packet_Syn&0x000FFFFF)==0x55555){rxphase=1;TIMER18ms=600;DATA_Packet_Syn=0;DATA_Packet_Head=0;   //TIMER18ms=2000
+                if((DATA_Packet_Syn&0xFFFFFFFF)==0x55555555){rxphase=1;TIMER18ms=2000;DATA_Packet_Syn=0;DATA_Packet_Head=0;
  #if defined(__Product_PIC32MX2_Receiver__)
                                                              Receiver_LED_RX=1;
                                                              TIMER300ms=500; //if(TIMER300ms==0)TIMER300ms=100;
  #endif
                                                              }
-
-//                if(TIMER18ms==0){
-//                                 DATA_Packet_Syn_bak=DATA_Packet_Syn&0x00000FFF;
-//                                 if((DATA_Packet_Syn_bak==0x555)||(DATA_Packet_Syn_bak==0xAAA)){rxphase=1;TIMER18ms=100;DATA_Packet_Syn=0;DATA_Packet_Head=0;
-// #if defined(__Product_PIC32MX2_Receiver__)
-//                                                             Receiver_LED_RX=1;
-//                                                             TIMER300ms=500; //if(TIMER300ms==0)TIMER300ms=100;
-// #endif
-//                                                             }
-//                                 else {FLAG_Receiver_Scanning=1;TIMER18ms=12;}
-//                                }
-
                 break;
 	case 1:
                 DATA_Packet_Head=DATA_Packet_Head<<1;
                 if(ADF7021_DATA_rx)DATA_Packet_Head+=1;
                 //DATA_Packet_Head=DATA_Packet_Head&0x0000FFFF;
-                if(TIMER18ms==0)
-                    rxphase=0;
+                if(TIMER18ms==0)rxphase=0;
                 if(DATA_Packet_Head==0x5515){rxphase=2;DATA_Packet_Syn=0;DATA_Packet_Head=0;DATA_Packet_Code_i=0;}
 		break;
         case 2:
@@ -213,8 +198,7 @@ void ID_Decode_IDCheck(void)
                     DATA_Packet_Control_0=DATA_Packet_Control&0x8F;
                     DATA_Packet_Control=DATA_Packet_Control_0;
                 }
-                else if((DATA_Packet_Control<0x3F)&&(DATA_Packet_Control>0)&&(Freq_Scanning_CH_save_HA==1))read_TIMER_Semi_open=DATA_Packet_Control;
-                else read_TIMER_Semi_open=0;
+                else if((DATA_Packet_Control<0x3F)&&(DATA_Packet_Control>0))read_TIMER_Semi_open=DATA_Packet_Control;
              #endif
              #if defined(__Product_PIC32MX2_Receiver__)
                 if(DATA_Packet_Control==0x08)DATA_Packet_Control_err=0x08;
@@ -262,10 +246,9 @@ void ID_Decode_IDCheck(void)
                     else {
                         if(((DATA_Packet_Control&0x20)==0x20)||((DATA_Packet_Control&0x40)==0x40))TIMER1s=500;
                         else if((DATA_Packet_Control&0x10)==0x10){
-                            if(HA_Status==0x82)TIMER1s=(TIMER_Semi_open+1)*1000;
+                            if(HA_Status==0x81)TIMER1s=(TIMER_Semi_open+1)*1000;
                         }
-                        //else if(DATA_Packet_Control==0x00)TIMER1s=1000;
-                        else TIMER1s=1000;
+                        else  TIMER1s=1000;
                     }
                     TIMER300ms=500;
                     Receiver_LED_RX=1;
@@ -487,11 +470,9 @@ void ID_Decode_OUT(void)
                 }
                 //if((DATA_Packet_Control==0x00)&&(FLAG_APP_Reply==0)) FLAG_APP_Reply=1;
                 //if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x08))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1)) FLAG_APP_Reply=1;
-                
                 if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)||(DATA_Packet_Control==0x10)
-                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0xBF)||(DATA_Packet_Control==0x40)||((DATA_Packet_Control>=0x81)&&(DATA_Packet_Control<=0xBD)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
+                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x3F)||(DATA_Packet_Control==0x40)||((DATA_Packet_Control>=0x81)&&(DATA_Packet_Control<=0xBD)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
                      FLAG_APP_Reply=1;
-
 //                if((DATA_Packet_Control&0x14)==0x14){
 //                    TIMER250ms_STOP=250;
 //                    if(TIMER1s<3550){Receiver_OUT_OPEN=1;Receiver_OUT_CLOSE=1;Receiver_BEEP();}
@@ -524,7 +505,7 @@ void ID_Decode_OUT(void)
                if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status;}
                if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;HA_Status_buf=HA_Status+4;}    //受信器自动发送HA状态码为实际HA码+4
                ID_data.IDL=DATA_Packet_ID;
-               if(DATA_Packet_Control==0xBF)Control_code=TIMER_Semi_open+1;
+               if(DATA_Packet_Control==0x3F)Control_code=TIMER_Semi_open+1;
                  else {
                    if(DIP_switch1==1)HA_Status_buf=HA_Status_buf&0xBF;
                       else HA_Status_buf=HA_Status_buf|0x40;
@@ -556,8 +537,7 @@ void ID_Decode_OUT(void)
          HA_uart_send_APP();
          FLAG_TIME_No_response=0;
      }
-    if(((read_TIMER_Semi_open<0x3F)&&(read_TIMER_Semi_open>0))||(((SWITCH_DIP_bak!=SWITCH_DIP)||(SWITCH_DIP_id_data_bak!=DATA_Packet_ID))&&(Freq_Scanning_CH_save_HA==1))){
-        SWITCH_DIP_check_app(); //检测现在的值与缓存中SWITCH_DIP,如果变化FG_WIFI_SWITCH_DIP=1;
+    if((read_TIMER_Semi_open<0x3F)&&(read_TIMER_Semi_open>0)){
         HA_uart_send_APP();
     }
  #endif
@@ -641,21 +621,7 @@ void ID_Decode_OUT(void)
 //     }
  #endif    
 }
-void SWITCH_DIP_check_app(void)
-{
- #if defined(__Product_PIC32MX2_WIFI__)
-    UINT8 i;
-        for(i=0;i<64;i++)
-        {
-            if(SWITCH_DIP_id_data[i]==0x00){SWITCH_DIP_id_data[i]=DATA_Packet_ID;SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
-            if(SWITCH_DIP_id_data[i]==DATA_Packet_ID)
-            {
-                if(SWITCH_DIP==SWITCH_DIP_id_DIP[i])break;
-                else {SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
-            }
-        }
- #endif
-}
+
 void Email_check_app(void)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
@@ -665,7 +631,7 @@ void Email_check_app(void)
             if(EMIAL_id_data[i]==0x00){EMIAL_id_data[i]=DATA_Packet_ID;EMIAL_id_HA[i]=DATA_Packet_Control;EMIAL_id_PCS++;break;}
             if(EMIAL_id_data[i]==DATA_Packet_ID)
             {
-                if(DATA_Packet_Control==EMIAL_id_HA[i])break;
+                if(DATA_Packet_Control==EMIAL_id_data[i])break;
                 else {EMIAL_id_HA[i]=DATA_Packet_Control;break;}
             }
         }
@@ -695,15 +661,12 @@ void  Freq_Scanning(void)
     if(((FLAG_Receiver_Scanning==1)||(TIME_EMC==0))&&(FLAG_APP_RX==1)&&(FLAG_UART_ok==0))
     {
         FLAG_Receiver_Scanning=0;
-//        TIMER18ms=12;
         Freq_Scanning_CH++;
-        if(Freq_Scanning_CH>4){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
-        
-//        if(Freq_Scanning_CH>6){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
-//        Freq_Scanning_CH=2;
+        if(Freq_Scanning_CH>6){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
         dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
 
-        //TIMER18ms=36;//18;
+
+//        TIMER18ms=18;//18;
         if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))TIMER18ms=36;
         else TIMER18ms=18;
     }
@@ -720,8 +683,6 @@ void SendTxData(void)
        WIFI_LED_RX=0;
  #endif
        ADF7021_DATA_IO=0;           //测试
-       dd_set_ADF7021_ReInitial();
-       TX_Freq_CH=2;
        dd_set_TX_mode();
  #if defined(__Product_PIC32MX2_Receiver__)
        Receiver_LED_TX=1;

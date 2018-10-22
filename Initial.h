@@ -95,6 +95,10 @@ extern FLAG FLAG_APP;
         #define		FLAG_AUTO_SEND_ok		FLAG_APP.BIT.Bit1      
         #define		Freq_Scanning_CH_save_HA	FLAG_APP.BIT.Bit2
 
+//        #define		FLAG_APP_SW1		FLAG_APP.BIT.Bit0      //test use
+//        #define		FLAG_APP_SW2		FLAG_APP.BIT.Bit1      //test use
+//        #define		FLAG_APP_SW3		FLAG_APP.BIT.Bit2      //test use
+
 	#define		FLAG_rssi_Freq		FLAG_APP.BIT.Bit3
 	#define		FLAG_Receiver_BEEP	FLAG_APP.BIT.Bit4
 
@@ -230,12 +234,6 @@ extern UINT16 TIME_No_response;
 extern UINT8 FLAG_TIME_No_response;
 extern UINT8 read_TIMER_Semi_open;
 
-extern UINT32 RF_SET_TX_DATA[5];
-extern UINT32 RF_SET_TX_REGISTER_0[6];
-extern UINT32 RF_SET_RX_DATA[6];
-extern UINT32 RF_SET_RX_REGISTER_0[6];
-extern UINT32 RF_SET_RX_REGISTER_A[6];
-
 //*********以下为测试代码所用变量****************
 extern UINT8 Tx_Rx_mode;
 extern FLAG FLAG_test;
@@ -344,7 +342,6 @@ extern void Delayus(unsigned int timer);
 extern void Delay100us(unsigned int timer);
 extern void RF_test_mode(void );
 
-
 //以下是IO 方向定义
 #if defined(__Product_PIC32MX2_Receiver__)
     /* ADF7021 register interface */
@@ -384,7 +381,7 @@ extern void RF_test_mode(void );
     #define  Receiver_OUT_STOP_IO    TRISCbits.TRISC0  // Output 受信机继电器STOP  高电平有效
     #define  Receiver_OUT_VENT_IO    TRISBbits.TRISB3  // Output 受信机继电器STOP  高电平有效
 
-    #define  Receiver_test_IO    TRISBbits.TRISB10  // INPUT 受信机测试脚  低电平有效
+    #define  Receiver_test_IO    TRISBbits.TRISB10  // INPUT 受信机测试脚  高电平有效
     #define  DIP_switch1_IO         TRISBbits.TRISB11 // Input   DIP_switch1  低电平有效
     #define  DIP_switch2_IO         TRISBbits.TRISB5 // Input   DIP_switch2  低电平有效
     #define  DIP_switch3_IO         TRISAbits.TRISA0 // Input   DIP_switch3  低电平有效
@@ -426,7 +423,6 @@ extern void RF_test_mode(void );
     #define  LAN_POWER_IO         TRISBbits.TRISB13 // output  LAN电源  低电平有效
 
     #define WIFI_test_IO          TRISBbits.TRISB4  // INPUT WIFI测试脚  低电平有效
-
 #endif
 
 
@@ -472,7 +468,7 @@ extern void RF_test_mode(void );
     #define  Receiver_OUT_STOP    LATCbits.LATC0  // Output   受信机继电器stop  高电平有效
     #define  Receiver_OUT_VENT    LATBbits.LATB3   // Output 受信机继电器STOP  高电平有效
 
-    #define  Receiver_test    PORTBbits.RB10   // Input 受信机测试脚  低电平有效
+    #define  Receiver_test    PORTBbits.RB10   // Input 受信机测试脚  高电平有效
     #define  DIP_switch1         PORTBbits.RB11 // Input   DIP_switch1  低电平有效
     #define  DIP_switch2         PORTBbits.RB5 // Input   DIP_switch2  低电平有效
     #define  DIP_switch3         PORTAbits.RA0 // Input   DIP_switch3  低电平有效
@@ -517,7 +513,6 @@ extern void RF_test_mode(void );
     #define  LAN_POWER        LATBbits.LATB13  // output  LAN电源  低电平有效
 
     #define  WIFI_test        PORTBbits.RB4   // Input WIFI测试脚  低电平有效
-
 //特别注意，在追加I/O时，用到PA口，请不要用LATAbits寄存器，请使用LATACLR，LATASET。
 
 #endif
