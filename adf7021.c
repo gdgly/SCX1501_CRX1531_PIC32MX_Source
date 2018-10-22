@@ -230,15 +230,52 @@ void dd_set_TX_mode_1010pattern(void)
 }
 void dd_set_RX_mode_test(void)
 {
-   UINT8 i;
-   ADF70XX_REG_T register_value;
+//   UINT8 i;
+//   ADF70XX_REG_T register_value;
+//
+//     for(i=0;i<6;i++){
+//        register_value.whole_reg =RF_SET_RX_test[i];
+//        dd_write_7021_reg(&register_value.byte[0]);
+//
+//        if((i==3)||(i==5))Delayus(40);
+//    }
 
-     for(i=0;i<6;i++){
-        register_value.whole_reg =RF_SET_RX_test[i];
+
+        ADF70XX_REG_T register_value;
+	//write R1, turn on VCO
+	register_value.whole_reg = 0x031B5011;
+	dd_write_7021_reg(&register_value.byte[0]);
+        Delayus(800);		//delay 800us
+
+        register_value.whole_reg =0x00800882;
+	dd_write_7021_reg(&register_value.byte[0]);
+
+	//write R3, turn on TX/RX clocks
+	register_value.whole_reg = 0x29920893;
+	dd_write_7021_reg(&register_value.byte[0]);
+
+//        register_value.whole_reg = 0x00001915;
+//	dd_write_7021_reg(&register_value.byte[0]);
+//        Delayus(300);   //0.2ms
+
+        register_value.whole_reg = 0x0504C996;
+	dd_write_7021_reg(&register_value.byte[0]);
+
+	register_value.whole_reg = 0x00001915;
+	dd_write_7021_reg(&register_value.byte[0]);
+        Delayus(6000);   //0.2ms
+
+        register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
         dd_write_7021_reg(&register_value.byte[0]);
+        Delayus(40);		//delay 40us
+        	//write R4, turn on demodulation
+        register_value.whole_reg = 0x00280294;
+	dd_write_7021_reg(&register_value.byte[0]);
 
-        if((i==3)||(i==5))Delayus(40);
-    }
+	//write R10, turn on PLL
+	register_value.whole_reg = 0x029668EA;
+	dd_write_7021_reg(&register_value.byte[0]);
+	Delayus(40);		//delay 40us
 }
 void dd_set_TX_mode(void)
 {
