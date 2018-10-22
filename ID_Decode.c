@@ -132,7 +132,8 @@ void ID_Decode_function(void)
                 DATA_Packet_Head=DATA_Packet_Head<<1;
                 if(ADF7021_DATA_rx)DATA_Packet_Head+=1;
                 //DATA_Packet_Head=DATA_Packet_Head&0x0000FFFF;
-                if(TIMER18ms==0)rxphase=0;
+                if(TIMER18ms==0)
+                    rxphase=0;
                 if(DATA_Packet_Head==0x5515){rxphase=2;DATA_Packet_Syn=0;DATA_Packet_Head=0;DATA_Packet_Code_i=0;}
 		break;
         case 2:
@@ -680,10 +681,13 @@ void  Freq_Scanning(void)
     {
         FLAG_Receiver_Scanning=0;
         Freq_Scanning_CH++;
-        if(Freq_Scanning_CH>6){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
+        if(Freq_Scanning_CH>6)Freq_Scanning_CH=1;
+        dd_set_ADF7021_ReInitial();
+//        if(Freq_Scanning_CH>6){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
+//        Freq_Scanning_CH=1;
         dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
 
-//        TIMER18ms=18;//18;
+//     TIMER18ms=36;//18;
         if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))TIMER18ms=36;
         else TIMER18ms=18;
     }
