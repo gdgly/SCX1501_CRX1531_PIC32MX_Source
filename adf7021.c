@@ -1,4 +1,3 @@
-
 /***********************************************************************/
 /*  FILE        :ADF7021.c                                             */
 /*  DATE        :Mar, 2013                                             */
@@ -128,7 +127,7 @@ ADF70XX_REG_T dd_read_7021_reg(UINT8 readback_config)
     return register_value;
 }
 
-const unsigned char gain_correction[] =
+const unsigned char gain_correction[] = 
     { 2*86, 0, 0, 0, 2*58, 2*38, 2*24, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0 }; // 7021
 
@@ -200,42 +199,34 @@ UINT8 dd_read_rssi_7021_reg(UINT8 readback_config)
 void dd_set_TX_mode(void)
 {
 	ADF70XX_REG_T register_value;
-          //dd_set_ADF7021_ReInitial();
         //write R1, turn on VCO
-	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
+	register_value.whole_reg = 0x031BD011;
 	dd_write_7021_reg(&register_value.byte[0]);
 	Delayus(800);		//delay 800us
 
 	//write R3, turn on TX/RX clocks
-	register_value.whole_reg = 0x29915CD3;//0x2991A0D3;
+	register_value.whole_reg = 0x2991A0D3;
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
 	//write R0, turn on PLL
-	//register_value.whole_reg = 0x0154DC30;       //CH=426.075MHz
+	register_value.whole_reg = 0x0154DC30;       //CH=426.075MHz
         //register_value.whole_reg = 0x01575710;   //CH=429.175MHz
-        //register_value.whole_reg = 0x01576140;//CH=429.225MHz
-        if((Frequency_CH==1)||(Frequency_CH==3)||(Frequency_CH==5))register_value.whole_reg = 0x0154DC30;       //CH=426.075MHz
-        if(Frequency_CH==2)register_value.whole_reg = 0x01575710;   //CH=429.175MHz
-        if(Frequency_CH==4)register_value.whole_reg = 0x01575C30;  //CH=429.200MHz
-        if(Frequency_CH==6)register_value.whole_reg = 0x01576140;//CH=429.225MHz
 	dd_write_7021_reg(&register_value.byte[0]);
 	Delayus(40);		//delay 40us
 
 	//write R2, turn on PA
-	register_value.whole_reg = 0x00566882;//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
-        //register_value.whole_reg = 0x006E6882;                     //2013年11月29日修改  TX频偏 2K 2FSK  功率:51（10dBM）       （0x006E6882）
+	register_value.whole_reg = 0x00536882;//0x006B6882;			//Ramp Rate = 16 codes/bit, TX level = 2;
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改   2FSK linear（0x00200004）   频偏不设置
+	register_value.whole_reg = 0x00289A14;//0x00268614;
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
-	register_value.whole_reg = 0x0000010F;                      //TX test
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
+//	register_value.whole_reg = 0x00001915;
+//	dd_write_7021_reg(&register_value.byte[0]);
+//        Delayus(40);		//delay 40us
 //
 //	register_value.whole_reg = 0x0504C986;
 //	dd_write_7021_reg(&register_value.byte[0]);
@@ -244,69 +235,19 @@ void dd_set_TX_mode(void)
 //	register_value.whole_reg = 0x329668EA;
 //	dd_write_7021_reg(&register_value.byte[0]);
 }
-void dd_set_TX_mode1(void)
-{
-	ADF70XX_REG_T register_value;
-          //dd_set_ADF7021_ReInitial();
-        //write R1, turn on VCO
-	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(800);		//delay 800us
-
-	//write R3, turn on TX/RX clocks
-	register_value.whole_reg = 0x29915CD3;//0x2991A0D3;
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-
-	//write R0, turn on PLL
-//	register_value.whole_reg = 0x0154DC30;       //CH=426.075MHz
-        //register_value.whole_reg = 0x01575710;   //CH=429.175MHz
-        //register_value.whole_reg = 0x01576140;//CH=429.225MHz
-        if((Frequency_CH==1)||(Frequency_CH==3)||(Frequency_CH==5))register_value.whole_reg = 0x0154DC30;       //CH=426.075MHz
-        if(Frequency_CH==2)register_value.whole_reg = 0x01575710;   //CH=429.175MHz
-        if(Frequency_CH==4)register_value.whole_reg = 0x01575C30;  //CH=429.200MHz
-        if(Frequency_CH==6)register_value.whole_reg = 0x01576140;//CH=429.225MHz
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(40);		//delay 40us
-
-	//write R2, turn on PA
-	register_value.whole_reg = 0x00566882;//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
-        //register_value.whole_reg = 0x006E6882;                     //2013年11月29日修改  TX频偏 2K 2FSK  功率:51（10dBM）       （0x006E6882）
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改   2FSK linear（0x00200004）   频偏不设置
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-
-	register_value.whole_reg = 0x0000040F;                      //TX test
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-//
-//	register_value.whole_reg = 0x0504C986;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//        Delayus(40);		//delay 40us
-//
-//	register_value.whole_reg = 0x329668EA;
-//	dd_write_7021_reg(&register_value.byte[0]);
-}
-
 
 void dd_set_RX_mode(void)
 {
 	ADF70XX_REG_T register_value;
-          //dd_set_ADF7021_ReInitial();
 
 	//	for ADF7021DB2 864M
 
 	//write R1, turn on VCO
-	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
+	register_value.whole_reg = 0x031BD011;
 	dd_write_7021_reg(&register_value.byte[0]);
-
-        register_value.whole_reg =0x00500882; //0x00680882;        //2013年11月22日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
-        //register_value.whole_reg =0x00680882; //0x00680882;        //2013年11月29日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
-	dd_write_7021_reg(&register_value.byte[0]);
+        
+	register_value.whole_reg =0x00500882; //0x00680882;
+	dd_write_7021_reg(&register_value.byte[0]);        
 
 	//write R3, turn on TX/RX clocks
 	register_value.whole_reg = 0x29915CD3;
@@ -319,22 +260,22 @@ void dd_set_RX_mode(void)
 //	register_value.whole_reg = 0x00001915;	//write R5 to start IF filter cal
 //	dd_write_7021_reg(&register_value.byte[0]);
 //	Delay100us(2);		//delay 0.2ms
-//
+//        
 //	register_value.whole_reg = 0x0504C986;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//
+//	dd_write_7021_reg(&register_value.byte[0]);  
+//        
 //	register_value.whole_reg = 0x000231E9;
 //	dd_write_7021_reg(&register_value.byte[0]);
 //
 //	//write R11, configure sync word detect
 //	register_value.whole_reg = 0x329668EA;
 //	dd_write_7021_reg(&register_value.byte[0]);
-//
+//        
 //	register_value.whole_reg = 0x0000003B;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//
+//	dd_write_7021_reg(&register_value.byte[0]);   
+//        
 //	register_value.whole_reg = 0x0000010C;
-//	dd_write_7021_reg(&register_value.byte[0]);
+//	dd_write_7021_reg(&register_value.byte[0]); 
 
 	//write R0, turn on PLL
 	register_value.whole_reg = 0x0954C7B0;    //CH=426.075MHz
@@ -342,40 +283,15 @@ void dd_set_RX_mode(void)
 	Delayus(40);		//delay 40us
 
 	//write R4, turn on demodulation
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改   2FSK linear（0x00200004）  频偏不设置
+	register_value.whole_reg = 0x00289A14;//0x00268614;
 	dd_write_7021_reg(&register_value.byte[0]);
 
-	//write R10, turn on PLL
-	register_value.whole_reg = 0x049668FA;
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(40);		//delay 40us
-
-//	register_value.whole_reg = 0x0500003F;                      //TX test
-//	dd_write_7021_reg(&register_value.byte[0]);
-//        Delayus(40);		//delay 40us
 }
 void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 {
   ADF70XX_REG_T register_value;
-  //dd_set_ADF7021_ReInitial();
     if(Mode==1)     //ADF7021 TX Mode
     {
-
-
-
-        //write R1, turn on VCO
-	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(800);		//delay 800us
-
-	//write R3, turn on TX/RX clocks
-	register_value.whole_reg = 0x29915CD3;//0x2991A0D3;
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-
-
-
     	switch (CH){
             case 1:
                     register_value.whole_reg = 0x0154DC30; //CH=426.075MHz
@@ -384,67 +300,32 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
                     register_value.whole_reg = 0x01575710;   //CH=429.175MHz
                     break;
             case 3:
-                    //register_value.whole_reg = 0x015759A0;  //CH=429.1875MHz
-                    register_value.whole_reg = 0x0154DC30; //CH=426.075MHz
+                    register_value.whole_reg = 0x015759A0;  //CH=429.1875MHz
                     break;
             case 4:
                     register_value.whole_reg = 0x01575C30;  //CH=429.200MHz
                     break;
             case 5:
-                    //register_value.whole_reg = 0x01575EC0; //CH=429.2125MHz
-                    register_value.whole_reg = 0x0154DC30; //CH=426.075MHz
+                    register_value.whole_reg = 0x01575EC0; //CH=429.2125MHz
                     break;
             case 6:
                     register_value.whole_reg = 0x01576140;//CH=429.225MHz
                     break;
-//            case 7:
-//                    register_value.whole_reg = 0x015763D0;//CH=429.2375MHz
-//                    break;
+            case 7:
+                    register_value.whole_reg = 0x015763D0;//CH=429.2375MHz
+                    break;
             default:
                    break;
 	}
         dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
         	//write R2, turn on PA
-	register_value.whole_reg = 0x00566882;//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
-        //register_value.whole_reg = 0x006E6882;                     //2013年11月29日修改  TX频偏 2K 2FSK  功率:51（10dBM）       （0x006E6882）
+	register_value.whole_reg = 0x00536882;//0x006B6882;			//Ramp Rate = 16 codes/bit, TX level = 2;
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
-
-
-
-
-
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改   2FSK linear（0x00200004）   频偏不设置
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-
-
-
-
     }
     else        //ADF7021 RX Mode
     {
-
-
-
-	//write R1, turn on VCO
-	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
-	dd_write_7021_reg(&register_value.byte[0]);
-
-        register_value.whole_reg =0x00500882; //0x00680882;        //2013年11月22日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
-        //register_value.whole_reg =0x00680882; //0x00680882;        //2013年11月29日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
-	dd_write_7021_reg(&register_value.byte[0]);
-
-	//write R3, turn on TX/RX clocks
-	register_value.whole_reg = 0x29915CD3;
-	dd_write_7021_reg(&register_value.byte[0]);
-
-
-
-
-
     	switch (CH){
             case 1:
                     register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
@@ -453,42 +334,34 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
                     register_value.whole_reg = 0x09574290;//CH=429.175MHz
                     break;
             case 3:
-                    //register_value.whole_reg = 0x09574520;//CH=429.1875MHz
-                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
+                    register_value.whole_reg = 0x09574520;//CH=429.1875MHz
+                    //register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
                     break;
             case 4:
                     register_value.whole_reg = 0x095747B0;//CH=429.200MHz
                     break;
             case 5:
-                    //register_value.whole_reg = 0x09574A40;//CH=429.2125MHz
-                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
+                    register_value.whole_reg = 0x09574A40;//CH=429.2125MHz
+                    //register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
                     break;
             case 6:
                     register_value.whole_reg = 0x09574CD0;//CH=429.225MHz
                     break;
-//            case 7:
-//                    register_value.whole_reg = 0x09574F60;//CH=429.2375MHz
-//                    break;
+            case 7:
+                    register_value.whole_reg = 0x09574F60;//CH=429.2375MHz
+                    break;
             default:
                    break;
 	}
         dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
+        Delayus(40);		//delay 40us 
         	//write R4, turn on demodulation
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）  频偏不设置
+	register_value.whole_reg = 0x00289A14;//0x00268614;
 	dd_write_7021_reg(&register_value.byte[0]);
-
-	//write R10, turn on PLL
-	if((CH==1)||(CH==3)||(CH==5))register_value.whole_reg = 0x049668FA;
-        else register_value.whole_reg = 0x049668EA;
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(40);		//delay 40us
     }
 }
 void dd_set_ADF7021_Power_on(void)
 {
-    UINT8 i;
 	if (ADF7021_CE == 0)
 	{
 		ADF7021_CE = 1;
@@ -496,21 +369,8 @@ void dd_set_ADF7021_Power_on(void)
 		//if ( is_use_crystal == TRUE ) 	dd_short_delay(25);	
                 Delayus(1000);             //delay 1ms
 	}
-        Delayus(20000);             //delay 1ms
-        m_RFNormalBuf[0]=0xFF;
-        m_RFNormalBuf[1]=0xFF;
-        for(i=2;i<=21;i++)m_RFNormalBuf[i]=0x55;
-        m_RFNormalBuf[22]=0x15;
 }
 
-void dd_set_ADF7021_ReInitial(void)
-{
-    ADF7021_CE = 0;
-    Delayus(20);
-    ADF7021_CE = 1;
-    Delayus(20);
-    dd_set_RX_mode();
-}
 
 void dd_read_RSSI(void)
 {
@@ -531,181 +391,110 @@ void dd_read_RSSI(void)
 
 }
 
-void ADF7021_change_TXorRX(void)
+void ADF7021_test(void)
 {
-    UINT8 i;
  #if defined(__Product_PIC32MX2_Receiver__)
-//   if((HA_Sensor_signal==1)&&(FLAG_APP_TX==0)&&(FLAG_APP_SW1==0)){
-//       FLAG_APP_SW1=1;
-//       SendTxData();
-//   }
-//   if(HA_Sensor_signal==0)FLAG_APP_SW1=0;
-
-   if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
-       FLAG_SendTxData=1;
-       FLAG_APP_RX=1;
-       Receiver_LED_OUT=0;
-       Receiver_LED_TX=0;
+   if((HA_L_signal==0)&&(FLAG_APP_SW1==0)){
+       FLAG_APP_SW1=1;
+       FLAG_APP_TX=1;
+       FLAG_APP_RX=0;
+       Receiver_LED_TX=1;
        Receiver_LED_RX=0;
+       Receiver_LED_OUT=0;
+       ADF7021_DATA_IO=1;           //测试
+       dd_set_TX_mode();
+   }
+   if(HA_L_signal==1)FLAG_APP_SW1=0;
+
+   if((HA_ERR_signal==0)&&(FLAG_APP_SW2==0)){
+       FLAG_APP_SW2=1;
+       FLAG_APP_TX=0;
+       FLAG_APP_RX=1;
+       Receiver_LED_TX=0;
+       Receiver_LED_RX=1;
+       Receiver_LED_OUT=0;
        ADF7021_DATA_IO=1;
        dd_set_RX_mode();
    }
-
-//   if((HA_Sensor_signal==0)&&(FLAG_APP_SW2==0)){
-//       FLAG_APP_SW2=1;
-//       FLAG_APP_TX=0;
-//       FLAG_APP_RX=1;
-//       Receiver_LED_TX=0;
-//       Receiver_LED_RX=0;
-//       Receiver_LED_OUT=0;
-//       ADF7021_DATA_IO=1;
-//       dd_set_RX_mode();
-//   }
-//   if(HA_Sensor_signal==1)FLAG_APP_SW2=0;
-
+   if(HA_ERR_signal==1)FLAG_APP_SW2=0;
    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
        rssi=dd_read_rssi_7021_reg(0x14);
-//       if(rssi>25);//TIMER300ms=200;//Receiver_LED_OUT=0;
-//       else ;//Receiver_LED_OUT=1;
+       if(rssi>15)Receiver_LED_RX=1;
+       else Receiver_LED_RX=0;
    }
-//   if((Receiver_Login==0)&&(FLAG_APP_SW3==0)){
-//       FLAG_APP_SW3=1;
-//       Frequency_CH++;
-//       if(Frequency_CH>7)Frequency_CH=1;
-//       if(FLAG_APP_TX==1)dd_set_ADF7021_Freq(1,Frequency_CH);
-//        else dd_set_ADF7021_Freq(0,Frequency_CH);
-//   }
-//   if(Receiver_Login==1)FLAG_APP_SW3=0;
+   if((Receiver_Login==0)&&(FLAG_APP_SW3==0)){
+       FLAG_APP_SW3=1;
+       Frequency_CH++;
+       if(Frequency_CH>7)Frequency_CH=1;
+       if(FLAG_APP_TX==1)dd_set_ADF7021_Freq(1,Frequency_CH);
+        else dd_set_ADF7021_Freq(0,Frequency_CH);
+   }
+   if(Receiver_Login==1)FLAG_APP_SW3=0;
+
+   if((HA_Sensor_signal==1)&&(FLAG_APP_TX==1)&&(FLAG_APP_SW4==0))
+   {
+       if(PCB_debug_num0==0){PCB_debug_num0=1;ADF7021_DATA_IO=0;}
+       else {PCB_debug_num0=0;ADF7021_DATA_IO=1;}
+
+   }
+   if(HA_Sensor_signal==0)FLAG_APP_SW4=0;
 
 //   if(FLAG_APP_RX==1){
 //       if(Receiver_Login==0)Receiver_LED_TX=1;
 //   }
-//       if(TIMER1s==0)Receiver_LED_OUT=0;           //测试，测试完后需要删除
-//       if(TIMER300ms==0)Receiver_LED_RX=0;
+       if(TIMER1s==0)Receiver_LED_OUT=0;           //测试，测试完后需要删除
 #endif
    
-//#if defined(__Product_PIC32MX2_WIFI__)
-////   if((WIFI_L_Login==0)&&(FLAG_APP_TX==0)&&(FLAG_APP_SW1==0)){
-////       FLAG_APP_SW1=1;
-////       //WIFI_Useless1=1;
-////       SendTxData();
-////   }
-////   if(WIFI_L_Login==1)FLAG_APP_SW1=0;
-//   if((FLAG_UART_R==1)&&(FLAG_APP_TX==0)){
-//       FLAG_UART_R=0;
-//       //WIFI_Useless1=1;
-//       UART_Decode();
-//   }
-//   if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
-//       FLAG_SendTxData=1;
-//       FLAG_APP_RX=1;
-//       //WIFI_Useless1=1;
-//       WIFI_LED_TX=0;
-//       WIFI_LED_RX=0;
-//       ADF7021_DATA_IO=1;
-//       dd_set_RX_mode();
-//   }
-//
-//   //if(((WIFI_Useless0==0)&&(FLAG_APP_SW2==0))||((FLAG_APP_RX==0)&&(FLAG_APP_RX==0))){
-////   if((WIFI_Useless0==0)&&(FLAG_APP_SW2==0)){
-////       FLAG_APP_SW2=1;
-////       FLAG_APP_TX=0;
-////       FLAG_APP_RX=1;
-////       WIFI_Useless1=1;
-////       WIFI_LED_RX=1;
-////       ADF7021_DATA_IO=1;
-////       dd_set_RX_mode();
-////   }
-////   if(WIFI_Useless0==1)FLAG_APP_SW2=0;
-//
-////   if((Receiver_Login==0)&&(FLAG_APP_SW3==0)){
-////       FLAG_APP_SW3=1;
-////       Frequency_CH++;
-////       if(Frequency_CH>7)Frequency_CH=1;
-////       if(FLAG_APP_TX==1)dd_set_ADF7021_Freq(1,Frequency_CH);
-////        else dd_set_ADF7021_Freq(0,Frequency_CH);
-////   }
-////   if(Receiver_Login==1)FLAG_APP_SW3=0;
-//
-////   if(FLAG_APP_RX==1){
-////       if(Receiver_Login==0)Receiver_LED_TX=1;
-////   }
-////       if(TIMER1s==0)WIFI_LED_RX=0;           //测试，测试完后需要删除
-// #endif
-//
-//   if(FLAG_UART_ok==1){
-//       if(FLAG_rssi_Freq==0){
-//           rssi_TIME=1;    //发射时10ms间隔搜索空信道
-//           FLAG_rssi_Freq=1;
-//           rssi_COUNT=0;
-//           TX_Freq_CH=TX_Freq_CH+2;
-//           if(TX_Freq_CH>6)TX_Freq_CH=2;
-//           dd_set_ADF7021_Freq(0,TX_Freq_CH);
-//       }
-//       if(rssi_TIME==0){
-//           FLAG_rssi_Freq=0;
-//           if(rssi_COUNT>=10){FLAG_UART_ok=0;SendTxData();TX_Freq_CH=0;}
-//       }
-//   }
-//
-//    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
-//       rssi=dd_read_rssi_7021_reg(0x14);
-//       if(rssi<=34){
-//           rssi_COUNT++;
-//           if(rssi_COUNT>10)rssi_COUNT=10;
-//       }
-//       //else rssi_COUNT=0;
-//   }
-
-
-
-   if((WIFI_USBLogin==0)&&(FLAG_APP_SW2==0)){
-       FLAG_APP_SW2=1;
-       test_TRX++;
-       if(test_TRX>3)test_TRX=1;
-       if(test_TRX==1){
-           //Frequency_CH=1;
-           FLAG_APP_TX=1;
-           FLAG_APP_RX=0;
-           WIFI_LED_RX=0;
-           WIFI_LED_TX=1;
-           ADF7021_DATA_IO=1;           //测试
-           dd_set_TX_mode();
-       }
-       if(test_TRX==2){
-           //Frequency_CH=1;
-           FLAG_APP_TX=1;
-           FLAG_APP_RX=0;
-           WIFI_LED_RX=0;
-           WIFI_LED_TX=1;
-           ADF7021_DATA_IO=0;           //测试
-           dd_set_TX_mode1();
-       }
-       if(test_TRX==3){
-           //Frequency_CH=1;
-           FLAG_APP_TX=0;
-           FLAG_APP_RX=1;
-           WIFI_LED_RX=1;
-           WIFI_LED_TX=0;
-           ADF7021_DATA_IO=1;           //测试
-           //dd_set_RX_mode();
-           dd_set_ADF7021_Freq(0,Frequency_CH);
-       }  
+#if defined(__Product_PIC32MX2_WIFI__)
+   if((WIFI_Useless0==0)&&(FLAG_APP_SW1==0)){
+       FLAG_APP_SW1=1;
+       FLAG_APP_TX=1;
+       FLAG_APP_RX=0;
+       WIFI_LED_TX=1;
+       WIFI_LED_RX=0;
+       ADF7021_DATA_IO=1;           //测试
+       dd_set_TX_mode();
    }
-   if(WIFI_USBLogin==1)FLAG_APP_SW2=0;
-   if((WIFI_L_Login==0)&&(FLAG_APP_SW3==0)){
+   if(WIFI_Useless0==1)FLAG_APP_SW1=0;
+
+   if((WIFI_Useless1==0)&&(FLAG_APP_SW2==0)){
+       FLAG_APP_SW2=1;
+       FLAG_APP_TX=0;
+       FLAG_APP_RX=1;
+       WIFI_LED_TX=0;
+       WIFI_LED_RX=1;
+       ADF7021_DATA_IO=1;
+       dd_set_RX_mode();
+   }
+   if(WIFI_Useless1==1)FLAG_APP_SW2=0;
+   if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
+       rssi=dd_read_rssi_7021_reg(0x14);
+       if(rssi>15)WIFI_LED_RX=1;
+       else WIFI_LED_RX=0;
+   }
+   if((WIFI_USBLogin==0)&&(FLAG_APP_SW3==0)){
        FLAG_APP_SW3=1;
        Frequency_CH++;
-       if(Frequency_CH>6)Frequency_CH=1;
+       if(Frequency_CH>7)Frequency_CH=1;
        if(FLAG_APP_TX==1)dd_set_ADF7021_Freq(1,Frequency_CH);
         else dd_set_ADF7021_Freq(0,Frequency_CH);
    }
-   if(WIFI_L_Login==1)FLAG_APP_SW3=0;
+   if(WIFI_USBLogin==1)FLAG_APP_SW3=0;
 
-//    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1))
-//       rssi=130-dd_read_rssi_7021_reg(014);
-   if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1))
-    dd_read_RSSI();
+   if((WIFI_L_Login==0)&&(FLAG_APP_TX==1)&&(FLAG_APP_SW4==0))
+   {
+       if(PCB_debug_num0==0){PCB_debug_num0=1;ADF7021_DATA_IO=0;}
+       else {PCB_debug_num0=0;ADF7021_DATA_IO=1;}
+
+   }
+   if(WIFI_L_Login==1)FLAG_APP_SW4=0;
+
+//   if(FLAG_APP_RX==1){
+//       if(Receiver_Login==0)Receiver_LED_TX=1;
+//   }
+       if(TIMER1s==0)WIFI_LED_TX=0;           //测试，测试完后需要删除
+ #endif
+
 }
 
 

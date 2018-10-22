@@ -12,10 +12,6 @@
     #define __Product_PIC32MX2_WIFI__            //"0"代表DIV8  CPU Freq=10MHz  受信机
 #endif
 
-#if defined(__32MX250F128D__)
-    #define __Product_PIC32MX2_WIFI__            //"0"代表DIV8  CPU Freq=10MHz  受信机
-#endif
-
 #if defined(__32MX210F016D__)
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 #endif
@@ -29,23 +25,14 @@
     #define	INT16		short int
     #define	UINT32		unsigned long
     #define	INT32		long
-    #define     NOP()           asm ("nop")
     //--------------------------------------------
 
-  typedef union{
+  typedef union
+  {
     UINT32  whole_reg;
     UINT8   byte[4];    // Warning: Be endian-specific when accessing bytes
 
    } ADF70XX_REG_T;
-
-  typedef union {												// ID No.
-	UINT32	IDL ;
-	UINT8	IDB[4];
-  }uni_rom_id;
-  typedef union {
-        UINT16	ui ;
-	UINT8	uc[2] ;
-  }uni_i;
 
 typedef union{
 	UINT32 BYTE;	
@@ -92,21 +79,13 @@ extern FLAG FLAG_APP;
 	#define		FLAG_APP_SW1		FLAG_APP.BIT.Bit0      //test use
         #define		FLAG_APP_SW2		FLAG_APP.BIT.Bit1      //test use
         #define		FLAG_APP_SW3		FLAG_APP.BIT.Bit2      //test use
+        #define		FLAG_APP_SW4		FLAG_APP.BIT.Bit3
+	#define		FLAG_APP_TX		FLAG_APP.BIT.Bit4
+	#define		FLAG_APP_RX		FLAG_APP.BIT.Bit5
 
-	#define		FLAG_rssi_Freq		FLAG_APP.BIT.Bit3
-	//#define		FLAG_APP_RX		FLAG_APP.BIT.Bit4
-
-	#define		FLAG_Signal_DATA_OK	FLAG_APP.BIT.Bit5
-        #define		FLAG_Receiver_IDCheck 	FLAG_APP.BIT.Bit6
-        #define		FLAG_Receiver_Scanning 	FLAG_APP.BIT.Bit7
-        #define		FLAG_ID_Login 	        FLAG_APP.BIT.Bit8
-        #define		FLAG_ID_Erase_Login 	FLAG_APP.BIT.Bit9
-        #define		FLAG_ID_Login_EXIT 	FLAG_APP.BIT.Bit10
-
-        #define		FLAG_ID_Login_OK 	FLAG_APP.BIT.Bit12
-        #define		FLAG_ID_Login_OK_bank 	FLAG_APP.BIT.Bit13
-
-        #define		FG_10ms 	        FLAG_APP.BIT.Bit24
+	#define		FLAG_Receiver_OK	FLAG_APP.BIT.Bit6
+        #define		FLAG_Receiver_IDCheck 	FLAG_APP.BIT.Bit7
+        #define		FLAG_Receiver_Scanning 	FLAG_APP.BIT.Bit8
 	//************************************************
 
 
@@ -114,73 +93,21 @@ extern UINT32 EEPROM_Receiver_ID;
 
 extern UINT16 rssi;
 extern UINT8 Frequency_CH;
-extern UINT8 test_TRX;
-
 extern UINT8 rxphase;
-extern UINT16 txphase;
-extern UINT8 txphase_Repeat;
+extern UINT8 txphase;
 extern UINT8 Syn_count;
 extern UINT32 DATA_Packet_Syn;    //A部
 extern UINT16 DATA_Packet_Head;   //B部
-extern UINT32 DATA_Packet_Code[6];  //C部
+extern UINT32 DATA_Packet_Code[3];  //C部
 extern UINT8  DATA_Packet_Code_g;
 extern UINT8  DATA_Packet_Code_i;
 extern UINT32 DATA_Packet_ID;
-extern UINT8  DATA_Packet_Control;
-extern UINT16  TIMER1s;
-extern UINT16  TIMER300ms;
-extern UINT8   TIMER18ms;
-extern UINT8   TIMER250ms_STOP;
+extern UINT16 TIMER1s;
+extern UINT8  TIMER18ms;
 extern UINT8  Freq_Scanning_CH;
-extern UINT8  m_RFNormalBuf[35]; // Buffer for data
-                               /* m_RFNormalBuf[0] 帧间隔时间10ms(LSB)
-                                * m_RFNormalBuf[1] 帧间隔时间10ms(MSB)
-                                * m_RFNormalBuf[2] SYN同步时间160BIT 第20个字节(LSB)
-                                *    .。。。。。。。。。。
-                                * m_RFNormalBuf[21] SYN同步时间160BIT 第0个字节(MSB)
-                                * m_RFNormalBuf[22] 同步码0X15
-                                * m_RFNormalBuf[23] ID code(LSB)
-                                * m_RFNormalBuf[24] ID code
-                                * m_RFNormalBuf[25] ID code
-                                * m_RFNormalBuf[26] ID code
-                                * m_RFNormalBuf[27] ID code
-                                * m_RFNormalBuf[28] ID code(MSB)
-                                * m_RFNormalBuf[29] Control code(LSB)
-                                * m_RFNormalBuf[30] Control code(MSB)
-                                * m_RFNormalBuf[31] SUM code(LSB)
-                                * m_RFNormalBuf[32] SUM code
-                                * m_RFNormalBuf[33] SUM code
-                                * m_RFNormalBuf[34] SUM code(MSB)*/
-extern uni_rom_id ID_data;
-extern UINT8 Control_code;
-extern UINT8 ID_INT_CODE;
 
-extern UINT16 UART_DATA_i;
-extern UINT8  UART_DATA_cnt;
-extern UINT8  UART1_DATA[15];
-extern UINT8  UART_DATA_buffer[15];
-extern UINT8  TIME_10ms;
-extern UINT8  COUNT_Receiver_Login;
-extern UINT16  TIME_Receiver_Login;
-extern UINT16 TIME_Receiver_Login_led;
-extern UINT16 TIME_Receiver_Login_restrict;
-extern UINT32 ID_Receiver_Login;
-extern UINT32 ID_Receiver_DATA[256];//写入EEPROM ID的数据
-extern UINT16 ID_DATA_PCS;
-extern UINT16 INquiry;
 
-extern UINT8  rssi_COUNT;
-extern UINT8  rssi_TIME;
-extern UINT8  TX_Freq_CH;
-
-extern UINT8 FLAG_APP_TX;
-extern UINT8 FLAG_APP_RX;
-extern UINT8 FLAG_SendTxData;
-extern UINT8  FLAG_UART_R;
-extern UINT8 FLAG_UART_0xBB;
-extern UINT8  FLAG_UART_ok;
-extern UINT8  FLAG_ADF7021_ReInitial;
-extern UINT8 FLAG_IDCheck_OK;
+extern UINT8  PCB_debug_num0;    //测试，测试完后需要删除
 
 extern void VHF_GPIO_INIT(void);		// CPU端口设置
 extern void Delayus(unsigned int timer);
@@ -248,11 +175,14 @@ extern void Delay100us(unsigned int timer);
     /* wifi集中通讯机使用的IO*/
     #define  WIFI_L_Login_IO      TRISAbits.TRISA7 // Input   wifi集中通讯机登录键   低电平有效
     #define  WIFI_USBLogin_IO     TRISCbits.TRISC7 // Input   wifi集中通讯机USB升级键   低电平有效
-    #define  WIFI_Useless0_IO      TRISAbits.TRISA10 // Input  样机板后面没有用  测试版作为SW2
-    #define  WIFI_Useless1_IO     TRISCbits.TRISC6 // output  样机板后面没有用    测试版作为LED2
     #define  WIFI_USBOC_IO        TRISBbits.TRISB3 // Input   wifi集中USB保护监测   低电平有效
     #define  WIFI_LED_RX_IO       TRISCbits.TRISC8 // Input   wifi集中通讯机受信指示 低电平有效
     #define  WIFI_LED_TX_IO       TRISCbits.TRISC9 // Input   wifi集中通讯机送信指示 低电平有效
+
+    #define  WIFI_test_R34_IO     TRISAbits.TRISA1
+    #define  WIFI_test_R35_IO     TRISCbits.TRISC0
+    #define  WIFI_Useless0_IO     TRISAbits.TRISA10 // Input  样机板后面没有用  测试版作为SW2
+    #define  WIFI_Useless1_IO     TRISCbits.TRISC6 // output  样机板后面没有用    测试版作为LED2
 #endif
 
 
@@ -321,11 +251,12 @@ extern void Delay100us(unsigned int timer);
     /* wifi集中通讯机使用的IO*/
     #define  WIFI_L_Login      PORTAbits.RA7 // Input   wifi集中通讯机登录键   低电平有效
     #define  WIFI_USBLogin     PORTCbits.RC7 // Input   wifi集中通讯机USB升级键   低电平有效
-    #define  WIFI_Useless0     PORTAbits.RA10 // Input  样机板后面没有用  测试版作为SW2
-    #define  WIFI_Useless1     PORTCbits.RC6 // output  样机板后面没有用    测试版作为LED2
     #define  WIFI_USBOC        PORTBbits.RB3 // Input   wifi集中USB保护监测   低电平有效
     #define  WIFI_LED_RX       LATCbits.LATC8 // Output   wifi集中通讯机受信指示 低电平有效
     #define  WIFI_LED_TX       LATCbits.LATC9 // Output   wifi集中通讯机送信指示 低电平有效
+
+    #define  WIFI_Useless0     PORTAbits.RA10 // Input  样机板后面没有用  测试版作为SW2
+    #define  WIFI_Useless1     PORTCbits.RC6 // output  样机板后面没有用    测试版作为LED2
 #endif
 
 

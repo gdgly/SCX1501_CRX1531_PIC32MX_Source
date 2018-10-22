@@ -12,7 +12,6 @@
 
 
 extern void dd_set_TX_mode(void);
-extern void dd_set_TX_mode1(void);
 void dd_write_7021_reg(unsigned char* reg_bytes);
 extern void dd_set_ADF7021_Power_on(void);
 extern void dd_set_RX_mode(void);
@@ -20,5 +19,4 @@ extern void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH);
 ADF70XX_REG_T dd_read_7021_reg(UINT8 readback_config);
 extern UINT8 dd_read_rssi_7021_reg(UINT8 readback_config);
 extern void dd_read_RSSI(void);
-extern void ADF7021_change_TXorRX(void);
-extern void dd_set_ADF7021_ReInitial(void);
+extern void ADF7021_test(void);

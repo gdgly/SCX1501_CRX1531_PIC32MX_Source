@@ -1,4 +1,3 @@
-
 /*********************************************************************
  *
  *                  Boot Loader Simple Application
@@ -59,9 +58,6 @@ Note: make sure the boot loader and your application, both use the same fuse set
 #include "adf7021.h"
 #include "ID_Decode.h"
 #include "Timers.h"
-#include "Uart.h"
-#include "EEPROM.h"
-#include "pcf8563.h"
 
 #if   (((__PIC32_FEATURE_SET__ >= 100) && (__PIC32_FEATURE_SET__ <= 299)))
     #define __PIC32MX1XX_2XX__
@@ -102,10 +98,6 @@ Note: make sure the boot loader and your application, both use the same fuse set
         #pragma config FPLLODIV = DIV_2         // PLL Output Divider: Divide by 2  SYSCLK=40M
     #endif
 
-    #if defined(__32MX250F128D__)
-        #pragma config FPLLODIV = DIV_2         // PLL Output Divider: Divide by 2  SYSCLK=40M
-    #endif
-
     #if defined(__32MX210F016D__)
         #pragma config FPLLODIV = DIV_4         // PLL Output Divider: Divide by 8    SYSCLK=10M
     #endif
@@ -143,22 +135,30 @@ int main(void)
     //ID_Decode_Initial_CNx();
     ID_Decode_Initial_INT();
     timer2_Init();
-    Uart1_Init();
     INTEnableSystemMultiVectoredInt();
 
     dd_set_ADF7021_Power_on();
-    ID_EEPROM_Initial();
-    Set_Time(number_time);
-    Frequency_CH=1;
+    //dd_set_RX_mode();
     while(1)
     {
-        ADF7021_change_TXorRX();
-        //ID_Decode_IDCheck();
-        //ID_Decode_OUT();
+        ADF7021_test();
+        ID_Decode_IDCheck();
         //Freq_Scanning();
-   //     ID_learn();
 
- Read_Time(number_time);
+           // dd_set_TX_mode();
+       // Delayus(1000);
+//        Receiver_LED_RX=((ReadCoreTimer() & 0x0200000) != 0);
+//        Receiver_LED_TX=((ReadCoreTimer() & 0x0200000) != 0);
+//        ADF7021_SLE=!ADF7021_SLE;//((ReadCoreTimer() & 0x0200000) != 0);
+//        ADF7021_SDATA=!ADF7021_SDATA;//((ReadCoreTimer() & 0x0200000) != 0);
+//        ADF7021_SCLK=!ADF7021_SCLK;//((ReadCoreTimer() & 0x0200000) != 0);
+//        ADF7021_CE=!ADF7021_CE;//((ReadCoreTimer() & 0x0200000) != 0);
+//       if(ADF7021_MUXOUT==1)
+//       {
+//         dd_read_RSSI();
+//         if(rssi>15)Receiver_LED_RX=0;
+//          else Receiver_LED_RX=1;
+//       }
      }
 	return 0;
 }
