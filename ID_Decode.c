@@ -161,15 +161,17 @@ void ID_Decode_IDCheck(void)
                     Signal_DATA_Decode(1);
                     if(FLAG_Signal_DATA_OK==1){
                             eeprom_IDcheck();
-                            if(DATA_Packet_Control==0xFF){
+                            if(DATA_Packet_Control_buf==0xFF){
                                 if(FLAG_IDCheck_OK==1)FLAG_IDCheck_OK=0;
                                  else{
-                                     BEEP_and_LED();
-                                     ID_Receiver_Login=DATA_Packet_ID;
+                                    #if defined(__Product_PIC32MX2_Receiver__)
+                                     BEEP_and_LED();         //2014.10.11修改
+                                     ID_Receiver_Login=DATA_Packet_ID_buf;
                                      ID_EEPROM_write();
+                                     #endif
                                  }//end else
                             }
-                            else if(DATA_Packet_Control==0x00){
+                            else if(DATA_Packet_Control_buf==0x00){
                                 if(FLAG_IDCheck_OK==1){
                                      FLAG_IDCheck_OK=0;
                                      BEEP_and_LED();
@@ -186,8 +188,13 @@ void ID_Decode_IDCheck(void)
 #endif
 #if defined(__Product_PIC32MX2_Receiver__)
                     if(Freq_Scanning_CH_bak==0){
-                        if((DATA_Packet_Control&0x14)==0x14){if(TIMER1s==0)TIMER1s=3800-30;}
-                        else TIMER1s=1000;
+                         if(DATA_Packet_Control==0x40){TIMER1s=3000;TIME_auto_out=1000;}
+			 else{
+			   FG_auto_out=0;
+			   TIME_auto_close=0;
+		           if((DATA_Packet_Control&0x14)==0x14){if(TIMER1s==0)TIMER1s=3800-30;}
+			   else  TIMER1s=1000;
+			}
                     }
                     else {
                         if(((DATA_Packet_Control&0x20)==0x20)||((DATA_Packet_Control&0x40)==0x40))TIMER1s=500;
@@ -298,7 +305,7 @@ void ID_Decode_OUT(void)
     Control_i=DATA_Packet_Control&0xFF;
     if(TIMER1s){
                 switch (Control_i){
-                     case 0x14:
+                     case 0x14:                     //stop+login
                                 Receiver_LED_OUT=1;
                                 TIMER250ms_STOP=250;
                                 Receiver_OUT_STOP=1;
@@ -306,28 +313,28 @@ void ID_Decode_OUT(void)
                                                  LATASET=0x0002;
                                                  Receiver_OUT_CLOSE=1;Receiver_BEEP();}
                                 break;
-                     case 0x02:
+                     case 0x02:                        //close
                                 Receiver_LED_OUT=1;
                                 //Receiver_OUT_OPEN=0;
                                 LATACLR=0x0002;
                                 Receiver_OUT_STOP=0;
                                 Receiver_OUT_CLOSE=1;
                                 break;
-                     case 0x04:
+                     case 0x04:                      //stop
                                 Receiver_LED_OUT=1;
                                 //Receiver_OUT_OPEN=0;
                                 LATACLR=0x0002;
                                 Receiver_OUT_CLOSE=0;
                                 Receiver_OUT_STOP=1;
                                 break;
-                     case 0x08:
+                     case 0x08:                      //open
                                 Receiver_LED_OUT=1;
                                 Receiver_OUT_STOP=0;
                                 Receiver_OUT_CLOSE=0;
                                 //Receiver_OUT_OPEN=1;
                                 LATASET=0x0002;
                                 break;
-                     case 0x0C:
+                     case 0x0C:                    //open+stop
                                 Receiver_LED_OUT=1;
                                 TIMER250ms_STOP=250;
                                 Receiver_OUT_CLOSE=0;
@@ -335,7 +342,7 @@ void ID_Decode_OUT(void)
                                 //Receiver_OUT_OPEN=1;
                                 LATASET=0x0002;
                                 break;
-                     case 0x06:
+                     case 0x06:                  //close+stop
                                 Receiver_LED_OUT=1;
                                 TIMER250ms_STOP=250;
                                 //Receiver_OUT_OPEN=0;
@@ -343,7 +350,7 @@ void ID_Decode_OUT(void)
                                 Receiver_OUT_STOP=1;
                                 Receiver_OUT_CLOSE=1;   
                                 break;
-                     case 0x01:  
+                     case 0x01:                  //VENT
                                 Receiver_LED_OUT=1;
                                 //Receiver_OUT_OPEN=1;
                                 LATASET=0x0002;
@@ -351,7 +358,7 @@ void ID_Decode_OUT(void)
                                 Receiver_OUT_CLOSE=1;
                                 break;
                      case 0x20:
-                                if(Freq_Scanning_CH_bak==1){
+                                if(Freq_Scanning_CH_bak==1){          //429M  角度调整（开）
                                         Receiver_LED_OUT=1;
                                         //Receiver_OUT_OPEN=1;
                                         LATASET=0x0002;
@@ -359,17 +366,36 @@ void ID_Decode_OUT(void)
                                         Receiver_OUT_CLOSE=0;
                                 }
                                 break;
+                     case 0x0A:                       //close+OPEN
+                                Receiver_LED_OUT=1;
+                                Receiver_OUT_STOP=0;
+				//Receiver_OUT_VENT=FG_NOT_allow_out;
+                                //Receiver_OUT_OPEN=1;
+                                LATASET=0x0002;
+                                Receiver_OUT_CLOSE=1;
+                                break;
                      case 0x40:
-                                if(Freq_Scanning_CH_bak==1){
+                                if(Freq_Scanning_CH_bak==1){          //429M  角度调整（关）
                                         Receiver_LED_OUT=1;
                                         //Receiver_OUT_OPEN=0;
                                         LATACLR=0x0002;
                                         Receiver_OUT_STOP=0;
                                         Receiver_OUT_CLOSE=1;
                                 }
+                                else{
+                                    if(FG_auto_out==0){                  //自动送信
+                                        Receiver_LED_OUT=1;
+                                        TIMER250ms_STOP=0;
+                                        //Receiver_OUT_VENT=FG_NOT_allow_out;
+                                        Receiver_OUT_CLOSE=0;
+                                        if(TIMER1s>2000){Receiver_OUT_STOP=1;LATACLR=0x0002;}
+                                        else if(TIMER1s>1000){Receiver_OUT_STOP=0;LATACLR=0x0002;}
+                                        else {FG_auto_out=1;Receiver_OUT_STOP=0;LATASET=0x0002;}
+                                    }
+                                }
                                 break;
                      case 0x10:
-                                if(Freq_Scanning_CH_bak==1){
+                                if(Freq_Scanning_CH_bak==1){             //429M   半开
                                     if(TIMER1s>(TIMER_Semi_open*1000)){
                                         //Receiver_OUT_OPEN=1;
                                         LATASET=0x0002;
@@ -410,16 +436,30 @@ void ID_Decode_OUT(void)
 //                if((DATA_Packet_Control&0x06)==0x06)TIMER250ms_STOP=250;
                }       
      else {
+           if((FG_auto_out==1)&&(TIME_auto_out==0)){FG_auto_out=0;TIME_auto_close=300;Receiver_LED_OUT=1;}
+	   if(TIME_auto_close){
+                if(TIME_auto_close>200){Receiver_OUT_STOP=1;Receiver_OUT_CLOSE=0;}
+                else if(TIME_auto_close>100){Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=0;}
+	        else {Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=1;}
+	   }
+	   else {
+               Receiver_OUT_CLOSE=0;
+               LATACLR=0x0002;
+               if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
+               else Receiver_LED_OUT=0;    
+               if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
+           }
+
            FLAG__Semi_open_T=0;
            if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
            if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status+4;FLAG_HA_START=1;}   //受信器自动发送HA状态码为实际HA码+4
            FLAG_Receiver_BEEP=0;
-           if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
-           else Receiver_LED_OUT=0;
+           //if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
+           //else Receiver_LED_OUT=0;
            //Receiver_OUT_OPEN=0;
-           LATACLR=0x0002;
-           Receiver_OUT_CLOSE=0;
-           if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
+           //LATACLR=0x0002;
+           //Receiver_OUT_CLOSE=0;
+           //if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
           }
     if(TIMER300ms==0)Receiver_LED_RX=0;
  #endif
@@ -454,7 +494,8 @@ void ID_Decode_OUT(void)
         FLAG_email_send=0;
         Email_check_mail();
         if(FLAG_Emial_time==1){FLAG_Emial_time=0;HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=Emial_time_data[Emial_time_place][5];HA_uart[9]=Emial_time_data[Emial_time_place][6];HA_uart_email(EMIAL_id_PCS);} //邮件定时器到时 邮件送信
-        else if(HA_Change_email_Step==2){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}     //HA状态变化通知  上次邮件发送内容和本次内容不一样
+        //2014.10.11修改
+        else if((FLAG_Email_check==1)&&(HA_Change_email_Step==2)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}     //HA状态变化通知  上次邮件发送内容和本次内容不一样
         else if((FLAG_Email_check==1)&&(HA_Change_send_email[0]==1)&&(FLAG_HA_Change_ERROR==1)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}
     }
     //if((HA_Change_send_email[0]==1)&&(HA_Change_email_time==0)&&(HA_Change_email_Step==1)){

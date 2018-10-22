@@ -19,3 +19,8 @@ extern void HA_uart_email_Repeat(void);
 extern void uart_send_APP_allID(void);
 extern void uart_send_APP_answer(UINT8 answer_data);
 #endif
+
+ #if defined(__32MX250F128D__)
+extern void APP_OUT_TEST1(unsigned char *time_TEST1);
+extern void APP_OUT_TEST2(unsigned char *time_TEST2);
+ #endif

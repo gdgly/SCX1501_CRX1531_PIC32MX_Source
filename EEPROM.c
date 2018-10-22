@@ -83,6 +83,8 @@ void ID_learn(void)
 
      if(rssi_TIME)--rssi_TIME;
      if(TIMER60s)--TIMER60s;
+     if(TIME_auto_out)--TIME_auto_out;
+     if(TIME_auto_close)--TIME_auto_close;
      if(TIMER_err_1s)--TIMER_err_1s;
      if(TIMER_Sensor_open_1s)--TIMER_Sensor_open_1s;
      if(TIMER_Sensor_close_1s)--TIMER_Sensor_close_1s;
@@ -296,7 +298,7 @@ void ID_EEPROM_Initial(void)
     }
 #if defined(__Product_PIC32MX2_Receiver__)
     Read(&xm[0],0x7E5,1);
-    if((xm[0]>0xBD)||(xm[0]<0x81))TIMER_Semi_open=30;
+    if((xm[0]>0xBD)||(xm[0]<0x81))TIMER_Semi_open=20;      //30
     else TIMER_Semi_open=(xm[0]-1)&0x7F;
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -357,7 +359,8 @@ void ID_EEPROM_Initial(void)
     }
 
     Read_Time(&xm[0]);
-    RTC_Minutes=xm[2]*60+xm[1];
+    //RTC_Minutes=xm[2]*60+xm[1];
+    RTC_Minutes=Hex_Decimal(xm[2],xm[1]);             //2014.10.11修改   解决TIMER有时不动作
     NEW_set_alarm_pcf8563(RTC_Minutes);
 
     Read(&xm[0],0x7ED,3);       //0x7ED      卷帘门状态变化是否邮件件送信   0x00->OFF    0x01->ON
@@ -442,19 +445,26 @@ void Sunrise_sunset_EEPROM_write(void){         //日出日落表格数据DATA设置保存
     }
     SUN_time_get(SUN_ON_OFF_seat[2]);
     Read_Time(&xn[0]);
-    RTC_Minutes=xn[2]*60+xn[1];
+    //RTC_Minutes=xn[2]*60+xn[1];
+    RTC_Minutes=Hex_Decimal(xn[2],xn[1]);             //2014.10.11修改   解决TIMER有时不动作
     NEW_set_alarm_pcf8563(RTC_Minutes);
 }
 void SUN_time_get(UINT8 value){         //查询某月某地在日出日落表格数据DATA中的OPEN CLOSE时间
     UINT8 xm[10]={0};
-    UINT16 i;                        //UINT8 i; -----> UINT16 i;     2014年7月23日修正
+    UINT8 x_h0,x_h1;
+    //UINT16 i_m7;                        //UINT8 i; -----> UINT16 i;     2014年7月23日修正
+
     if((value>0)&&(value<=10)){
         Read_Time(&xm[0]);
-        i=(xm[5]-1)*40+(value-1)*4;
-        WIFI_alarm_data[10][3]=Sunrise_sunset_DATA[i];
-        WIFI_alarm_data[10][4]=Sunrise_sunset_DATA[i+1];
-        WIFI_alarm_data[11][3]=Sunrise_sunset_DATA[i+2];
-        WIFI_alarm_data[11][4]=Sunrise_sunset_DATA[i+3];
+        x_h0=xm[5]>>4;
+        x_h0=x_h0*10;
+        x_h1=xm[5]&0x0F;
+        x_h0=x_h0+x_h1;
+        DATA_SUN_time_get=(x_h0-1)*40+(value-1)*4;
+        WIFI_alarm_data[10][3]=Sunrise_sunset_DATA[DATA_SUN_time_get];
+        WIFI_alarm_data[10][4]=Sunrise_sunset_DATA[DATA_SUN_time_get+1];
+        WIFI_alarm_data[11][3]=Sunrise_sunset_DATA[DATA_SUN_time_get+2];
+        WIFI_alarm_data[11][4]=Sunrise_sunset_DATA[DATA_SUN_time_get+3];
         SUN_Weekdays_alarm=xm[5];
     }
 }
@@ -507,7 +517,8 @@ void alarm_EEPROM_write(void)
     if(FLAG_Write_Read_compare==1){
         for(i=0;i<103;i++)WIFI_alarm_data[m1-1][i]=WIFI_alarm_data_Cache[i];
         Read_Time(&xm[0]);
-        RTC_Minutes=xm[2]*60+xm[1];
+        //RTC_Minutes=xm[2]*60+xm[1];
+        RTC_Minutes=Hex_Decimal(xm[2],xm[1]);             //2014.10.11修改   解决TIMER有时不动作
         NEW_set_alarm_pcf8563(RTC_Minutes);
     }
 //    xmm.IDB[0]=UART1_DATA[8];
@@ -659,7 +670,8 @@ void SUN_EEPROM_write(void)
         for(i=0;i<103;i++){WIFI_alarm_data[10][i]=WIFI_alarm_data_Cache[0][i];WIFI_alarm_data[11][i]=WIFI_alarm_data_Cache[1][i];}
         SUN_time_get(SUN_ON_OFF_seat[2]);
         Read_Time(&xm[0]);
-        RTC_Minutes=xm[2]*60+xm[1];
+        //RTC_Minutes=xm[2]*60+xm[1];
+        RTC_Minutes=Hex_Decimal(xm[2],xm[1]);             //2014.10.11修改   解决TIMER有时不动作
         NEW_set_alarm_pcf8563(RTC_Minutes);
     }
 }
@@ -699,7 +711,8 @@ void Emial_time_EEPROM_write(void)
     if(FLAG_Write_Read_compare==1){
         for(i=0;i<7;i++)Emial_time_data[m1][i]=Emial_time_data_Cache[i];
         Read_Time(&xm[0]);
-        RTC_Minutes=xm[2]*60+xm[1];
+        //RTC_Minutes=xm[2]*60+xm[1];
+        RTC_Minutes=Hex_Decimal(xm[2],xm[1]);             //2014.10.11修改   解决TIMER有时不动作
         NEW_set_alarm_pcf8563(RTC_Minutes);
     }
 }

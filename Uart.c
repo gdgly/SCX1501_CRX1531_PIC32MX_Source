@@ -184,6 +184,7 @@ void UART_Decode(void)
             uart_y.uc[1]=UART1_DATA[9];
             switch(uart_y.ui){
                 case 0x0101:                                           //卷帘门依次单个HA状态取得
+                          APP_check_char=0;     //2014.10.11修改
                 case 0x0102:                                           //卷帘门依次单个操作
                             for(i=8;i<16;i++)  m+=UART1_DATA[i];
                             n=UART1_DATA[16]+UART1_DATA[17]*256;
@@ -237,7 +238,8 @@ void UART_Decode(void)
                                     Set_Time(&UART1_DATA[11]);       //==0x00  写时钟
                                     SUN_time_get(SUN_ON_OFF_seat[2]);
                                     Read_Time(&xm00[0]);
-                                    RTC_Minutes00=xm00[2]*60+xm00[1];
+                                    //RTC_Minutes00=xm00[2]*60+xm00[1];
+                                    RTC_Minutes00=Hex_Decimal(xm00[2],xm00[1]);             //2014.10.11修改   解决TIMER有时不动作
                                     NEW_set_alarm_pcf8563(RTC_Minutes00);
                                     uart_send_APP_Public(0x05,0);
                                 }
@@ -384,10 +386,10 @@ void UART_Decode(void)
                                     U1TXREG=0x65;      //e
                                     U1TXREG=0x72;      //r
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-                                    U1TXREG=0x32;      //2
+                                    U1TXREG=0x33;      //3              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x37;      //7
-                                    U1TXREG=0xD4;     //0x16B+0x32+0x37
+                                    U1TXREG=0x33;      //3
+                                    U1TXREG=0xD1;     //0x16B+0x33+0x33
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -738,9 +740,15 @@ void HA_uart_send_APP(void)
     HA_uart_app[16]=m%256;
     HA_uart_app[17]=m/256;
 
-    for(i=0;i<18;i++){
-        U1TXREG=HA_uart_app[i];
-        if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0))    //2014.10.11修改
+    {
+        for(i=0;i<18;i++){
+            U1TXREG=HA_uart_app[i];
+            if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+        }
+        APP_check_ID=b0.IDL;
+        APP_check_Control=HA_uart_app[14];
+        APP_check_char=1;
     }
  #endif
 }
@@ -950,3 +958,41 @@ void uart_send_APP_Public(UINT8 Public_X,UINT8 Public_Y)     //Public_X ->指令类
     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
  #endif
 }
+
+
+ #if defined(__32MX250F128D__)
+void APP_OUT_TEST1(unsigned char *time_TEST1)
+{
+    UINT16 i_x0;
+    uart_send_APP_Head();
+    U1TXREG=0x06;
+    U1TXREG=0x00;
+    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+    U1TXREG=0xE0;
+    U1TXREG=0x01;
+    U1TXREG=time_TEST1[1];
+    U1TXREG=time_TEST1[2];
+    U1TXREG=WIFI_alarm_Hours_Minutes[1];
+    U1TXREG=WIFI_alarm_Hours_Minutes[0];
+    i_x0=0xE1+time_TEST1[1]+time_TEST1[2]+WIFI_alarm_Hours_Minutes[1]+WIFI_alarm_Hours_Minutes[0];
+    U1TXREG=i_x0%256;
+    U1TXREG=i_x0/256;
+    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+}
+void APP_OUT_TEST2(unsigned char *time_TEST2)
+{
+    UINT16 i_x0;
+    uart_send_APP_Head();
+    U1TXREG=0x04;
+    U1TXREG=0x00;
+    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+    U1TXREG=0xE1;
+    U1TXREG=0x01;
+    U1TXREG=time_TEST2[1];
+    U1TXREG=time_TEST2[0];
+    i_x0=0xE2+time_TEST2[0]+time_TEST2[1];
+    U1TXREG=i_x0%256;
+    U1TXREG=i_x0/256;
+    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+}
+ #endif

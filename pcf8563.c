@@ -274,13 +274,32 @@ void alarm_pcf8563(unsigned char *time_alarm)
 #if defined(__Product_PIC32MX2_WIFI__)
      UINT8 data_i[4]={0x80,0x80,0x80,0x80};
           data_i[0]=time_alarm[0];
-          data_i[1]=time_alarm[1];
+          //data_i[1]=time_alarm[1];
           Write_pcf8563(&data_i[0],0x09,4);
           Delayus(10);
           data_i[0]=2;
           Write_pcf8563(&data_i[0],0x01,1);
 #endif
 }
+#if defined(__Product_PIC32MX2_WIFI__)
+UINT16 Hex_Decimal(UINT8 value_h,UINT8 value_m)
+{
+    UINT8 x_h0,x_h1,x_m0,x_m1;
+    UINT16 x_hm;
+    x_h0=value_h>>4;
+    x_h0=x_h0*10;
+    x_h1=value_h&0x0F;
+    x_h0=x_h0+x_h1;
+
+    x_m0=value_m>>4;
+    x_m0=x_m0*10;
+    x_m1=value_m&0x0F;
+    x_m0=x_m0+x_m1;
+
+    x_hm=x_h0*60+x_m0;
+    return x_hm;
+}
+#endif
 void NEW_set_alarm_pcf8563(UINT16 value0)
 {
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -292,8 +311,9 @@ void NEW_set_alarm_pcf8563(UINT16 value0)
     for(i=0;i<22;i++){
         if(i<12){
                 if((WIFI_alarm_data[i][1]==0x00)||(WIFI_alarm_data[i][3]==0xFF)||(WIFI_alarm_data[i][4]==0xFF));
-                else{
-                    alarm_Minutes=WIFI_alarm_data[i][3]*60+WIFI_alarm_data[i][4];
+                else if(WIFI_alarm_data[i][1]==0x01){
+                    //alarm_Minutes=WIFI_alarm_data[i][3]*60+WIFI_alarm_data[i][4];
+                    alarm_Minutes=Hex_Decimal(WIFI_alarm_data[i][3],WIFI_alarm_data[i][4]);    //2014.10.11修改   解决TIMER有时不动作
                     if(alarm_Minutes>value0)time_differ=alarm_Minutes-value0;
                     //else if(alarm_Minutes<value0)time_differ=alarm_Minutes+1440-value0;
                     //else if(alarm_Minutes==value0);//相等时控制输出，后面追加控制输出代码
@@ -304,8 +324,9 @@ void NEW_set_alarm_pcf8563(UINT16 value0)
         else {
                 i1=i-12;
                 if((Emial_time_data[i1][1]==0x00)||(Emial_time_data[i1][2]==0xFF)||(Emial_time_data[i1][3]==0xFF));
-                else{
-                    alarm_Minutes=Emial_time_data[i1][2]*60+Emial_time_data[i1][3];
+                else if(WIFI_alarm_data[i1][1]==0x01){
+                    //alarm_Minutes=Emial_time_data[i1][2]*60+Emial_time_data[i1][3];
+                     alarm_Minutes=Hex_Decimal(Emial_time_data[i1][2],Emial_time_data[i1][3]);    //2014.10.11修改   解决TIMER有时不动作
                     if(alarm_Minutes>value0)time_differ=alarm_Minutes-value0;
                     //else if(alarm_Minutes<value0)time_differ=alarm_Minutes+1440-value0;
                     //else if(alarm_Minutes==value0);//相等时控制输出，后面追加控制输出代码

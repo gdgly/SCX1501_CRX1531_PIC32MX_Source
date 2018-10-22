@@ -240,6 +240,10 @@ extern UINT8 FLAG_HA_ERR_Sensor;
 extern UINT8 FLAG_HA_ERR_bit;
 extern UINT8 TIMER_Semi_open;
 extern UINT8 FLAG__Semi_open_T;
+
+extern UINT16  TIME_auto_out;
+extern UINT16  TIME_auto_close;
+extern UINT8 FG_auto_out;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -278,6 +282,11 @@ extern UINT8 FLAG__Semi_open_T;
 
     extern UINT8 FLAG_Write_Read_compare;
     extern UINT8 uart_Control_code;
+
+    extern UINT32 APP_check_ID;              //2014.10.11修改
+    extern UINT8  APP_check_Control;
+    extern UINT8  APP_check_char;
+    extern UINT16  DATA_SUN_time_get;
 
     extern UINT8 TIME_WIFI_LAN_SELECT;
     extern UINT8 FLAG_WIFI_LAN_SELECT;
@@ -354,8 +363,6 @@ extern void Delay100us(unsigned int timer);
     /* wifi集中通讯机使用的IO*/
     #define  WIFI_L_Login_IO      TRISAbits.TRISA7 // Input   wifi集中通讯机登录键   低电平有效
     #define  WIFI_USBLogin_IO     TRISCbits.TRISC7 // Input   wifi集中通讯机USB升级键   低电平有效
-//    #define  WIFI_Useless0_IO      TRISAbits.TRISA10 // Input  样机板后面没有用  测试版作为SW2
-//    #define  WIFI_Useless1_IO     TRISCbits.TRISC6 // output  样机板后面没有用    测试版作为LED2
     #define  WIFI_USBOC_IO        TRISBbits.TRISB3 // Input   wifi集中USB保护监测   低电平有效
     #define  WIFI_LED_RX_IO       TRISCbits.TRISC8 // Input   wifi集中通讯机受信指示 低电平有效
     #define  WIFI_LED_TX_IO       TRISCbits.TRISC9 // Input   wifi集中通讯机送信指示 低电平有效
@@ -363,6 +370,7 @@ extern void Delay100us(unsigned int timer);
     #define  WIFI_LAN_SELECT_IO   TRISCbits.TRISC6 // Input   有线LAN、WIFI切换
     #define  WIFI_POWER_IO        TRISAbits.TRISA10 // output  WIFI电源  低电平有效
     #define  LAN_POWER_IO         TRISBbits.TRISB13 // output  LAN电源  低电平有效
+
 #endif
 
 
@@ -436,8 +444,6 @@ extern void Delay100us(unsigned int timer);
     /* wifi集中通讯机使用的IO*/
     #define  WIFI_L_Login      PORTAbits.RA7 // Input   wifi集中通讯机登录键   低电平有效
     #define  WIFI_USBLogin     PORTCbits.RC7 // Input   wifi集中通讯机USB升级键   低电平有效
-//    #define  WIFI_Useless0     PORTAbits.RA10 // Input  样机板后面没有用  测试版作为SW2
-//    #define  WIFI_Useless1     PORTCbits.RC6 // output  样机板后面没有用    测试版作为LED2
     #define  WIFI_USBOC        PORTBbits.RB3 // Input   wifi集中USB保护监测   低电平有效
     #define  WIFI_LED_RX       LATCbits.LATC8 // Output   wifi集中通讯机受信指示 低电平有效
     #define  WIFI_LED_TX       LATCbits.LATC9 // Output   wifi集中通讯机送信指示 低电平有效
