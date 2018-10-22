@@ -90,6 +90,7 @@ void ID_learn(void)
      if(TIMER_Sensor_open_1s)--TIMER_Sensor_open_1s;
      if(TIMER_Sensor_close_1s)--TIMER_Sensor_close_1s;
      if(TIME_DIP_switch)--TIME_DIP_switch;
+     if(TIME_Fine_Calibration)--TIME_Fine_Calibration;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
        else if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
           else {TIME_Receiver_Login=0;COUNT_Receiver_Login=0;}
@@ -153,6 +154,7 @@ void ID_learn(void)
      if((TIME_email_send)&&(HA_Change_email_time==0))--TIME_email_send;
      if(FLAG_all_Erase_time)--FLAG_all_Erase_time;
      if(HA_Change_email_time)--HA_Change_email_time;
+     if(TIME_Fine_Calibration)--TIME_Fine_Calibration;
      if(TIME_WIFI_LAN_SELECT)--TIME_WIFI_LAN_SELECT;
      if(TIME_one_hour)--TIME_one_hour;         //2015.1.30追加修改1小时查询一次HA状态
 
