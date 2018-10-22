@@ -675,8 +675,8 @@ void HA_uart_send_APP(void)
         HA_uart_app[12]=b0.IDB[1];
         HA_uart_app[13]=b0.IDB[2];
         HA_uart_app[15]=0xFF;
-        if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==0)) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
-        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1)){FG_Second=1;APP_check_char=0;}
+        if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==0)&&(Control_code!=0)) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
+        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1)&&(Control_code!=0)){FG_Second=1;APP_check_char=0;}
         if(UART_DATA_buffer[8]==0x10){HA_uart_app[14]=0xFF;HA_uart_app[15]=0x00;}
     }
     else if(read_TIMER_Semi_open!=0){HA_uart_app[14]=read_TIMER_Semi_open-1;read_TIMER_Semi_open=0;HA_uart_app[15]=0x00;}
@@ -693,9 +693,9 @@ void HA_uart_send_APP(void)
     HA_uart_app[17]=m/256;
 
     //if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(HA_uart_app[14]==5)||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))    //2014.10.11修改
-    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))
+    if(((b0.IDL!=0)&&(APP_check_ID!=b0.IDL))||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))
     {
-        if((HA_uart_app[14]==5)&&(FG_Second==0));
+        if((FLAG_AUTO_SEND_START==1)&&(HA_uart_app[14]==5)&&(FG_Second==0));
         else {
             for(i=0;i<18;i++){
                 U1TXREG=HA_uart_app[i];
