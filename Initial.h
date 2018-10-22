@@ -85,9 +85,13 @@ extern FLAG FLAG_APP;
 	//************************************************
 	#define 	FLAG_APP_BYTE		FLAG_APP.BYTE	 
 	//------------------------------------------------
-	#define		FLAG_APP_SW1		FLAG_APP.BIT.Bit0      //test use
-        #define		FLAG_APP_SW2		FLAG_APP.BIT.Bit1      //test use
-        #define		FLAG_APP_SW3		FLAG_APP.BIT.Bit2      //test use
+	#define		FLAG_AUTO_SEND_START		FLAG_APP.BIT.Bit0      
+        #define		FLAG_AUTO_SEND_ok		FLAG_APP.BIT.Bit1      
+        #define		Freq_Scanning_CH_save_HA	FLAG_APP.BIT.Bit2
+
+//        #define		FLAG_APP_SW1		FLAG_APP.BIT.Bit0      //test use
+//        #define		FLAG_APP_SW2		FLAG_APP.BIT.Bit1      //test use
+//        #define		FLAG_APP_SW3		FLAG_APP.BIT.Bit2      //test use
 
 	#define		FLAG_rssi_Freq		FLAG_APP.BIT.Bit3
 	#define		FLAG_Receiver_BEEP	FLAG_APP.BIT.Bit4
@@ -121,6 +125,9 @@ extern FLAG FLAG_APP;
 
         #define		FLAG_426MHz_Reply    	FLAG_APP.BIT.Bit27
         #define		FLAG_email_Repeat    	FLAG_APP.BIT.Bit28
+
+        #define		FLAG_Email_check    	FLAG_APP.BIT.Bit29
+        #define		FLAG_ID_Erase_Login_PCS   FLAG_APP.BIT.Bit30
 	//************************************************
 
 
@@ -148,6 +155,7 @@ extern UINT8   TIMER250ms_STOP;
 extern UINT16  TIMER60s;
 extern UINT8   HA_Status;
 extern UINT8   Emial_Control;
+extern UINT32  Emial_ID;
 extern UINT8  Freq_Scanning_CH;
 extern UINT8  Freq_Scanning_CH_bak;
 extern UINT8  Freq_Scanning_CH_save;
@@ -176,8 +184,8 @@ extern UINT8 ID_INT_CODE;
 
 extern UINT16 UART_DATA_i;
 extern UINT8  UART_DATA_cnt;
-extern UINT8  UART1_DATA[18];
-extern UINT8  UART_DATA_buffer[18];
+extern UINT8  UART1_DATA[27];
+extern UINT8  UART_DATA_buffer[27];
 extern UINT8  TIME_UART;
 extern UINT8  UART_send_count;
 extern UINT16 TIME_email_Repeat;
@@ -208,6 +216,17 @@ extern UINT8 FLAG_UART_0xBB;
 extern UINT8  FLAG_UART_ok;
 extern UINT8  FLAG_ADF7021_ReInitial;
 extern UINT8 FLAG_IDCheck_OK;
+
+#if defined(__Product_PIC32MX2_WIFI__)
+    extern UINT8 WIFI_alarm_data[200][10];
+    extern UINT8 WIFI_alarm_data_PCS;
+    extern UINT8 WIFI_alarm_Hours_Minutes[2];
+    extern UINT8 AUTO_SEND_DATA[200][4];
+    extern UINT8 AUTO_SEND_DATA_pcs;
+    extern UINT16 TIME_alarm_AUTO;
+    extern UINT8 AUTO_HA_Inquiry;
+#endif
+
 
 extern void VHF_GPIO_INIT(void);		// CPU端口设置
 extern void Delayus(unsigned int timer);
@@ -271,6 +290,8 @@ extern void Delay100us(unsigned int timer);
 
    #define	SDAIO                   TRISCbits.TRISC2 // Input AND output
    #define	SCLIO                   TRISCbits.TRISC1 // output
+
+   #define	PCF8563_INT_IO          TRISCbits.TRISC0 // Input    追加定时OPEN CLOSE
 
     /* wifi集中通讯机使用的IO*/
     #define  WIFI_L_Login_IO      TRISAbits.TRISA7 // Input   wifi集中通讯机登录键   低电平有效
@@ -345,6 +366,8 @@ extern void Delay100us(unsigned int timer);
     #define	SDA                     LATCbits.LATC2     // Output
     #define	SDA_I                   PORTCbits.RC2 // Input
     #define	SCL                     LATCbits.LATC1     // Output
+
+   #define	PCF8563_INT           PORTCbits.RC0 // Input    追加定时OPEN CLOSE
 
     /* wifi集中通讯机使用的IO*/
     #define  WIFI_L_Login      PORTAbits.RA7 // Input   wifi集中通讯机登录键   低电平有效

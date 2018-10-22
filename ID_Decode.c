@@ -14,6 +14,11 @@
 #include "Uart.h"
 #include "pcf8563.h"
 
+ #if defined(__Product_PIC32MX2_WIFI__)
+    UINT32 Email_check_ID[64]={0x00};
+    UINT8  Emial_check_Control[64]={0x00};
+ #endif
+
 void ID_Decode_function(void);
 void  Freq_Scanning(void);
 void ID_code_function(void);
@@ -23,6 +28,7 @@ void SendTxData(void);
 void ID_Decode_OUT(void);
 void Signal_DATA_Decode(UINT8 NUM_Type);
 void BEEP_and_LED(void);
+void Email_check(void);
 
 void ID_Decode_Initial_INT(void)
 {
@@ -146,8 +152,8 @@ void ID_Decode_IDCheck(void)
             else if(FLAG_IDCheck_OK==1)
             {
                 FLAG_IDCheck_OK=0;
-                if(Freq_Scanning_CH_bak==0)Freq_Scanning_CH_save=0;   //保存记录下收到信号的频率信道,0代表426M
-                else Freq_Scanning_CH_save=1;  //                       1代表429M
+                if(Freq_Scanning_CH_bak==0){Freq_Scanning_CH_save=1;Freq_Scanning_CH_save_HA=0; }  //当前收到426M控制   但保存记录下收到信号的频率信道,0代表426M
+                else Freq_Scanning_CH_save_HA=1;  //                       1代表429M
                 DATA_Packet_Control_0=DATA_Packet_Control;
                 if(((DATA_Packet_Code[1]&0x0000FFFF)==0x5556)&&(Freq_Scanning_CH_bak==0)){
                     Signal_DATA_Decode(1);
@@ -177,7 +183,7 @@ void ID_Decode_IDCheck(void)
 #endif
 #if defined(__Product_PIC32MX2_Receiver__)
                     if(Freq_Scanning_CH_bak==0){
-                        if((DATA_Packet_Control&0x14)==0x14)TIMER1s=3800;
+                        if((DATA_Packet_Control&0x14)==0x14){if(TIMER1s==0)TIMER1s=3800-30;}
                         else TIMER1s=1000;
                     }
                     else TIMER1s=1000;
@@ -228,6 +234,7 @@ void BEEP_and_LED(void)
          Receiver_Buzzer=!Receiver_Buzzer;   //蜂鸣器频率2.08KHZ
          //Delayus(190);     //特别说明：该行采用XC32的0级优化，即无优化
          Delayus(240);//特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+         ClearWDT(); // Service the WDT
      }
      Receiver_Buzzer=0;
      Receiver_LED_OUT=0;
@@ -236,6 +243,7 @@ void BEEP_and_LED(void)
      WIFI_LED_RX=1;
      for(i=0;i<8000;i++){        
          Delayus(190);       //2.08KHZ
+         ClearWDT(); // Service the WDT
      }
      WIFI_LED_RX=0;
 #endif
@@ -253,11 +261,13 @@ void Receiver_BEEP(void)
              Receiver_Buzzer=!Receiver_Buzzer;   //蜂鸣器频率2.08KHZ
              //Delayus(190);     //特别说明：该行采用XC32的0级优化，即无优化
              Delayus(240);//特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+             ClearWDT(); // Service the WDT
          }
          for(i=0;i<1800;i++){
              Receiver_Buzzer=0;   //蜂鸣器频率2.08KHZ
              //Delayus(190);     //特别说明：该行采用XC32的0级优化，即无优化
              Delayus(240);//特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+             ClearWDT(); // Service the WDT
          }
        }
        Receiver_Buzzer=0;
@@ -279,7 +289,7 @@ void ID_Decode_OUT(void)
                                 TIMER250ms_STOP=250;
                                 Receiver_OUT_STOP=1;
                                 if(TIMER1s<3550){//Receiver_OUT_OPEN=1;
-                                                 LATACLR=0x0002;
+                                                 LATASET=0x0002;
                                                  Receiver_OUT_CLOSE=1;Receiver_BEEP();}
                                 break;
                      case 0x02:
@@ -351,20 +361,57 @@ void ID_Decode_OUT(void)
      else if(TIMER1s) WIFI_LED_RX=1;
      else WIFI_LED_RX=0;
 
-     if(FLAG_HA_Inquiry==1){
+//     if(FLAG_HA_Inquiry==1){
+//         if((DATA_Packet_Control_0==0x81)||(DATA_Packet_Control_0==0x82)||(DATA_Packet_Control_0==0x83)){
+//             FLAG_HA_Inquiry=0;
+//             HA_uart_send_APP();
+//         }
+//     }
+//     if((Freq_Scanning_CH_save==1)&&((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x82)||(DATA_Packet_Control==0x83))){
+//         Email_check();
+//         if(((Emial_ID!=DATA_Packet_ID)&&(FLAG_Email_check==1))||((Emial_ID==DATA_Packet_ID)&&(Emial_Control!=DATA_Packet_Control))){
+//               HA_uart_send();
+//               Emial_ID=DATA_Packet_ID;
+//               Emial_Control=DATA_Packet_Control;
+//               Freq_Scanning_CH_save=0;
+//         }
+//     }
+
          if((DATA_Packet_Control_0==0x81)||(DATA_Packet_Control_0==0x82)||(DATA_Packet_Control_0==0x83)){
-             FLAG_HA_Inquiry=0;
-             HA_uart_send_APP();
+             if((FLAG_HA_Inquiry==1)||((Freq_Scanning_CH_save==1)&&((Emial_Control!=DATA_Packet_Control_0)||(Emial_ID!=DATA_Packet_ID)))){
+                     HA_uart_send_APP();
+                     Email_check();
+                     if(((Emial_ID!=DATA_Packet_ID)&&(FLAG_Email_check==1))||((Emial_ID==DATA_Packet_ID)&&(Emial_Control!=DATA_Packet_Control_0))){
+                           HA_uart_send();    //发邮件
+                           Emial_ID=DATA_Packet_ID;
+                           Emial_Control=DATA_Packet_Control_0;
+                     }
+                     //DATA_Packet_Control_0=0x00;
+                     Freq_Scanning_CH_save=0;
+                     FLAG_HA_Inquiry=0;
+             }
          }
-     }
-     if((Freq_Scanning_CH_save==1)&&(Emial_Control!=DATA_Packet_Control)&&((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x82)||(DATA_Packet_Control==0x83))){
-       HA_uart_send();
-       Emial_Control=DATA_Packet_Control;
-       Freq_Scanning_CH_save=0;
-     }
+
  #endif    
 }
-
+void Email_check(void)
+{
+ #if defined(__Product_PIC32MX2_WIFI__)
+    UINT8 i;
+    if(Emial_ID!=DATA_Packet_ID)
+    {
+        for(i=0;i<64;i++)
+        {
+            if(Email_check_ID[i]==0x00){Email_check_ID[i]=DATA_Packet_ID;Emial_check_Control[i]=DATA_Packet_Control;FLAG_Email_check=1;break;}
+            if(Email_check_ID[i]==DATA_Packet_ID)
+            {
+                if(DATA_Packet_Control==Emial_check_Control[i]){FLAG_Email_check=0;break;}
+                else {Emial_check_Control[i]=DATA_Packet_Control;FLAG_Email_check=1;break;}
+            }
+        }
+    }
+ #endif
+}
 
 void  Freq_Scanning(void)
 {

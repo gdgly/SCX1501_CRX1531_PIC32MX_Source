@@ -36,6 +36,7 @@ UINT8   TIMER250ms_STOP=0;
 UINT16  TIMER60s=0;
 UINT8   HA_Status=0;
 UINT8   Emial_Control=0;
+UINT32  Emial_ID=0;
 UINT8   Freq_Scanning_CH=0;
 UINT8   Freq_Scanning_CH_bak=0;
 UINT8   Freq_Scanning_CH_save=0;
@@ -46,8 +47,8 @@ UINT8 ID_INT_CODE=0;
 
 UINT16 UART_DATA_i=0;
 UINT8  UART_DATA_cnt=0;
-UINT8  UART1_DATA[18]={0};
-UINT8  UART_DATA_buffer[18]={0};
+UINT8  UART1_DATA[27]={0};
+UINT8  UART_DATA_buffer[27]={0};
 UINT8  TIME_UART=0;
 UINT8  UART_send_count=0;
 UINT16 TIME_email_Repeat=0;
@@ -92,6 +93,16 @@ UINT8 FLAG_UART_ok=0;
 UINT8 FLAG_ADF7021_ReInitial=0;
 UINT8 FLAG_IDCheck_OK=0;
 
+#if defined(__Product_PIC32MX2_WIFI__)
+    UINT8 WIFI_alarm_data[200][10]={0};
+    UINT8 WIFI_alarm_data_PCS=0;
+    UINT8 WIFI_alarm_Hours_Minutes[2]={0xFF,0xFF};
+    UINT8 AUTO_SEND_DATA[200][4]={0};
+    UINT8 AUTO_SEND_DATA_pcs=0;
+    UINT16 TIME_alarm_AUTO=0;
+    UINT8 AUTO_HA_Inquiry=0;
+#endif
+
 
 void VHF_GPIO_INIT(void){	
     // CPU端口设置
@@ -105,6 +116,7 @@ void VHF_GPIO_INIT(void){
     TRISBbits.TRISB14=1;
     TRISAbits.TRISA0=1;
         HA_Status=0x81;
+        FLAG_open=1;
  #endif
 //    RTCCONbits.ON=0;
 //    RTCCONbits.RTCCLKON=0;
@@ -201,6 +213,10 @@ void VHF_GPIO_INIT(void){
        SDAIO=0; // Input AND output
        SCLIO=0; // output
 
+       PCF8563_INT_IO=1;// Input    追加定时OPEN CLOSE
+       CNPUCbits.CNPUC0=1;
+       //CNPDCbits.CNPDC0=0;
+       
      WIFI_L_Login_IO=1;// Input   wifi集中通讯机登录键   低电平有效
      WIFI_USBLogin_IO=1;// Input   wifi集中通讯机USB升级键   低电平有效
      WIFI_Useless0_IO=1;// Input  样机板后面没有用

@@ -269,6 +269,52 @@ void Read_pcf8563(UINT8 *s,UINT16 suba,UINT8 n)
  stop_i2c(); //发送停止位
 }
 #endif
+void alarm_pcf8563(unsigned char *time_alarm)
+{
+#if defined(__Product_PIC32MX2_WIFI__)
+     UINT8 data_i[4]={0x80,0x80,0x80,0x80};
+          data_i[0]=time_alarm[0];
+          data_i[1]=time_alarm[1];
+          Write_pcf8563(&data_i[0],0x09,4);
+          Delayus(10);
+          data_i[0]=2;
+          Write_pcf8563(&data_i[0],0x01,1);
+#endif
+}
+void NEW_set_alarm_pcf8563(UINT16 value0)
+{
+#if defined(__Product_PIC32MX2_WIFI__)
+    UINT8 i;
+    UINT16 alarm_Minutes,time_differ;
+    UINT16 Compare_data0=0xFFFF;
+    UINT8 xl[2]={0xFF,0xFF};
+
+    for(i=0;i<WIFI_alarm_data_PCS;i++){
+        alarm_Minutes=WIFI_alarm_data[i][8]*60+WIFI_alarm_data[i][9];
+        if(alarm_Minutes>value0)time_differ=alarm_Minutes-value0;
+        else if(alarm_Minutes<value0)time_differ=alarm_Minutes+1440-value0;
+        else if(alarm_Minutes==value0);//相等时控制输出，后面追加控制输出代码
+        if((time_differ<Compare_data0)&&(time_differ>0)){Compare_data0=time_differ;xl[1]=WIFI_alarm_data[i][8];xl[0]=WIFI_alarm_data[i][9];}
+    }
+    if((xl[0]!=0xFF)&&(xl[1]!=0xFF)){
+        alarm_pcf8563(&xl[0]);
+        WIFI_alarm_Hours_Minutes[0]=xl[1];
+        WIFI_alarm_Hours_Minutes[1]=xl[0];
+    }
+#endif
+}
+void alarm_OUT_bak(UINT16 value10)
+{
+#if defined(__Product_PIC32MX2_WIFI__)
+    FLAG_AUTO_SEND_START=1;
+    FLAG_AUTO_SEND_ok=0;
+    AUTO_SEND_DATA_pcs++;
+    AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][0]=WIFI_alarm_data[value10][0];
+    AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][1]=WIFI_alarm_data[value10][1];
+    AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][2]=WIFI_alarm_data[value10][2];
+    AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][3]=WIFI_alarm_data[value10][3];
+#endif
+}
  void Set_Time(unsigned char *time_arr)
  {
 #if defined(__Product_PIC32MX2_WIFI__)

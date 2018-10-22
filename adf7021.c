@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <plib.h>		// 常用C定义
 #include "initial.h"		// 初始化
+#include "pcf8563.h"
 
 void dd_write_7021_reg(unsigned char* reg_bytes)
 {
@@ -199,11 +200,7 @@ UINT8 dd_read_rssi_7021_reg(UINT8 readback_config)
 
 void dd_set_TX_mode(void)
 {
-//        ADF7021_CE = 0;         //以下是测试
-//        Delayus(20000);
-//        ADF7021_CE = 1;
-//        Delayus(20000);        //测试END
-        
+       
 	ADF70XX_REG_T register_value;
         //write R1, turn on VCO
 	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
@@ -233,7 +230,7 @@ void dd_set_TX_mode(void)
         Delayus(40);		//delay 40us
 
 	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）
+        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改   2FSK linear（0x00200004）   频偏不设置
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
@@ -298,7 +295,7 @@ void dd_set_RX_mode(void)
 
 	//write R4, turn on demodulation
 	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）
+        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改   2FSK linear（0x00200004）  频偏不设置
 	dd_write_7021_reg(&register_value.byte[0]);
 
 }
@@ -344,28 +341,12 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
     {
     	switch (CH){
             case 1:
-//                    #if defined(__Product_PIC32MX2_Receiver__)
-//                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-//                    #endif
-//                    #if defined(__Product_PIC32MX2_WIFI__)
-//                    if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))
-//                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-//                    else   register_value.whole_reg = 0x09574290;//CH=429.175MHz
-//                    #endif
                     register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
                     break;
             case 2:
                     register_value.whole_reg = 0x09574290;//CH=429.175MHz
                     break;
             case 3:
-//                    #if defined(__Product_PIC32MX2_Receiver__)
-//                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-//                    #endif
-//                    #if defined(__Product_PIC32MX2_WIFI__)
-//                    if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))
-//                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-//                    else   register_value.whole_reg = 0x095747B0;//CH=429.200MHz
-//                    #endif
                     //register_value.whole_reg = 0x09574520;//CH=429.1875MHz
                     register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
                     break;
@@ -373,14 +354,6 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
                     register_value.whole_reg = 0x095747B0;//CH=429.200MHz
                     break;
             case 5:
-//                    #if defined(__Product_PIC32MX2_Receiver__)
-//                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-//                    #endif
-//                    #if defined(__Product_PIC32MX2_WIFI__)
-//                    if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))
-//                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-//                    else   register_value.whole_reg = 0x09574CD0;//CH=429.225MHz
-//                    #endif
                     //register_value.whole_reg = 0x09574A40;//CH=429.2125MHz
                     register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
                     break;
@@ -397,21 +370,24 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
         Delayus(40);		//delay 40us 
         	//write R4, turn on demodulation
 	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）
+        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）  频偏不设置
 	dd_write_7021_reg(&register_value.byte[0]);
     }
 }
 void dd_set_ADF7021_Power_on(void)
 {
     UINT8 i;
-	if (ADF7021_CE == 0)
-	{
-		ADF7021_CE = 1;
-		//phy_state = PHY_POWERON;
-		//if ( is_use_crystal == TRUE ) 	dd_short_delay(25);	
-                Delayus(1000);             //delay 1ms
-	}
+//	if (ADF7021_CE == 0)
+//	{
+//		ADF7021_CE = 1;
+//		//phy_state = PHY_POWERON;
+//		//if ( is_use_crystal == TRUE ) 	dd_short_delay(25);
+//                Delayus(1000);             //delay 1ms
+//	}
+        ADF7021_CE = 0;
         Delayus(20000);             //delay 1ms
+        ADF7021_CE = 1;
+        Delayus(20000);             //delay 1ms        
         m_RFNormalBuf[0]=0xFF;
         m_RFNormalBuf[1]=0xFF;
         for(i=2;i<=21;i++)m_RFNormalBuf[i]=0x55;
@@ -449,19 +425,10 @@ void ADF7021_change_TXorRX(void)
 {
     UINT8 i;
     UINT8 HA_j=0;
+    UINT8 xmv[10]={0};
+    UINT8 Weekday_alarm;
+    UINT16 Minutes_x;
  #if defined(__Product_PIC32MX2_Receiver__)
-//   if(((HA_L_signal!=FLAG_HA_L_signal)||(HA_ERR_signal!=FLAG_HA_ERR_signal))&&(FLAG_HA_START==0)){
-//       if((Freq_Scanning_CH_save==0)||((Freq_Scanning_CH_save==1)&&(Control_bak&0x80==0x00))){
-//           if(HA_L_signal!=FLAG_HA_L_signal)FLAG_HA_L_signal=HA_L_signal;
-//           if(HA_ERR_signal!=FLAG_HA_ERR_signal)FLAG_HA_ERR_signal=HA_ERR_signal;
-//           if(HA_L_signal==1)HA_j=HA_j|0x20;
-//           if(HA_ERR_signal==1)HA_j=HA_j|0x10;
-//           FLAG_HA_START=1;
-//           ID_data.IDL=DATA_Packet_ID;
-//           Control_code=HA_j;
-//       }
-//   }
-
    if((HA_L_signal==1)&&(HA_ERR_signal==1)){
        TIMER60s=5;
        if((DATA_Packet_Control==0x08)&&(FLAG_open==0)&&(FLAG_APP_TX==0)){
@@ -469,7 +436,7 @@ void ADF7021_change_TXorRX(void)
            FLAG_close=0;
            FLAG_HA_ERR=0;
            HA_Status=0x81;
-           if(Freq_Scanning_CH_save==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
            //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
        }
    }
@@ -479,7 +446,7 @@ void ADF7021_change_TXorRX(void)
            FLAG_open=0;
            FLAG_HA_ERR=0;
            HA_Status=0x82;
-           if(Freq_Scanning_CH_save==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
            //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
        }
    }
@@ -489,7 +456,8 @@ void ADF7021_change_TXorRX(void)
            FLAG_close=0;
            FLAG_open=0;
            HA_Status=0x83;
-           if(Freq_Scanning_CH_save==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           FLAG_426MHz_Reply=1;    //在遥控板和APP控制下，EER都输出
+//           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
            //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
        }
    }
@@ -503,47 +471,9 @@ void ADF7021_change_TXorRX(void)
        ADF7021_DATA_IO=1;
        dd_set_RX_mode();
    }
-
-//   if((HA_Sensor_signal==0)&&(FLAG_APP_SW2==0)){
-//       FLAG_APP_SW2=1;
-//       FLAG_APP_TX=0;
-//       FLAG_APP_RX=1;
-//       Receiver_LED_TX=0;
-//       Receiver_LED_RX=0;
-//       Receiver_LED_OUT=0;
-//       ADF7021_DATA_IO=1;
-//       dd_set_RX_mode();
-//   }
-//   if(HA_Sensor_signal==1)FLAG_APP_SW2=0;
-
-//   if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
-//       rssi=dd_read_rssi_7021_reg(0x14);
-////       if(rssi>25);//TIMER300ms=200;//Receiver_LED_OUT=0;
-////       else ;//Receiver_LED_OUT=1;
-//   }
-//   if((Receiver_Login==0)&&(FLAG_APP_SW3==0)){
-//       FLAG_APP_SW3=1;
-//       Frequency_CH++;
-//       if(Frequency_CH>7)Frequency_CH=1;
-//       if(FLAG_APP_TX==1)dd_set_ADF7021_Freq(1,Frequency_CH);
-//        else dd_set_ADF7021_Freq(0,Frequency_CH);
-//   }
-//   if(Receiver_Login==1)FLAG_APP_SW3=0;
-
-//   if(FLAG_APP_RX==1){
-//       if(Receiver_Login==0)Receiver_LED_TX=1;
-//   }
-//       if(TIMER1s==0)Receiver_LED_OUT=0;           //测试，测试完后需要删除
-//       if(TIMER300ms==0)Receiver_LED_RX=0;
 #endif
    
 #if defined(__Product_PIC32MX2_WIFI__)
-//   if((WIFI_L_Login==0)&&(FLAG_APP_TX==0)&&(FLAG_APP_SW1==0)){
-//       FLAG_APP_SW1=1;
-//       //WIFI_Useless1=1;
-//       SendTxData();
-//   }
-//   if(WIFI_L_Login==1)FLAG_APP_SW1=0;
    if((FLAG_UART_R==1)&&(FLAG_APP_TX==0)){
        FLAG_UART_R=0;
        //WIFI_Useless1=1;
@@ -566,34 +496,55 @@ void ADF7021_change_TXorRX(void)
        dd_set_RX_mode();
    }
 
-   //if(((WIFI_Useless0==0)&&(FLAG_APP_SW2==0))||((FLAG_APP_RX==0)&&(FLAG_APP_RX==0))){
-//   if((WIFI_Useless0==0)&&(FLAG_APP_SW2==0)){
-//       FLAG_APP_SW2=1;
-//       FLAG_APP_TX=0;
-//       FLAG_APP_RX=1;
-//       WIFI_Useless1=1;
-//       WIFI_LED_RX=1;
-//       ADF7021_DATA_IO=1;
-//       dd_set_RX_mode();
-//   }
-//   if(WIFI_Useless0==1)FLAG_APP_SW2=0;
+    if(PCF8563_INT==0){
+        Read_Time(&xmv[0]);
+        Minutes_x=xmv[2]*60+xmv[1];
+        if((WIFI_alarm_Hours_Minutes[0]==xmv[2])&&(WIFI_alarm_Hours_Minutes[1]==xmv[1])){
+            AUTO_SEND_DATA_pcs=0;
+            for(i=0;i<WIFI_alarm_data_PCS;i++){
+                if(WIFI_alarm_data[i][4]==0x10){
+                    if((xmv[6]==WIFI_alarm_data[i][5])&&(xmv[5]==WIFI_alarm_data[i][6])&&(xmv[3]==WIFI_alarm_data[i][7])
+                            &&(xmv[2]==WIFI_alarm_data[i][8])&&(xmv[1]==WIFI_alarm_data[i][9]))alarm_OUT_bak(i);
+                }
+                else if(WIFI_alarm_data[i][4]==0x20){
+                    Weekday_alarm=0x01;
+                    Weekday_alarm=Weekday_alarm<<xmv[4];
+                   if(((WIFI_alarm_data[i][7]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==WIFI_alarm_data[i][8])&&(xmv[1]==WIFI_alarm_data[i][9]))alarm_OUT_bak(i);
+                }
+            }
+            NEW_set_alarm_pcf8563(Minutes_x);
+        }
+        else {
+           xmv[0]=2;
+           Write_pcf8563(&xmv[0],0x01,1);
+        }
+    }
 
-//   if((Receiver_Login==0)&&(FLAG_APP_SW3==0)){
-//       FLAG_APP_SW3=1;
-//       Frequency_CH++;
-//       if(Frequency_CH>7)Frequency_CH=1;
-//       if(FLAG_APP_TX==1)dd_set_ADF7021_Freq(1,Frequency_CH);
-//        else dd_set_ADF7021_Freq(0,Frequency_CH);
-//   }
-//   if(Receiver_Login==1)FLAG_APP_SW3=0;
-
-//   if(FLAG_APP_RX==1){
-//       if(Receiver_Login==0)Receiver_LED_TX=1;
-//   }
-//       if(TIMER1s==0)WIFI_LED_RX=0;           //测试，测试完后需要删除
+    if(FLAG_AUTO_SEND_START==1){
+        if((TIME_alarm_AUTO==0)&&(FLAG_AUTO_SEND_ok==0)){
+            ID_data.IDB[0]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][0];
+            ID_data.IDB[1]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][1];
+            ID_data.IDB[2]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][2];
+            ID_data.IDB[3]=0x00;
+            if(AUTO_HA_Inquiry==0){
+                AUTO_HA_Inquiry=1;
+                Control_code=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][3];
+                TIME_alarm_AUTO=200;
+            }
+            else {
+                AUTO_HA_Inquiry=0;
+                Control_code=0x00;
+                TIME_alarm_AUTO=400;
+                AUTO_SEND_DATA_pcs--;
+                FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;    //表示APP查询
+            }
+            FLAG_AUTO_SEND_ok=1;
+            if(AUTO_SEND_DATA_pcs==0)FLAG_AUTO_SEND_START=0;
+        }
+    }
  #endif
 
-   if((FLAG_UART_ok==1)||(FLAG_HA_START==1)){
+   if((FLAG_UART_ok==1)||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
        if(FLAG_rssi_Freq==0){
            rssi_TIME=1;    //发射时10ms间隔搜索空信道
            FLAG_rssi_Freq=1;
@@ -604,7 +555,7 @@ void ADF7021_change_TXorRX(void)
        }
        if(rssi_TIME==0){
            FLAG_rssi_Freq=0;
-           if(rssi_COUNT>=10){FLAG_UART_ok=0;FLAG_HA_START=0;SendTxData();TX_Freq_CH=0;}
+           if(rssi_COUNT>=10){FLAG_UART_ok=0;FLAG_HA_START=0;FLAG_AUTO_SEND_ok=0;SendTxData();TX_Freq_CH=0;}
        }
 //       TX_Freq_CH=1;
 //       FLAG_UART_ok=0;FLAG_HA_START=0;SendTxData();TX_Freq_CH=0;
@@ -619,6 +570,7 @@ void ADF7021_change_TXorRX(void)
        else rssi_COUNT=0;
    }
 
+    
 }
 
 

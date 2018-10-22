@@ -20,6 +20,8 @@ const UINT8 Emial_uart[8]={0xBB,0x00,0x20,0x80,0x00,0x00,0x00,0x00};
 const UINT8 HA_uart_open[5]={79,80,69,78,32};
 const UINT8 HA_uart_close[5]={67,76,79,83,69};
 const UINT8 HA_uart_err[5]={69,82,82,32,32};
+
+ void UART_DATA_cope(void);
 #endif
 
 void Uart1_Init(void)
@@ -47,38 +49,67 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
 {
     UART_DATA_buffer[UART_DATA_cnt] = U1RXREG;
     if((FLAG_UART_0xBB==0)&&(UART_DATA_cnt>=1)){
-        if((UART_DATA_buffer[UART_DATA_cnt-1]==0xBB)&&(UART_DATA_buffer[UART_DATA_cnt]==0x00)){TIME_UART=8;UART_DATA_cnt=1;UART_DATA_buffer[0]=0xBB;UART_DATA_buffer[1]=0x00;FLAG_UART_0xBB=1;}
+        if(UART_DATA_buffer[UART_DATA_cnt]==0xBB)TIME_UART=2;      //解决开机UART收到乱码，APP正常控制时不能正确收到。
+        else if((UART_DATA_buffer[UART_DATA_cnt-1]==0xBB)&&(UART_DATA_buffer[UART_DATA_cnt]==0x00)){TIME_UART=8;UART_DATA_cnt=1;UART_DATA_buffer[0]=0xBB;UART_DATA_buffer[1]=0x00;FLAG_UART_0xBB=1;}
     }
     UART_DATA_cnt++;
-            if(UART_DATA_buffer[6]==0x05){
-                if(UART_DATA_cnt>=15){
-                    UART_DATA_cnt=0;
-                    FLAG_UART_0xBB=0;
-                    for(UART_DATA_i=0;UART_DATA_i<15;UART_DATA_i++)UART1_DATA[UART_DATA_i]=UART_DATA_buffer[UART_DATA_i];
-                    FLAG_UART_R=1;
-                }
-            }
-            else if(UART_DATA_buffer[6]==0x08){
-                if(UART_DATA_cnt>=18){
-                    UART_DATA_cnt=0;
-                    FLAG_UART_0xBB=0;
-                    for(UART_DATA_i=0;UART_DATA_i<18;UART_DATA_i++)UART1_DATA[UART_DATA_i]=UART_DATA_buffer[UART_DATA_i];
-                    FLAG_UART_R=1;
-                }
-            }
-            else if(UART_DATA_buffer[6]==0x00){
-                if(UART_DATA_cnt>=10){
-                    UART_DATA_cnt=0;
-                    FLAG_UART_0xBB=0;
-                    /*****2013年11月22日修改  提高Emial稳定性****/
-                    for(UART_DATA_i=0;UART_DATA_i<10;UART_DATA_i++)UART1_DATA[UART_DATA_i]=UART_DATA_buffer[UART_DATA_i];
-                    FLAG_UART_R=1;
-                    /******************************************/
-                }
-            }
-    if((UART_DATA_cnt>=18)||((UART_DATA_cnt>2)&&(TIME_UART==0))){UART_DATA_cnt=0;FLAG_UART_0xBB=0;}
+//            if(UART_DATA_buffer[6]==0x05){
+//                if(UART_DATA_cnt>=15){
+//                    UART_DATA_cnt=0;
+//                    FLAG_UART_0xBB=0;
+//                    for(UART_DATA_i=0;UART_DATA_i<15;UART_DATA_i++)UART1_DATA[UART_DATA_i]=UART_DATA_buffer[UART_DATA_i];
+//                    FLAG_UART_R=1;
+//                }
+//            }
+//            else if(UART_DATA_buffer[6]==0x08){
+//                if(UART_DATA_cnt>=18){
+//                    UART_DATA_cnt=0;
+//                    FLAG_UART_0xBB=0;
+//                    for(UART_DATA_i=0;UART_DATA_i<18;UART_DATA_i++)UART1_DATA[UART_DATA_i]=UART_DATA_buffer[UART_DATA_i];
+//                    FLAG_UART_R=1;
+//                }
+//            }
+//            else if(UART_DATA_buffer[6]==0x00){
+//                if(UART_DATA_cnt>=10){
+//                    UART_DATA_cnt=0;
+//                    FLAG_UART_0xBB=0;
+//                    /*****2013年11月22日修改  提高Emial稳定性****/
+//                    for(UART_DATA_i=0;UART_DATA_i<10;UART_DATA_i++)UART1_DATA[UART_DATA_i]=UART_DATA_buffer[UART_DATA_i];
+//                    FLAG_UART_R=1;
+//                    /******************************************/
+//                }
+//            }
+    switch(UART_DATA_buffer[6]){
+        case 0x05:
+            UART_DATA_i=15;
+            if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
+            break;
+        case 0x08:
+            UART_DATA_i=18;
+            if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
+            break;
+        case 0x00:
+            UART_DATA_i=10;
+            if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
+            break;
+        case 0x11:
+            UART_DATA_i=27;
+            if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
+            break;
+       default:
+            break;
+    }
+    if((UART_DATA_cnt>=27)||((UART_DATA_cnt>2)&&(TIME_UART==0))){UART_DATA_cnt=0;FLAG_UART_0xBB=0;}
     IFS1bits.U1RXIF = 0;
 }
+ void UART_DATA_cope(void)
+ {
+     UINT8 UART_DATA_j;
+        UART_DATA_cnt=0;
+        FLAG_UART_0xBB=0;
+        for(UART_DATA_j=0;UART_DATA_j<UART_DATA_i;UART_DATA_j++)UART1_DATA[UART_DATA_j]=UART_DATA_buffer[UART_DATA_j];
+        FLAG_UART_R=1;
+ }
 #endif
 void UART_Decode(void)
 {
@@ -134,6 +165,13 @@ void UART_Decode(void)
                         U1TXREG=m%256;
                         U1TXREG=m/256;
                     }
+                }
+            }
+            else if((UART_DATA_buffer[6]==0x11)&&(UART_DATA_buffer[7]==0x00)){
+                for(i=8;i<25;i++)  m+=UART1_DATA[i];
+                n=UART1_DATA[25]+UART1_DATA[26]*256;
+                if(m==n){
+                    alarm_EEPROM_write();
                 }
             }
     }                /*****2013年11月22日修改  提高Emial稳定性****/
@@ -199,7 +237,7 @@ void HA_uart_send(void)
        FLAG_email_Repeat=0;
        UART_send_count=0;
 
-   HA_uart_send_APP();
+  // HA_uart_send_APP();
     
  #endif
 }

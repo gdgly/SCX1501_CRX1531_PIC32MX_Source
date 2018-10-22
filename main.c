@@ -100,10 +100,12 @@ Note: make sure the boot loader and your application, both use the same fuse set
     // For PIC32MX1xx, PIC32MX2xx devices the output divisor is set to 2 to produce max 40MHz clock.
     #if defined(__32MX230F064D__)
         #pragma config FPLLODIV = DIV_2         // PLL Output Divider: Divide by 2  SYSCLK=40M
+        #pragma config WDTPS = PS128 // WDT timeout period = 1ms
     #endif
 
     #if defined(__32MX210F016D__)
         #pragma config FPLLODIV = DIV_4 //DIV_4         // PLL Output Divider: Divide by 8    SYSCLK=10M
+        #pragma config WDTPS = PS128 // WDT timeout period = 1ms
     #endif
 #elif defined(__PIC32MX3XX_7XX__)
     // For PIC32MX3xx, PIC32MX4xx, PIC32MX5xx, PIC32MX6xx and PIC32MX7xx
@@ -124,10 +126,12 @@ Note: make sure the boot loader and your application, both use the same fuse set
 #define CORE_TICK_RATE	       (SYS_FREQ/2/TOGGLES_PER_SEC)
 
 ////////////////////////////////////////////////////////////
-//
+
 int main(void)
 {
    DDPCONbits.JTAGEN = 0; // Disable JTAG
+    // WDT timeout period is set in the Device Configuration (WDTPS)
+    EnableWDT(); // Enable the WDT
 	//unsigned int pb_clock;
    SYSTEMConfig(SYS_FREQ, SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
 
@@ -147,8 +151,10 @@ int main(void)
     dd_set_ADF7021_Power_on();
     FLAG_HA_L_signal=1;
     FLAG_HA_ERR_signal=1;
+
     while(1)
-    {
+    {          
+        ClearWDT(); // Service the WDT
         ADF7021_change_TXorRX();
         ID_Decode_IDCheck();
         ID_Decode_OUT();

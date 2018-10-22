@@ -15,3 +15,7 @@ extern void eeprom_IDcheck(void);
 extern void eeprom_IDcheck_UART(void);
 extern void ID_EEPROM_write_0x00(void);
 extern void all_Erase_EEPROM(void);
+
+#if defined(__Product_PIC32MX2_WIFI__)
+extern void alarm_EEPROM_write(void);
+#endif
