@@ -341,8 +341,7 @@ void VHF_GPIO_INIT(void){
       Receiver_LED_RX_IO=0;// Output   受信机受信指示  低电平有效
       Receiver_LED_RX=0;
       Receiver_OUT_OPEN_IO=0;  // Output   受信机继电器OPEN  高电平有效
-      //Receiver_OUT_OPEN=0;
-      LATACLR=0x0002;
+      Receiver_OUT_OPEN=0;
       Receiver_OUT_CLOSE_IO=0;  // Output   受信机继电器CLOSE  高电平有效
       Receiver_OUT_CLOSE=0;
       Receiver_OUT_STOP_IO=0;  // Output   受信机继电器STOP  高电平有效

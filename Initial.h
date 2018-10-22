@@ -22,18 +22,6 @@
 
 #if defined(__32MX220F032D__)
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
-    #if 0
-        #define	Receiver_OUT_SUCCESS	0
-        #define	Receiver_OUT_FAILURE	1
-        #define Receiver_OUT_SUCCESS_LATA   (LATACLR=0x0002)
-        #define Receiver_OUT_FAILURE_LATA   (LATASET=0x0002)
-    #else
-        #define	Receiver_OUT_SUCCESS	1
-        #define	Receiver_OUT_FAILURE	0
-        #define Receiver_OUT_SUCCESS_LATA   (LATASET=0x0002)
-        #define Receiver_OUT_FAILURE_LATA   (LATACLR=0x0002)
-    #endif
-
 #endif
 
     //============================================
