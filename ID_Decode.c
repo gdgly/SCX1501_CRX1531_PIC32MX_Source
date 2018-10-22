@@ -331,6 +331,7 @@ void ID_Decode_OUT(void)
                                 break;
                      }
                 //if((DATA_Packet_Control==0x00)&&(FLAG_APP_Reply==0)) FLAG_APP_Reply=1;
+                //if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x08))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1)) FLAG_APP_Reply=1;
                 if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1)) FLAG_APP_Reply=1;
 //                if((DATA_Packet_Control&0x14)==0x14){
 //                    TIMER250ms_STOP=250;
@@ -429,8 +430,11 @@ void  Freq_Scanning(void)
         Freq_Scanning_CH++;
         if(Freq_Scanning_CH>6){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
         dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
-        TIMER18ms=18;//18;
 
+
+//        TIMER18ms=18;//18;
+        if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))TIMER18ms=36;
+        else TIMER18ms=18;
     }
 }
 

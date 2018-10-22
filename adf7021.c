@@ -301,6 +301,13 @@ void dd_set_RX_mode(void)
         //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改   2FSK linear（0x00200004）  频偏不设置
 	dd_write_7021_reg(&register_value.byte[0]);
 
+
+
+        	//write R10, turn on PLL
+	register_value.whole_reg = 0x049668FA;
+	dd_write_7021_reg(&register_value.byte[0]);
+	Delayus(40);		//delay 40us
+
 }
 void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 {
@@ -423,6 +430,15 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
         //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）  频偏不设置
 	dd_write_7021_reg(&register_value.byte[0]);
+
+
+
+
+	//write R10, turn on PLL
+	if((CH==1)||(CH==3)||(CH==5))register_value.whole_reg = 0x049668FA;
+        else register_value.whole_reg = 0x049668EA;
+	dd_write_7021_reg(&register_value.byte[0]);
+	Delayus(40);		//delay 40us
     }
 }
 void dd_set_ADF7021_Power_on(void)
