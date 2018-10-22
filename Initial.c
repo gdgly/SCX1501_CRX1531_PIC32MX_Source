@@ -85,13 +85,47 @@ UINT8 FLAG_IDCheck_OK=0;
 UINT16 time_3sec=0;
 
 UINT16 FLAG_all_Erase_time=0;
-
 UINT8 TIME_EMC=0;   //静电测试
 
-UINT16 RAM_rssi_SUM=0;
-UINT8 RAM_rssi_CNT=0;
-UINT8 RAM_rssi_AVG=0;
+UINT8 read_TIMER_Semi_open=0;
 
+                    /****说明 REG1     REG3     REG0      REG2     REG4******/
+UINT32 RF_SET_TX_DATA[5]={0x031B5011,0x29915CD3,0x00,0x00566882,0x00289A14};
+                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
+UINT32 RF_SET_TX_REGISTER_0[6]={0x0154DC30,0x01575710,0x0154DC30,0x01575C30,0x0154DC30,0x01576140};
+                    /****说明 REG1      REG2        REG3   REG0    REG4    REGA******/
+UINT32 RF_SET_RX_DATA[6]={0x031B5011,0x00500882,0x29915CD3,0x00,0x00289A14,0x0A};
+                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
+UINT32 RF_SET_RX_REGISTER_0[6]={0x0954C7B0,0x09574290,0x0954C7B0,0x095747B0,0x0954C7B0,0x09574CD0};
+                  /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
+UINT32 RF_SET_RX_REGISTER_A[6]={0x049668FA,0x049668EA,0x049668FA,0x049668EA,0x049668FA,0x049668EA};
+
+
+
+//                    /****说明 REG1     REG3     REG0      REG2     REG4******/
+//UINT32 RF_SET_TX_DATA[5]={0x031B5011,0x29915CD3,0x00,0x00566882,0x00289A14};
+//                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
+//UINT32 RF_SET_TX_REGISTER_0[6]={0x0154DC30,0x01575710,0x0154DC30,0x01575C30,0x0154DC30,0x01576140};
+//                    /****说明 REG1      REG2        REG3   REG0    REG4    REGA******/
+//UINT32 RF_SET_RX_DATA[6]={0x031B5011,0x00D00882,0x29920893,0x00,0x8024E294,0x0A};
+//                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
+//UINT32 RF_SET_RX_REGISTER_0[6]={0x0954C7B0,0x09574290,0x0954C7B0,0x095747B0,0x0954C7B0,0x09574CD0};
+//                  /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
+//UINT32 RF_SET_RX_REGISTER_A[6]={0x049668FA,0x049668FA,0x049668FA,0x049668FA,0x049668FA,0x049668FA};
+
+//*********以下为测试代码所用变量****************
+UINT8 Tx_Rx_mode=0;
+FLAG FLAG_test;
+                            /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
+UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000010F};
+                            /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
+UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000040F};
+                    /****说明 REG1      REG2        REG3        REG0    REG4    REGA******/
+UINT32 RF_SET_RX_test[6]={0x031B5011,0x00D00882,0x29920893,0x0954C7B0,0x8024E294,0x049668EA};
+UINT16 X_COUNT = 0;
+UINT16 X_ERR  = 0 ;//记录错误的个数
+UINT8 X_HIS=0; //历史记录   误码率测试用
+//*********************************************
 #if defined(__Product_PIC32MX2_Receiver__)
 UINT16  TIMER_err_1s=0;
 UINT16  TIMER_Sensor_open_1s=0;
@@ -106,6 +140,12 @@ UINT8 FLAG__Semi_open_T=0;
 UINT16  TIME_auto_out=0;
 UINT16  TIME_auto_close=0;
 UINT8 FG_auto_out=0;
+UINT8 HA_Status_buf=0;
+UINT8 DIP_switch_data_bak=0;
+UINT8 DIP_switch_data=0;
+UINT8 FLAG_DIP_switch=0;
+UINT8 TIME_DIP_switch=0;
+UINT8 FLAG_POER_on=0;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -161,6 +201,11 @@ UINT8 FG_auto_out=0;
     UINT16 TIME_email_send=0;
     UINT32 Email_check_ID[64]={0x00};
     UINT8  Emial_check_Control[64]={0x00};
+    UINT32 SWITCH_DIP_id_data[64];
+    UINT8  SWITCH_DIP_id_DIP[64];
+    UINT8 SWITCH_DIP=0;
+    UINT8 SWITCH_DIP_bak=0;
+    UINT32 SWITCH_DIP_id_data_bak=0;
 //                                     //东北OPEN ,东北CLOSE, 关东OPEN ,关东CLOSE,关西OPEN ,关西CLOSE ,九州OPEN ,九州CLOSE,北海道OPEN,北海CLOSE,冲绳OPEN ,冲绳CLOSE,预备1OPEN ,预1CLOSE ,预备2OPEN,预2CLOSE ,预备3OPEN,预备3CLOSE,预备4OPEN,预4CLOSE ,
 //    UINT8  Sunrise_sunset_DATA[480]={  0x07,0x00,0x16,0x55,0x06,0x58,0x17,0x06,0x07,0x13,0x17,0x25,0x07,0x31,0x17,0x47,0x07,0x11,0x16,0x41,0x07,0x28,0x18,0x13,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,     //一月份
 //                                       0x06,0x31,0x17,0x30,0x06,0x33,0x17,0x37,0x06,0x49,0x17,0x55,0x07,0x08,0x18,0x17,0x06,0x36,0x17,0x22,0x07,0x11,0x18,0x35,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,     //二月份
@@ -220,6 +265,9 @@ UINT8 FG_auto_out=0;
 
     UINT16 INquiry_0x00=0;
     UINT8 FLAG_IDCheck_OK_0x00=0;
+
+    UINT8 FG_WIFI_SWITCH_DIP=0;
+    UINT16 TIME_APP_Inquiry_HA=0;
 #endif
 
 
@@ -228,14 +276,15 @@ void VHF_GPIO_INIT(void){
     ANSELA = 0x0000; // Turn off all ADC analog intput pins
     ANSELB = 0x0000;
     ANSELC = 0x0000;
+
  #if defined(__Product_PIC32MX2_Receiver__)
-    TRISBbits.TRISB5=1;
+    CNPUA=0xFFFF;
+    CNPUB=0xFFFF;
+    CNPUC=0xFFFF;
     TRISBbits.TRISB10=1;
-    TRISBbits.TRISB11=1;
     TRISBbits.TRISB14=1;
-    TRISAbits.TRISA0=1;
-        HA_Status=0x81;
-        FLAG_open=1;
+        //HA_Status=0x81;
+        //FLAG_open=1;
  #endif
 //    RTCCONbits.ON=0;
 //    RTCCONbits.RTCCLKON=0;
@@ -314,6 +363,9 @@ void VHF_GPIO_INIT(void){
       Receiver_OUT_VENT=0;
 
       Receiver_test_IO=1;
+      DIP_switch1_IO=1;
+      DIP_switch2_IO=1;
+      DIP_switch3_IO=1;
     #endif
 
    #if defined(__Product_PIC32MX2_WIFI__)
@@ -329,7 +381,9 @@ void VHF_GPIO_INIT(void){
        ADF7021_MUXOUT_IO = 1;
        ADF7021_DATA_CLK_IO = 1;
        ADF7021_DATA_IO = 1;
-       ADF7021_CLKOUT_IO=1;     // Input
+       //ADF7021_CLKOUT_IO=1;     // Input
+       WIFI_test_IO=1;
+       CNPUBbits.CNPUB4=1;
        ADF7021_INT_LOCK_IO=1;   // Input
        SDAIO=0; // Input AND output
        SCLIO=0; // output
@@ -356,6 +410,202 @@ void VHF_GPIO_INIT(void){
 
 }
 
+void RF_test_mode(void )
+{
+  UINT8 uart_data,Boot_i;
+
+#if defined(__Product_PIC32MX2_Receiver__)
+//  Receiver_LED_OUT=1;
+//  for(Boot_i=0;Boot_i<6;Boot_i++){
+//      for(time_3sec=0;time_3sec<600;time_3sec++){
+//         Delayus(240);   //80us
+//         ClearWDT(); // Service the WDT
+//      }
+//      Receiver_LED_OUT=!Receiver_LED_OUT;
+//  }
+  Receiver_LED_OUT=0;
+
+
+
+    while(Receiver_test==0){
+        ClearWDT(); // Service the WDT
+        if(HA_Sensor_signal==0)Receiver_LED_TX=1;
+        else Receiver_LED_TX=0;
+
+	if(HA_ERR_signal==0){
+	  if(HA_L_signal==0)Tx_Rx_mode=0;
+	  else Tx_Rx_mode=1;
+	}
+	else{
+	  if(HA_L_signal==0)Tx_Rx_mode=2;
+	  else Tx_Rx_mode=3;
+	}
+	if((Tx_Rx_mode==0)||(Tx_Rx_mode==1)){
+	  FG_test_rx=0;
+	  Receiver_LED_RX=0;
+	  FG_test_tx_off=0;
+	  //if(HA_L_signal==0){    //发载波，无调制信号
+	  if(Tx_Rx_mode==0){
+	    Receiver_LED_OUT=1;
+	    FG_test_mode=0;
+	    FG_test_tx_1010=0;
+	    if(FG_test_tx_on==0){FG_test_tx_on=1;ADF7021_DATA_IO=1;dd_set_TX_mode_carrier();}
+	  }
+	  else {    //发载波，有调制信号
+	    if(TIMER1s==0){
+	      TIMER1s=500;
+	      Receiver_LED_OUT=!Receiver_LED_OUT;
+	    }
+	    FG_test_mode=1;
+	    FG_test_tx_on=0;
+	    if(FG_test_tx_1010==0){FG_test_tx_1010=1;ADF7021_DATA_IO=0;dd_set_TX_mode_1010pattern();}
+	  }
+	}
+        //else  {           //test ADF7021 RX
+	if((Tx_Rx_mode==2)||(Tx_Rx_mode==3)){
+	  FG_test_rx=1;
+	  Receiver_LED_OUT=0;
+	  FG_test_mode=0;
+	  FG_test_tx_on=0;
+	  FG_test_tx_1010=0;
+	  if(FG_test_tx_off==0){FG_test_tx_off=1;dd_set_RX_mode_test();ADF7021_DATA_IO=1;}
+	  //if(HA_L_signal==0){
+	  if(Tx_Rx_mode==2)
+	    if(TIMER1s==0){
+	      TIMER1s=500;
+	      Receiver_LED_RX=!Receiver_LED_RX;
+	    }
+	  if(Tx_Rx_mode==3){
+            if(X_COUNT >= 1200){
+              X_COUNT = 0;
+	      if(X_ERR>=60)Receiver_LED_RX=0; 
+	      else Receiver_LED_RX=1;
+//              uart_data = (X_ERR/1000) + 48;//48;//（X_ERR/1000) + 48;
+//	      Send_char(uart_data);
+//              X_ERR = X_ERR%1000;
+//              uart_data = (X_ERR/100) + 48;//X_ERR/256;
+//	      Send_char(uart_data);
+//              X_ERR = X_ERR%100;
+//              uart_data =(X_ERR/10) + 48;
+//	      Send_char(uart_data);
+//              X_ERR = X_ERR%10;
+//              uart_data = X_ERR +48;
+//	      Send_char(uart_data);
+//              uart_data = 13;//|字符
+//	      Send_char(uart_data);
+              X_ERR = 0;
+            }
+	  }
+	}
+//	PC_PRG();	       // PC控制
+
+
+    }
+//    UART1_end();
+    FG_test_rx=0;
+    TIMER1s=0;
+    Receiver_LED_TX=0;
+    Receiver_LED_RX=0;
+//    FG_Receiver_LED_RX=0;
+    Receiver_LED_OUT=0;
+
+
+    DIP_switch_data=0;
+    DIP_switch_Get();
+    DIP_switch_data_bak=DIP_switch_data;
+
+    if(HA_ERR_signal==0)HA_Status=0x83;
+    if((HA_L_signal==1)&&(HA_Sensor_signal==0)) HA_Status=0x81;
+    if((HA_L_signal==0)||(HA_Sensor_signal==1))HA_Status=0x82;
+
+    FLAG_426MHz_Reply=1;
+#endif
+
+
+#if defined(__Product_PIC32MX2_WIFI__)
+    while(WIFI_test==0){
+        ClearWDT(); // Service the WDT
+        //if(HA_ERR_signal==0){      //test ADF7021 TX
+	if(WIFI_L_Login==0){
+	  if(WIFI_USBLogin==0)Tx_Rx_mode=0;
+	  else Tx_Rx_mode=1;
+	}
+	else{
+	  if(WIFI_USBLogin==0)Tx_Rx_mode=2;
+	  else Tx_Rx_mode=3;
+	}
+	if((Tx_Rx_mode==0)||(Tx_Rx_mode==1)){
+	  FG_test_rx=0;
+	  WIFI_LED_RX=0;
+	  FG_test_tx_off=0;
+	  //if(HA_L_signal==0){    //发载波，无调制信号
+	  if(Tx_Rx_mode==0){
+	    WIFI_LED_TX=1;
+	    FG_test_mode=0;
+	    FG_test_tx_1010=0;
+	    if(FG_test_tx_on==0){FG_test_tx_on=1;ADF7021_DATA_IO=1;dd_set_TX_mode_carrier();}
+	  }
+	  else {    //发载波，有调制信号
+	    if(TIMER1s==0){
+	      TIMER1s=500;
+	      WIFI_LED_TX=!WIFI_LED_TX;
+	    }
+	    FG_test_mode=1;
+	    FG_test_tx_on=0;
+	    if(FG_test_tx_1010==0){FG_test_tx_1010=1;ADF7021_DATA_IO=0;dd_set_TX_mode_1010pattern();}
+	  }
+	}
+        //else  {           //test ADF7021 RX
+	if((Tx_Rx_mode==2)||(Tx_Rx_mode==3)){
+	  FG_test_rx=1;
+	  WIFI_LED_TX=0;
+	  FG_test_mode=0;
+	  FG_test_tx_on=0;
+	  FG_test_tx_1010=0;
+	  if(FG_test_tx_off==0){FG_test_tx_off=1;dd_set_RX_mode_test();ADF7021_DATA_IO=1;}
+	  //if(HA_L_signal==0){
+	  if(Tx_Rx_mode==2)
+	    if(TIMER1s==0){
+	      TIMER1s=500;
+	      WIFI_LED_RX=!WIFI_LED_RX;
+	    }
+	  if(Tx_Rx_mode==3){
+            if(X_COUNT >= 1200){
+              X_COUNT = 0;
+	      if(X_ERR>=60)WIFI_LED_RX=0;
+	      else WIFI_LED_RX=1;
+//              uart_data = (X_ERR/1000) + 48;//48;//（X_ERR/1000) + 48;
+//	      Send_char(uart_data);
+//              X_ERR = X_ERR%1000;
+//              uart_data = (X_ERR/100) + 48;//X_ERR/256;
+//	      Send_char(uart_data);
+//              X_ERR = X_ERR%100;
+//              uart_data =(X_ERR/10) + 48;
+//	      Send_char(uart_data);
+//              X_ERR = X_ERR%10;
+//              uart_data = X_ERR +48;
+//	      Send_char(uart_data);
+//              uart_data = 13;//|字符
+//	      Send_char(uart_data);
+              X_ERR = 0;
+            }
+	  }
+	}
+//	PC_PRG();	       // PC控制
+
+
+    }
+//    UART1_end();
+    FG_test_rx=0;
+    TIMER1s=0;
+    WIFI_LED_TX=0;
+    WIFI_LED_RX=0;
+
+
+    TIME_WIFI_LAN_SELECT=10;
+    SWITCH_DIP_bak=0xFF;
+#endif
+}
 
 
 //===================Delay100us()延时===============//
@@ -379,7 +629,7 @@ void Delayus(unsigned int timer)
 {
   unsigned int x;            //延时T=(timer)us     //SYSCLK=20M
 #if defined(__Product_PIC32MX2_Receiver__)
-    // for(x=0;x<2*timer;x++);  //特别说明：该行采用XC32的0级优化，即无优化
+     //for(x=0;x<2*timer;x++);  //特别说明：该行采用XC32的0级优化，即无优化
    for(x=0;x<10*timer;x++);  //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
