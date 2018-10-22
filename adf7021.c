@@ -359,38 +359,36 @@ void dd_set_RX_mode(void)
 #endif
 #if defined(__Product_PIC32MX2_Receiver__)
         ADF70XX_REG_T register_value;
+                                                                   /***RX*****以下是带宽4K，F_BW =25K*/
 	//write R1, turn on VCO
-	register_value.whole_reg = 0x031B5011; 
+	register_value.whole_reg = 0x031B5011;
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(800);		//delay 800us
 
-        register_value.whole_reg =0x00800882;  
+        register_value.whole_reg =0x00D00882;
 	dd_write_7021_reg(&register_value.byte[0]);
 
 	//write R3, turn on TX/RX clocks
 	register_value.whole_reg = 0x29920893;
 	dd_write_7021_reg(&register_value.byte[0]);
 
-//        register_value.whole_reg = 0x00001915;
+//	register_value.whole_reg = 0x0504C996;
 //	dd_write_7021_reg(&register_value.byte[0]);
-//        Delayus(300);   //0.2ms
-
-        register_value.whole_reg = 0x0504C996;
-	dd_write_7021_reg(&register_value.byte[0]);
 
 	register_value.whole_reg = 0x00001915;
 	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(6000);   //0.2ms
-        
+        Delayus(300);   //0.2ms
+
         register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
         dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
+
         	//write R4, turn on demodulation
-        register_value.whole_reg = 0x00280294;
+	register_value.whole_reg = 0x8024E294;
 	dd_write_7021_reg(&register_value.byte[0]);
 
 	//write R10, turn on PLL
-	register_value.whole_reg = 0x029668FA;
+	register_value.whole_reg = 0x049668EA;
 	dd_write_7021_reg(&register_value.byte[0]);
 	Delayus(40);		//delay 40us
 #endif
@@ -534,61 +532,10 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 //	//write R3, turn on TX/RX clocks
 //	register_value.whole_reg = 0x29915CD3;
 //	dd_write_7021_reg(&register_value.byte[0]);
-
-
-    	switch (CH){
-            case 1:
-                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-                    break;
-            case 2:
-                    register_value.whole_reg = 0x09574290;//CH=429.175MHz
-                    break;
-            case 3:
-                    //register_value.whole_reg = 0x09574520;//CH=429.1875MHz
-                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-                    break;
-            case 4:
-                    register_value.whole_reg = 0x095747B0;//CH=429.200MHz
-                    break;
-            case 5:
-                    //register_value.whole_reg = 0x09574A40;//CH=429.2125MHz
-                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-                    break;
-            case 6:
-                    register_value.whole_reg = 0x09574CD0;//CH=429.225MHz
-                    break;
-//            case 7:
-//                    register_value.whole_reg = 0x09574F60;//CH=429.2375MHz
-//                    break;
-            default:
-                   break;
-	}
-        dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-//        	//write R4, turn on demodulation
-//	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-//        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）  频偏不设置
-//	dd_write_7021_reg(&register_value.byte[0]);
 //
-	//write R10, turn on PLL
-	if((CH==1)||(CH==3)||(CH==5))register_value.whole_reg = 0x029668FA;
-        else register_value.whole_reg = 0x029668EA;
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(40);		//delay 40us
-     #else
-                                                                     /***RX*****以下是带宽4K，F_BW =25K*/
-//	//write R1, turn on VCO
-//	register_value.whole_reg = 0x031B5011;
+//        register_value.whole_reg = 0x00001915;
 //	dd_write_7021_reg(&register_value.byte[0]);
-//        if(CH==1)Delayus(800);		//delay 800us
-//
-//        register_value.whole_reg =0x00D00882;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//
-//	//write R3, turn on TX/RX clocks
-//	register_value.whole_reg = 0x29920893;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//
+//        Delayus(300);   //0.2ms
 //
 //    	switch (CH){
 //            case 1:
@@ -616,12 +563,25 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 ////                    break;
 //            default:
 //                   break;
+//
+////            case 1:
+////                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
+////                    break;
+////            case 2:
+////                    register_value.whole_reg = 0x0954CCD0;//CH=426.1MHz
+////                    break;
+////            case 4:
+////                    register_value.whole_reg = 0x0954D1F0;//CH=429.200MHz
+////                    break;
+////            default:
+////                   break;
+//
 //	}
 //        dd_write_7021_reg(&register_value.byte[0]);
 //        Delayus(40);		//delay 40us
-//
 //        	//write R4, turn on demodulation
-//	register_value.whole_reg = 0x8024E294;
+//	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
+//        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）  频偏不设置
 //	dd_write_7021_reg(&register_value.byte[0]);
 //
 //	//write R10, turn on PLL
@@ -629,6 +589,112 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 //        else register_value.whole_reg = 0x049668EA;
 //	dd_write_7021_reg(&register_value.byte[0]);
 //	Delayus(40);		//delay 40us
+
+
+                                                                         
+    	switch (CH){
+            case 1:                                          /***RX*****以下是带宽4K，F_BW =25K*/
+//                    register_value.whole_reg =0x00D00882;
+//                    dd_write_7021_reg(&register_value.byte[0]);
+//
+//                    //write R3, turn on TX/RX clocks
+//                    register_value.whole_reg = 0x29920893;
+//                    dd_write_7021_reg(&register_value.byte[0]);
+//
+//                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
+//                    dd_write_7021_reg(&register_value.byte[0]);
+//                    Delayus(40);		//delay 40us
+//
+//                            //write R4, turn on demodulation
+//                    register_value.whole_reg = 0x8024E294;
+//                    dd_write_7021_reg(&register_value.byte[0]);
+//
+//                    //write R10, turn on PLL
+//                    register_value.whole_reg = 0x049668FA;
+//                    dd_write_7021_reg(&register_value.byte[0]);
+//                    Delayus(40);		//delay 40us
+
+                     register_value.whole_reg =0x00500882;
+                    dd_write_7021_reg(&register_value.byte[0]);
+
+                    //write R3, turn on TX/RX clocks
+                    register_value.whole_reg = 0x29915CD3;
+                    dd_write_7021_reg(&register_value.byte[0]);
+
+                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
+                    dd_write_7021_reg(&register_value.byte[0]);
+                    Delayus(40);		//delay 40us
+
+                            //write R4, turn on demodulation
+                    register_value.whole_reg = 0x00289A14;
+                    dd_write_7021_reg(&register_value.byte[0]);
+
+                    //write R10, turn on PLL
+                    register_value.whole_reg = 0x049668EA;
+                    dd_write_7021_reg(&register_value.byte[0]);
+                    Delayus(40);		//delay 40us
+                    break;
+                    break;
+            case 2:                                  /***RX*****以下是带宽2K，F_BW =12.5K*/
+                     register_value.whole_reg =0x00500882;
+                    dd_write_7021_reg(&register_value.byte[0]);
+
+                    //write R3, turn on TX/RX clocks
+                    register_value.whole_reg = 0x29915CD3;
+                    dd_write_7021_reg(&register_value.byte[0]);
+
+                    register_value.whole_reg = 0x09574290;//CH=429.175MHz
+                    dd_write_7021_reg(&register_value.byte[0]);
+                    Delayus(40);		//delay 40us
+
+                            //write R4, turn on demodulation
+                    register_value.whole_reg = 0x00289A14;
+                    dd_write_7021_reg(&register_value.byte[0]);
+
+                    //write R10, turn on PLL
+                    register_value.whole_reg = 0x049668EA;
+                    dd_write_7021_reg(&register_value.byte[0]);
+                    Delayus(40);		//delay 40us
+                    break;
+            case 4:
+                     register_value.whole_reg =0x00500882;
+                    dd_write_7021_reg(&register_value.byte[0]);
+
+                    //write R3, turn on TX/RX clocks
+                    register_value.whole_reg = 0x29915CD3;
+                    dd_write_7021_reg(&register_value.byte[0]);
+
+                    register_value.whole_reg = 0x095747B0;//CH=429.200MHz
+                    dd_write_7021_reg(&register_value.byte[0]);
+                    Delayus(40);		//delay 40us
+
+                            //write R4, turn on demodulation
+                    register_value.whole_reg = 0x00289A14;
+                    dd_write_7021_reg(&register_value.byte[0]);
+
+                    //write R10, turn on PLL
+                    register_value.whole_reg = 0x049668EA;
+                    dd_write_7021_reg(&register_value.byte[0]);
+                    Delayus(40);		//delay 40us
+                    break;
+            default:
+                   break;
+	}
+
+
+     #else
+                                                                     /***RX*****以下是带宽4K，F_BW =25K*/
+	//write R1, turn on VCO
+	register_value.whole_reg = 0x031B5011;
+	dd_write_7021_reg(&register_value.byte[0]);
+        if(CH==1)Delayus(800);		//delay 800us
+
+        register_value.whole_reg =0x00D00882;
+	dd_write_7021_reg(&register_value.byte[0]);
+
+	//write R3, turn on TX/RX clocks
+	register_value.whole_reg = 0x29920893;
+	dd_write_7021_reg(&register_value.byte[0]);
 
 
     	switch (CH){
@@ -660,6 +726,10 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 	}
         dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
+
+        	//write R4, turn on demodulation
+	register_value.whole_reg = 0x8024E294;
+	dd_write_7021_reg(&register_value.byte[0]);
 
 	//write R10, turn on PLL
 	if((CH==1)||(CH==3)||(CH==5))register_value.whole_reg = 0x049668FA;

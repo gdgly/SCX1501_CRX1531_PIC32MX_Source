@@ -297,7 +297,8 @@ void Signal_DATA_Decode(UINT8 NUM_Type)
 //          if(Freq_Scanning_CH_bak==1)
 //              Control_bak=DATA_Packet_Control;
       }
-      else FLAG_Signal_DATA_OK=0;
+      else
+          FLAG_Signal_DATA_OK=0;
 }
 void BEEP_and_LED(void)
 {
@@ -673,12 +674,7 @@ void Email_check_mail(void)
 void  Freq_Scanning(void)
 {
     //if((FLAG_Receiver_Scanning==1)&&(FLAG_APP_RX==1)&&(FLAG_UART_ok==0))
- #if defined(__Product_PIC32MX2_WIFI__)
     if(((FLAG_Receiver_Scanning==1)||(TIME_EMC==0))&&(FLAG_APP_RX==1)&&(FLAG_UART_ok==0))
- #endif
- #if defined(__Product_PIC32MX2_Receiver__)
-    if(((FLAG_Receiver_Scanning==1)||(TIME_EMC==0)||(TIME_Fine_Calibration==0))&&(FLAG_APP_RX==1)&&(FLAG_UART_ok==0))
- #endif
     {
         FLAG_Receiver_Scanning=0;
  #if defined(__Product_PIC32MX2_WIFI__)
@@ -693,27 +689,27 @@ void  Freq_Scanning(void)
  #if defined(__Product_PIC32MX2_Receiver__)
         #if PIC32MX2_Receiver_mode               //TX and RX
 //            Freq_Scanning_CH++;
-//            if(Freq_Scanning_CH>6){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
+//            if(Freq_Scanning_CH>4){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
 //            dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
 //            if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))TIMER18ms=36; //36
 //            else TIMER18ms=18;
         
-            Freq_Scanning_CH++;
-            //if(Freq_Scanning_CH==3)Freq_Scanning_CH=4;
-            //if(Freq_Scanning_CH>4){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
-            //if(TIME_EMC==0){dd_set_ADF7021_ReInitial();dd_set_RX_mode();}
-            if(TIME_Fine_Calibration==0){TIME_Fine_Calibration=9000;dd_set_ADF7021_ReInitial();dd_set_RX_mode();}
-            if(Freq_Scanning_CH>4)Freq_Scanning_CH=1;
-            dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
-            TIMER18ms=18;
-        #else                                   //RX
-//            Freq_Scanning_CH=1;
+//            Freq_Scanning_CH++;
+//            if(Freq_Scanning_CH==3)Freq_Scanning_CH=4;
+//            if(Freq_Scanning_CH>4)Freq_Scanning_CH=1;
 //            dd_set_ADF7021_ReInitial();
 //            dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
 //            TIMER18ms=18;
 
+            Freq_Scanning_CH++;
+            if(Freq_Scanning_CH==3)Freq_Scanning_CH=4;
+            //if(Freq_Scanning_CH>4){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
+            if(TIME_EMC=0){dd_set_ADF7021_ReInitial();dd_set_RX_mode();}
+            dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
+            TIMER18ms=18;
+        #else                                   //RX
             Freq_Scanning_CH=1;
-            if(TIME_EMC==0){dd_set_ADF7021_ReInitial();dd_set_RX_mode();}
+            dd_set_ADF7021_ReInitial();
             dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
             TIMER18ms=18;
         #endif

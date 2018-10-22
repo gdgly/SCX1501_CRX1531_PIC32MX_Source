@@ -257,8 +257,6 @@ extern UINT32 RF_SET_RX_test[6];
 extern UINT16 X_COUNT ;
 extern UINT16 X_ERR ;//记录错误的个数
 extern UINT8 X_HIS; //历史记录   误码率测试用
-
-extern UINT16 TIME_Fine_Calibration;   //窄带下中频滤波器100KHz精校
 //*********************************************
 
 #if defined(__Product_PIC32MX2_Receiver__)
