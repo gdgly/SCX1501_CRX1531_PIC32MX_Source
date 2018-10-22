@@ -422,8 +422,8 @@ void UART_Decode(void)
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x35;      //5              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x34;      //4
-                                    U1TXREG=0xD4;     //0x16B+0x33+0x39
+                                    U1TXREG=0x35;      //5
+                                    U1TXREG=0xD5;     //0x16B+0x33+0x39
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -438,8 +438,8 @@ void UART_Decode(void)
                                     uart_send_APP_Public(0x08,0);
                                     if((UART1_DATA[11]>=0x80)&&(UART1_DATA[11]<=0xbc))uart_Control_code=UART1_DATA[11]+1;
                                     else uart_Control_code=UART1_DATA[11];
-                                    //for(i=0;i<UART1_DATA[12];i++) APP_UART_OUT(i);
-                                    for(i=UART1_DATA[12];i>0;i--) APP_UART_OUT(i-1);
+                                    for(i=0;i<UART1_DATA[12];i++) APP_UART_OUT(i);  //2015.4.11追加修正3
+                                    //for(i=UART1_DATA[12];i>0;i--) APP_UART_OUT(i-1);
                                 }
                                 else uart_send_APP_Public(0x08,1);
                             }

@@ -1008,6 +1008,7 @@ void ADF7021_change_TXorRX(void)
                                    Weekday_alarm=Weekday_alarm<<xmv[4];
                                    if(((WIFI_alarm_data[i][5]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==WIFI_alarm_data[i][3])&&(xmv[1]==WIFI_alarm_data[i][4])){
                                        for(i_m=0;i_m<WIFI_alarm_data[i][6];i_m++)alarm_OUT_to_AUTO(i,i_m);
+                                       // for(i_m=WIFI_alarm_data[i][6];i_m>0;i_m--) alarm_OUT_to_AUTO(i,i_m-1);      //2015.4.11追加修正3
                                    }
                             }
                 }
@@ -1018,6 +1019,7 @@ void ADF7021_change_TXorRX(void)
                                    Weekday_alarm=Weekday_alarm<<xmv[4];
                                    if(((Emial_time_data[i_n][4]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==Emial_time_data[i_n][2])&&(xmv[1]==Emial_time_data[i_n][3])){
                                        for(i_m=0;i_m<ID_DATA_PCS;i_m++)Emial_time_OUT(i_m);
+                                       // for(i_m=ID_DATA_PCS;i_m>0;i_m--) Emial_time_OUT(i_m-1);     //2015.4.11追加修正3
                                        //FLAG_Emial_time=1;
                                        HA_Change_email_time=0;
                                        HA_Change_email_Step=1;
@@ -1064,22 +1066,35 @@ void ADF7021_change_TXorRX(void)
 //    }
 
 AUTO_SEND_exit:
-    if(FLAG_AUTO_SEND_START==1){
+    if(FLAG_AUTO_SEND_START==1){              
         if((TIME_alarm_AUTO==0)&&(FLAG_AUTO_SEND_ok==0)){
             if(AUTO_SEND_DATA_pcs==0){FLAG_AUTO_SEND_START=0; goto AUTO_SEND_exit;}        //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
-            ID_data.IDB[0]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][0];
-            ID_data.IDB[1]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][1];
-            ID_data.IDB[2]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][2];
+//            ID_data.IDB[0]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][0];
+//            ID_data.IDB[1]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][1];
+//            ID_data.IDB[2]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][2];
+//            ID_data.IDB[3]=0x00;
+//            Control_code=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][3];
+            ID_data.IDB[0]=AUTO_SEND_DATA[0][0];    //2015.4.11追加修正3
+            ID_data.IDB[1]=AUTO_SEND_DATA[0][1];
+            ID_data.IDB[2]=AUTO_SEND_DATA[0][2];
             ID_data.IDB[3]=0x00;
-            Control_code=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][3];
-            if(ID_data.IDL!=0){                   //如果ID=0的话，不允许发送
+            Control_code=AUTO_SEND_DATA[0][3];
+
+            eeprom_IDcheck_UART();            //2015.4.11追加修正2
+            if((ID_data.IDL!=0)&&(FLAG_IDCheck_OK==1)){    //如果ID=0的话，不允许发送  //2015.4.11追加修正2
                 TIME_alarm_AUTO=350;                  //2014.10.11修改  250
                 FLAG_HA_Inquiry=1;
                 DATA_Packet_Control_0=0x00;    //表示APP查询
                 FLAG_AUTO_SEND_ok=1;
-
+                FLAG_IDCheck_OK=0;  //2015.4.11追加修正2
                 FG_send_Faile_again=0;       //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
             }
+             for(i=1;i<AUTO_SEND_DATA_pcs;i++){  //2015.4.11追加修正3
+                AUTO_SEND_DATA[i-1][0]=AUTO_SEND_DATA[i][0];
+                AUTO_SEND_DATA[i-1][1]=AUTO_SEND_DATA[i][1];
+                AUTO_SEND_DATA[i-1][2]=AUTO_SEND_DATA[i][2];
+                AUTO_SEND_DATA[i-1][3]=AUTO_SEND_DATA[i][3];
+             }
             AUTO_SEND_DATA_pcs--;
         }
     }
