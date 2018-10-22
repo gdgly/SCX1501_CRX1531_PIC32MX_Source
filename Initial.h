@@ -136,7 +136,7 @@ extern FLAG FLAG_APP;
 	//************************************************
 
 
-extern UINT32 EEPROM_Receiver_ID;
+//extern UINT32 EEPROM_Receiver_ID;
 
 extern UINT16 rssi;
 extern UINT8 Frequency_CH;
@@ -228,6 +228,8 @@ extern UINT16 FLAG_all_Erase_time;
 
 extern UINT8 TIME_EMC;
 
+extern UINT16 TIME_No_response;
+extern UINT8 FLAG_TIME_No_response;
 #if defined(__Product_PIC32MX2_Receiver__)
 extern UINT16  TIMER_err_1s;
 extern UINT16  TIMER_Sensor_open_1s;
@@ -236,6 +238,8 @@ extern UINT8 FLAG_open_Sensor;
 extern UINT8 FLAG_close_Sensor;
 extern UINT8 FLAG_HA_ERR_Sensor;
 extern UINT8 FLAG_HA_ERR_bit;
+extern UINT8 TIMER_Semi_open;
+extern UINT8 FLAG__Semi_open_T;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -273,6 +277,7 @@ extern UINT8 FLAG_HA_ERR_bit;
     extern UINT16 HA_uart_Length;
 
     extern UINT8 FLAG_Write_Read_compare;
+    extern UINT8 uart_Control_code;
 
     extern UINT8 TIME_WIFI_LAN_SELECT;
     extern UINT8 FLAG_WIFI_LAN_SELECT;

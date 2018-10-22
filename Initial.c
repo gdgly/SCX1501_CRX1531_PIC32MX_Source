@@ -10,7 +10,7 @@
 #include <plib.h>		// 常用C定义
 #include "initial.h"		// 初始化
 
-UINT32 EEPROM_Receiver_ID=2000307;//13040292;//13040451;//2000307;//13186823;
+//UINT32 EEPROM_Receiver_ID=2000307;//13040292;//13040451;//2000307;//13186823;
 
 FLAG FLAG_APP;
 UINT16 rssi;
@@ -96,7 +96,8 @@ UINT8 FLAG_open_Sensor=0;
 UINT8 FLAG_close_Sensor=0;
 UINT8 FLAG_HA_ERR_Sensor=0;
 UINT8 FLAG_HA_ERR_bit=0;
-
+UINT8 TIMER_Semi_open;
+UINT8 FLAG__Semi_open_T=0;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -178,6 +179,11 @@ UINT8 FLAG_HA_ERR_bit=0;
     UINT16 HA_uart_Length=0;
 
     UINT8 FLAG_Write_Read_compare=0;
+
+
+    UINT16 TIME_No_response=0;
+    UINT8 FLAG_TIME_No_response=0;
+    UINT8 uart_Control_code;
 
     UINT8 TIME_WIFI_LAN_SELECT=0;
     UINT8 FLAG_WIFI_LAN_SELECT=0;

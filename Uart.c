@@ -193,7 +193,8 @@ void UART_Decode(void)
                                 ID_data.IDB[2]=UART1_DATA[13];
                                 ID_data.IDB[3]=0x00;
                                 //UART1_DATA[11];
-                                Control_code=UART1_DATA[14];
+                                if((UART1_DATA[14]>=0x80)&&(UART1_DATA[14]<=0xbc))Control_code=UART1_DATA[14]+1;
+                                else Control_code=UART1_DATA[14];
                                 eeprom_IDcheck_UART();
                                 if(FLAG_IDCheck_OK==1){
                                     //if(Control_code==0x00){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //±íÊ¾APP²éÑ¯
@@ -399,6 +400,8 @@ void UART_Decode(void)
                                 if(FLAG_IDCheck_OK==1){
                                     FLAG_IDCheck_OK=0;
                                     uart_send_APP_Public(0x08,0);
+                                    if((UART1_DATA[11]>=0x80)&&(UART1_DATA[11]<=0xbc))uart_Control_code=UART1_DATA[11]+1;
+                                    else uart_Control_code=UART1_DATA[11];
                                     for(i=0;i<UART1_DATA[12];i++) APP_UART_OUT(i);
                                 }
                                 else uart_send_APP_Public(0x08,1);
@@ -508,7 +511,8 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
             HA_uart[HA_uart_Length]=101;
             HA_uart_Length++;
         }
-        else if((EMIAL_id_HA[j]==0x83)||(EMIAL_id_HA[j]==0x87)){
+   #if defined(__32MX230F064D__)
+        else if((EMIAL_id_HA[j]==0x83)||(EMIAL_id_HA[j]==0x87)||(EMIAL_id_HA[j]==0x84)||(EMIAL_id_HA[j]==0x88)){
             HA_uart[HA_uart_Length]=101;      //error
             HA_uart_Length++;
             HA_uart[HA_uart_Length]=114;
@@ -520,6 +524,39 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
             HA_uart[HA_uart_Length]=114;
             HA_uart_Length++;
         }
+    #endif
+    #if defined(__32MX250F128D__)
+        else if((EMIAL_id_HA[j]==0x83)||(EMIAL_id_HA[j]==0x87)){
+            HA_uart[HA_uart_Length]=101;      //error1
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=49;
+            HA_uart_Length++;
+        }
+        else if((EMIAL_id_HA[j]==0x84)||(EMIAL_id_HA[j]==0x88)){
+            HA_uart[HA_uart_Length]=101;      //error2
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=50;
+            HA_uart_Length++;
+        }
+    #endif
+
+
         if(j!=(EMIAL_id_PCS_x-1)){
             HA_uart[HA_uart_Length]=44;   //,
             HA_uart_Length++;
@@ -684,9 +721,17 @@ void HA_uart_send_APP(void)
     HA_uart_app[11]=b0.IDB[0];
     HA_uart_app[12]=b0.IDB[1];
     HA_uart_app[13]=b0.IDB[2];
-    if((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x85))HA_uart_app[14]=01;
+    if((FLAG_TIME_No_response==1)&&(TIME_No_response==0)){
+        HA_uart_app[14]=05;
+        b0.IDL=ID_data.IDL;
+        HA_uart_app[11]=b0.IDB[0];
+        HA_uart_app[12]=b0.IDB[1];
+        HA_uart_app[13]=b0.IDB[2];
+    }
+    else if((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x85))HA_uart_app[14]=01;
     else if((DATA_Packet_Control==0x82)||(DATA_Packet_Control==0x86))HA_uart_app[14]=02;
     else if((DATA_Packet_Control==0x83)||(DATA_Packet_Control==0x87))HA_uart_app[14]=03;
+    else if((DATA_Packet_Control==0x84)||(DATA_Packet_Control==0x88))HA_uart_app[14]=04;
     HA_uart_app[15]=0x00;
     m=0;
     for(i=8;i<16;i++)m=m+HA_uart_app[i];

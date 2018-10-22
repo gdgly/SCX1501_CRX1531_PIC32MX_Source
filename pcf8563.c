@@ -453,7 +453,7 @@ void APP_UART_OUT(UINT16 value10)
                     AUTO_SEND_DATA[0][0]=UART1_DATA[13+value10*3];
                     AUTO_SEND_DATA[0][1]=UART1_DATA[14+value10*3];
                     AUTO_SEND_DATA[0][2]=UART1_DATA[15+value10*3];
-                    AUTO_SEND_DATA[0][3]=UART1_DATA[11];
+                    AUTO_SEND_DATA[0][3]=uart_Control_code;//UART1_DATA[11];
                 }
         }
         else {
@@ -461,7 +461,7 @@ void APP_UART_OUT(UINT16 value10)
                 AUTO_SEND_DATA[0][0]=UART1_DATA[13+value10*3];
                 AUTO_SEND_DATA[0][1]=UART1_DATA[14+value10*3];
                 AUTO_SEND_DATA[0][2]=UART1_DATA[15+value10*3];
-                AUTO_SEND_DATA[0][3]=UART1_DATA[11];
+                AUTO_SEND_DATA[0][3]=uart_Control_code;//UART1_DATA[11];
         }
     }
     else {
@@ -469,7 +469,7 @@ void APP_UART_OUT(UINT16 value10)
         AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][0]=UART1_DATA[13+value10*3];
         AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][1]=UART1_DATA[14+value10*3];
         AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][2]=UART1_DATA[15+value10*3];
-        AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][3]=UART1_DATA[11];
+        AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][3]=uart_Control_code;//UART1_DATA[11];
         if((AUTO_SEND_DATA_pcs>1)&&(UART1_DATA[11]!=0)){
             for(APP_i=0;APP_i<AUTO_SEND_DATA_pcs-1;APP_i++){
                     if((AUTO_SEND_DATA[APP_i][0]==AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][0])&&(AUTO_SEND_DATA[APP_i][1]==AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][1])&&(AUTO_SEND_DATA[APP_i][2]==AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][2])){

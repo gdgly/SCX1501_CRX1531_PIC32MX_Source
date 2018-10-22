@@ -159,7 +159,7 @@ main_start:
     FLAG_HA_ERR_signal=1;
 
 #if defined(__Product_PIC32MX2_Receiver__)
-    Receiver_LED_OUT=1;    
+    Receiver_LED_OUT=1;
     for(time_3sec=0;time_3sec<1000;time_3sec++){
     Delay100us(10);
     ClearWDT(); // Service the WDT
@@ -172,7 +172,7 @@ main_start:
         if(HA_L_signal==0)Receiver_LED_TX=1;
         else Receiver_LED_TX=0;
         if(HA_ERR_signal==0)Receiver_LED_RX=1;
-        else Receiver_LED_RX=0;    
+        else Receiver_LED_RX=0;
         if(HA_Sensor_signal==0)Receiver_LED_OUT=1;
         else Receiver_LED_OUT=0;
     }
@@ -183,7 +183,6 @@ main_start:
 #if defined(__Product_PIC32MX2_WIFI__)
     TIME_WIFI_LAN_SELECT=10;
 #endif
-
     TIME_EMC=10;
     while(1)
     {

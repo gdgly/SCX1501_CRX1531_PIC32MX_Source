@@ -23,6 +23,7 @@ addr:0x7DC             ´æ´¢ÈÕ³öÈÕÂä±í¸ñÊý¾ÝDATAÀ´Ô´   =0 RAMµÄÊý¾Ý    =1 EEPROMµ
      0x7DD             ÈÕ³öON/OFF  ON=1  OFF=0
      0x7DE             ÈÕÂäON/OFF  ON=1  OFF=0
      0x7DF             ÈÕ±¾µØµã  1=¶«±±, 2=¹Ø¶«,3=¹ØÎ÷,4=¾ÅÖÝ
+addr:0x7E5             °ë¿ªÐÅºÅµÄTÃëÊý¾Ý
 addr:0x7ED             ¾íÁ±ÃÅ×´Ì¬±ä»¯ÊÇ·ñÓÊ¼þ¼þËÍÐÅ   0x00->OFF    0x01->ON
      0x7EE             ¾íÁ±ÃÅ×´Ì¬±ä»¯ÓÊ¼þÍ¨ÖªµØÖ·µÍ×Ö½Ú
      0x7EF             ¾íÁ±ÃÅ×´Ì¬±ä»¯ÓÊ¼þÍ¨ÖªµØÖ·¸ß×Ö½Ú
@@ -137,6 +138,7 @@ void ID_learn(void)
      FG_10ms = 0;
      if(rssi_TIME)--rssi_TIME;
      if(TIME_UART)--TIME_UART;
+     if(TIME_No_response)--TIME_No_response;
      if(TIME_alarm_AUTO)--TIME_alarm_AUTO;
      if(TIME_email_Repeat)--TIME_email_Repeat;
      if((TIME_email_send)&&(HA_Change_email_time==0))--TIME_email_send;
@@ -292,6 +294,11 @@ void ID_EEPROM_Initial(void)
         xn.IDB[3]=0;
         ID_Receiver_DATA[i]=xn.IDL;
     }
+#if defined(__Product_PIC32MX2_Receiver__)
+    Read(&xm[0],0x7E5,1);
+    if((xm[0]>0xBD)||(xm[0]<0x81))TIMER_Semi_open=30;
+    else TIMER_Semi_open=(xm[0]-1)&0x7F;
+#endif
 #if defined(__Product_PIC32MX2_WIFI__)
 //    Write(&Sunrise_sunset_DATA[0],0xD00,32);
 //    Delay100us(100);
@@ -387,19 +394,21 @@ void eeprom_IDcheck(void)
     UINT16 i;
    for(i=0;i<ID_DATA_PCS;i++){
        if(ID_Receiver_DATA[i]==DATA_Packet_ID_buf){INquiry=i;i=ID_DATA_PCS;FLAG_IDCheck_OK=1;
-                DATA_Packet_ID=DATA_Packet_ID_buf;
-                DATA_Packet_Control=DATA_Packet_Control_buf;
+             DATA_Packet_ID=DATA_Packet_ID_buf;
+             DATA_Packet_Control=DATA_Packet_Control_buf;
        }
        if((FLAG_ID_Erase_Login==1)&&(FLAG_ID_Erase_Login_PCS==1)){i=ID_DATA_PCS;FLAG_IDCheck_OK=0;}         //×·¼Ó¶à´ÎIDµÇÂ¼
    }
 }
 void eeprom_IDcheck_UART(void)
 {
+#if defined(__Product_PIC32MX2_WIFI__)
     UINT16 i;
    for(i=0;i<ID_DATA_PCS;i++){
        if(ID_Receiver_DATA[i]==ID_data.IDL){i=ID_DATA_PCS;FLAG_IDCheck_OK=1;}
        if(FLAG_ID_Erase_Login==1){i=ID_DATA_PCS;FLAG_IDCheck_OK=0;}
    }
+#endif
 }
 
 #if defined(__Product_PIC32MX2_WIFI__)

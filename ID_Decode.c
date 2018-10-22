@@ -182,13 +182,20 @@ void ID_Decode_IDCheck(void)
                    {
 #if defined(__Product_PIC32MX2_WIFI__)
                     TIMER1s=500;//1000
+                    FLAG_TIME_No_response=0;
 #endif
 #if defined(__Product_PIC32MX2_Receiver__)
                     if(Freq_Scanning_CH_bak==0){
                         if((DATA_Packet_Control&0x14)==0x14){if(TIMER1s==0)TIMER1s=3800-30;}
                         else TIMER1s=1000;
                     }
-                    else TIMER1s=1000;
+                    else {
+                        if(((DATA_Packet_Control&0x20)==0x20)||((DATA_Packet_Control&0x40)==0x40))TIMER1s=500;
+                        else if((DATA_Packet_Control&0x10)==0x10){
+                            if(HA_Status==0x81)TIMER1s=(TIMER_Semi_open+1)*1000;
+                        }
+                        else  TIMER1s=1000;
+                    }
                     TIMER300ms=500;
                     Receiver_LED_RX=1;
 #endif
@@ -280,7 +287,7 @@ void Receiver_BEEP(void)
 
 void ID_Decode_OUT(void)
 {
-    UINT8 Control_i,data0,data_sum;
+    UINT8 Control_i,data0,data_sum,data_xm[2];
     UINT16 i_xm;
  #if defined(__Product_PIC32MX2_Receiver__)
 //    if(Freq_Scanning_CH_bak==0) Control_i=DATA_Packet_Control&0xFF;
@@ -336,12 +343,62 @@ void ID_Decode_OUT(void)
                                 Receiver_OUT_STOP=1;
                                 Receiver_OUT_CLOSE=1;   
                                 break;
+                     case 0x01:  
+                                Receiver_LED_OUT=1;
+                                //Receiver_OUT_OPEN=1;
+                                LATASET=0x0002;
+                                Receiver_OUT_STOP=0;
+                                Receiver_OUT_CLOSE=1;
+                                break;
+                     case 0x20:
+                                if(Freq_Scanning_CH_bak==1){
+                                        Receiver_LED_OUT=1;
+                                        //Receiver_OUT_OPEN=1;
+                                        LATASET=0x0002;
+                                        Receiver_OUT_STOP=0;
+                                        Receiver_OUT_CLOSE=0;
+                                }
+                                break;
+                     case 0x40:
+                                if(Freq_Scanning_CH_bak==1){
+                                        Receiver_LED_OUT=1;
+                                        //Receiver_OUT_OPEN=0;
+                                        LATACLR=0x0002;
+                                        Receiver_OUT_STOP=0;
+                                        Receiver_OUT_CLOSE=1;
+                                }
+                                break;
+                     case 0x10:
+                                if(Freq_Scanning_CH_bak==1){
+                                    if(TIMER1s>(TIMER_Semi_open*1000)){
+                                        //Receiver_OUT_OPEN=1;
+                                        LATASET=0x0002;
+                                        Receiver_LED_OUT=1;
+                                    }
+                                    else{
+                                        //Receiver_OUT_OPEN=0;
+                                        LATACLR=0x0002;
+                                        Receiver_LED_OUT=0;
+                                    }
+                                    if(TIMER1s<1000){Receiver_OUT_STOP=1;Receiver_LED_OUT=1;}
+                                }
+                                break;
                      default:
                                 break;
                      }
+                if(Freq_Scanning_CH_bak==1){
+                        if((DATA_Packet_Control>=0x81)&&(DATA_Packet_Control<=0xBD)&&(FLAG__Semi_open_T==0)){
+                             data_xm[0]=DATA_Packet_Control;
+                             TIMER_Semi_open=(DATA_Packet_Control-1)&0x7F;
+                             Write(&data_xm[0],0x7E5,1);
+                             Delay100us(100);
+                             FLAG__Semi_open_T=1;
+                        }
+                }
                 //if((DATA_Packet_Control==0x00)&&(FLAG_APP_Reply==0)) FLAG_APP_Reply=1;
                 //if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x08))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1)) FLAG_APP_Reply=1;
-                if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1)) FLAG_APP_Reply=1;
+                if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)||(DATA_Packet_Control==0x10)
+                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)||((DATA_Packet_Control>=0x81)&&(DATA_Packet_Control<=0xBD)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1)) FLAG_APP_Reply=1;
 //                if((DATA_Packet_Control&0x14)==0x14){
 //                    TIMER250ms_STOP=250;
 //                    if(TIMER1s<3550){Receiver_OUT_OPEN=1;Receiver_OUT_CLOSE=1;Receiver_BEEP();}
@@ -353,6 +410,7 @@ void ID_Decode_OUT(void)
 //                if((DATA_Packet_Control&0x06)==0x06)TIMER250ms_STOP=250;
                }       
      else {
+           FLAG__Semi_open_T=0;
            if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
            if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status+4;FLAG_HA_START=1;}   //受信器自动发送HA状态码为实际HA码+4
            FLAG_Receiver_BEEP=0;
@@ -370,14 +428,21 @@ void ID_Decode_OUT(void)
      else if(TIMER1s) WIFI_LED_RX=1;
      else WIFI_LED_RX=0;
 
+  #if defined(__32MX250F128D__)
+     if((FLAG_TIME_No_response==1)&&(TIME_No_response==0)){
+         HA_uart_send_APP();
+         FLAG_TIME_No_response=0;
+     }
+ #endif
  /********************以下是遥控板和APP一起邮件送信**********************/
       //if((FLAG_HA_Inquiry==1)||(DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x85)||(DATA_Packet_Control_0==0x86)||(DATA_Packet_Control_0==0x87)){
-     if((FLAG_HA_Inquiry==1)||((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x83))||((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x87))){
-         if(((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x83))||((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x87))){
+     if((FLAG_HA_Inquiry==1)||((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x84))||((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x88))){
+         if(((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x84))||((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x88))){
              FLAG_HA_Inquiry=0;
+             FLAG_TIME_No_response=0;
              HA_uart_send_APP();
              Email_check_app();
-             if((DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x87))FLAG_HA_Change_ERROR=1;
+             if((DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x87)||(DATA_Packet_Control_0==0x84)||(DATA_Packet_Control_0==0x88))FLAG_HA_Change_ERROR=1;
              DATA_Packet_Control_0=0;
              FLAG_email_send=1;
              TIME_email_send=650;
