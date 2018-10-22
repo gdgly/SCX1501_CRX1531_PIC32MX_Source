@@ -230,13 +230,6 @@ extern UINT8 TIME_EMC;
 
 extern UINT16 TIME_No_response;
 extern UINT8 FLAG_TIME_No_response;
-
-extern UINT32 RF_SET_TX_DATA[5];
-extern UINT32 RF_SET_TX_REGISTER_0[6];
-extern UINT32 RF_SET_RX_DATA[6];
-extern UINT32 RF_SET_RX_REGISTER_0[6];
-extern UINT32 RF_SET_RX_REGISTER_A[6];
-
 #if defined(__Product_PIC32MX2_Receiver__)
 extern UINT16  TIMER_err_1s;
 extern UINT16  TIMER_Sensor_open_1s;
