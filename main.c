@@ -98,6 +98,11 @@ Note: make sure the boot loader and your application, both use the same fuse set
     // For PIC32MX1xx, PIC32MX2xx devices there are jumpers on PIM to choose from PGx1/PGx2.
     #pragma config ICESEL = ICS_PGx1    // ICE pins configured on PGx1 (PGx2 is multiplexed with USB D+ and D- pins).
     // For PIC32MX1xx, PIC32MX2xx devices the output divisor is set to 2 to produce max 40MHz clock.
+    #if defined(__32MX250F128D__)
+        #pragma config FPLLODIV = DIV_2         // PLL Output Divider: Divide by 2  SYSCLK=40M
+        #pragma config WDTPS = PS4096  //PS128 // WDT timeout period = 1ms
+    #endif
+
     #if defined(__32MX230F064D__)
         #pragma config FPLLODIV = DIV_2         // PLL Output Divider: Divide by 2  SYSCLK=40M
         #pragma config WDTPS = PS4096  //PS128 // WDT timeout period = 1ms

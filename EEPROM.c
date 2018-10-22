@@ -385,7 +385,10 @@ void eeprom_IDcheck(void)
 {
     UINT16 i;
    for(i=0;i<ID_DATA_PCS;i++){
-       if(ID_Receiver_DATA[i]==DATA_Packet_ID){INquiry=i;i=ID_DATA_PCS;FLAG_IDCheck_OK=1;}
+       if(ID_Receiver_DATA[i]==DATA_Packet_ID_buf){INquiry=i;i=ID_DATA_PCS;FLAG_IDCheck_OK=1;
+                DATA_Packet_ID=DATA_Packet_ID_buf;
+                DATA_Packet_Control=DATA_Packet_Control_buf;
+       }
        if((FLAG_ID_Erase_Login==1)&&(FLAG_ID_Erase_Login_PCS==1)){i=ID_DATA_PCS;FLAG_IDCheck_OK=0;}         //×·¼Ó¶à´ÎIDµÇÂ¼
    }
 }

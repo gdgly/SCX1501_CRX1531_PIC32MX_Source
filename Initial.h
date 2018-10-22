@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include <plib.h>				// 常用C定义
 
+#if defined(__32MX250F128D__)
+    #define __Product_PIC32MX2_WIFI__            //"0"代表DIV8  CPU Freq=10MHz  受信机
+#endif
+
 #if defined(__32MX230F064D__)
     #define __Product_PIC32MX2_WIFI__            //"0"代表DIV8  CPU Freq=10MHz  受信机
 #endif
@@ -147,6 +151,8 @@ extern UINT8  DATA_Packet_Code_g;
 extern UINT8  DATA_Packet_Code_i;
 extern UINT32 DATA_Packet_ID;
 extern UINT8  DATA_Packet_Control;
+extern UINT32 DATA_Packet_ID_buf;
+extern UINT8  DATA_Packet_Control_buf;
 extern UINT8  DATA_Packet_Control_0;
 extern UINT8  DATA_Packet_Control_err;
 extern UINT8  Control_bak;

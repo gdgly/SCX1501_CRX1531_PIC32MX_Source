@@ -145,7 +145,7 @@ void ID_Decode_IDCheck(void)
         {
             eeprom_IDcheck();
             if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
-                if(FLAG_ID_Login_OK==0){FLAG_ID_Login_OK=1;ID_Receiver_Login=DATA_Packet_ID;}
+                if(FLAG_ID_Login_OK==0){FLAG_ID_Login_OK=1;ID_Receiver_Login=DATA_Packet_ID_buf;}
             }
             else if(FLAG_IDCheck_OK==1)
             {
@@ -220,11 +220,11 @@ void Signal_DATA_Decode(UINT8 NUM_Type)
         }
       if(data_NRZ[2]==((data_NRZ[0]+data_NRZ[1])&0xFFFF)){
           FLAG_Signal_DATA_OK=1;
-          DATA_Packet_ID=(data_NRZ[1]&0x00FF)*65536+data_NRZ[0];
-          if(DATA_Packet_ID==0)FLAG_Signal_DATA_OK=0;    //2014.3.21追加  不允许使用ID=0
-          DATA_Packet_Control=(data_NRZ[1]&0xFF00)>>8;
-          if(Freq_Scanning_CH_bak==1)
-              Control_bak=DATA_Packet_Control;
+          DATA_Packet_ID_buf=(data_NRZ[1]&0x00FF)*65536+data_NRZ[0];
+          if(DATA_Packet_ID_buf==0)FLAG_Signal_DATA_OK=0;    //2014.3.21追加  不允许使用ID=0
+          DATA_Packet_Control_buf=(data_NRZ[1]&0xFF00)>>8;
+//          if(Freq_Scanning_CH_bak==1)
+//              Control_bak=DATA_Packet_Control;
       }
       else FLAG_Signal_DATA_OK=0;
 }

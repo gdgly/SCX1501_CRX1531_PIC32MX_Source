@@ -530,7 +530,7 @@ void ADF7021_change_TXorRX(void)
 //   }
 
     if(HA_L_signal==1){
-       TIMER60s=6000;
+       TIMER60s=1730;   //20√Î
            FLAG_open=1;
            FLAG_close=0;
            FLAG_HA_ERR=0;
