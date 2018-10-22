@@ -577,6 +577,7 @@ void ID_Decode_OUT(void)
      if((FLAG_TIME_No_response==1)&&(TIME_No_response==0)){
          HA_uart_send_APP();
          FLAG_TIME_No_response=0;
+         FG_mial_com_fail=1;
      }
     if(((read_TIMER_Semi_open<0x3F)&&(read_TIMER_Semi_open>0))||(((SWITCH_DIP_bak!=SWITCH_DIP)||(SWITCH_DIP_id_data_bak!=DATA_Packet_ID))&&(Freq_Scanning_CH_save_HA==1))){
         SWITCH_DIP_check_app(); //检测现在的值与缓存中SWITCH_DIP,如果变化FG_WIFI_SWITCH_DIP=1;
@@ -585,12 +586,12 @@ void ID_Decode_OUT(void)
  #endif
  /********************以下是遥控板和APP一起邮件送信**********************/
       //if((FLAG_HA_Inquiry==1)||(DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x85)||(DATA_Packet_Control_0==0x86)||(DATA_Packet_Control_0==0x87)){
-     if((FLAG_HA_Inquiry==1)||((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x84))||((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x88))){
-         if(((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x84))||((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x88))){
+         if((FG_mial_com_fail==1)||((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x84))||((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x88))){
              FLAG_HA_Inquiry=0;
              FLAG_TIME_No_response=0;
              HA_uart_send_APP();
-             Email_check_app();
+             if(FG_mial_com_fail==1){FG_mial_com_fail=0;DATA_Packet_ID=ID_data.IDL;DATA_Packet_Control=0xFF;}
+             Email_check_app();             
              if((DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x87)||(DATA_Packet_Control_0==0x84)||(DATA_Packet_Control_0==0x88))FLAG_HA_Change_ERROR=1;
              DATA_Packet_Control_0=0;
              FLAG_email_send=1;
@@ -598,12 +599,12 @@ void ID_Decode_OUT(void)
              //if((HA_Change_email_Step==0)&&(HA_Change_send_email[0]==1)){HA_Change_email_time=18000;HA_Change_email_Step=1;}//3分钟
              if((HA_Change_email_Step==0)&&(HA_Change_send_email[0]==1)){HA_Change_email_time=16530;HA_Change_email_Step=1;}//3分钟     2014年4月24日文化修改
          }
-     }
     if((FLAG_email_send==1)&&(TIME_email_send==0)){
         FLAG_email_send=0;
         Email_check_mail();
-        if(FLAG_Emial_time==1){FLAG_Emial_time=0;HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=Emial_time_data[Emial_time_place][5];HA_uart[9]=Emial_time_data[Emial_time_place][6];HA_uart_email(EMIAL_id_PCS);} //邮件定时器到时 邮件送信
+        //if(FLAG_Emial_time==1){FLAG_Emial_time=0;HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=Emial_time_data[Emial_time_place][5];HA_uart[9]=Emial_time_data[Emial_time_place][6];HA_uart_email(EMIAL_id_PCS);} //邮件定时器到时 邮件送信
         //2014.10.11修改
+        if((FLAG_Email_check==0)&&(HA_Change_email_Step==2))HA_Change_email_Step=0;
         else if((FLAG_Email_check==1)&&(HA_Change_email_Step==2)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}     //HA状态变化通知  上次邮件发送内容和本次内容不一样
         else if((FLAG_Email_check==1)&&(HA_Change_send_email[0]==1)&&(FLAG_HA_Change_ERROR==1)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}
     }
@@ -617,50 +618,6 @@ void ID_Decode_OUT(void)
         //}
         //else HA_Change_email_Step=0;
     }
-
-
-/********************以下是遥控板和APP分开邮件送信**********************/
-//     if((FLAG_HA_Inquiry==1)||(DATA_Packet_Control_0==0x83)){
-//         if((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x83)){
-//             FLAG_HA_Inquiry=0;
-//             HA_uart_send_APP();
-//             Email_check_app();
-//             if(DATA_Packet_Control_0==0x83)FLAG_HA_Change_ERROR=1;
-//             DATA_Packet_Control_0=0;
-//             FLAG_email_send=1;
-//             TIME_email_send=650;
-//             if((HA_Change_email_Step==0)&&(HA_Change_send_email[0]==1)){HA_Change_email_time=18000;HA_Change_email_Step=1;}//3分钟
-//         }
-//     }
-//    if((FLAG_email_send==1)&&(TIME_email_send==0)){
-//        FLAG_email_send=0;
-//        Email_check_mail();
-//        if(FLAG_Emial_time==1){FLAG_Emial_time=0;HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=Emial_time_data[Emial_time_place][5];HA_uart[9]=Emial_time_data[Emial_time_place][6];HA_uart_email(EMIAL_id_PCS);} //邮件定时器到时 邮件送信
-//        else if(HA_Change_email_Step==2){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}     //HA状态变化通知  上次邮件发送内容和本次内容不一样
-//        else if((FLAG_Email_check==1)&&(HA_Change_send_email[0]==1)&&(FLAG_HA_Change_ERROR==1)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}
-//    }
-//    if((HA_Change_send_email[0]==1)&&(HA_Change_email_time==0)&&(HA_Change_email_Step==1)){
-//        Email_check_mail();
-//        if(FLAG_Email_check==1){
-//            HA_Change_email_Step=2;
-//            for(i_xm=0;i_xm<ID_DATA_PCS;i_xm++)Emial_time_OUT(i_xm);
-//        }
-//        else HA_Change_email_Step=0;
-//    }
-//
-//     if((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x87)&&((Emial_Control!=DATA_Packet_Control_0)||(Emial_ID!=DATA_Packet_ID))){
-//          HA_uart_send_APP();
-//          EMIAL_id_data[0]=DATA_Packet_ID;
-//          EMIAL_id_HA[0]=DATA_Packet_Control;
-//          if(HA_Change_send_email[0]==1){      //HA状态变化邮件通知   在遥控板控制情况下
-//              HA_uart[8]=HA_Change_send_email[1];
-//              HA_uart[9]=HA_Change_send_email[2];
-//              HA_uart_email(1);
-//          }
-//          Emial_ID=DATA_Packet_ID;
-//          Emial_Control=DATA_Packet_Control;
-//          DATA_Packet_Control_0=0;
-//     }
  #endif    
 }
 
@@ -686,10 +643,10 @@ void Email_check_app(void)
     UINT8 i;
         for(i=0;i<64;i++)
         {
-            if(EMIAL_id_data[i]==0x00){EMIAL_id_data[i]=DATA_Packet_ID;EMIAL_id_HA[i]=DATA_Packet_Control;EMIAL_id_PCS++;break;}
+            if(EMIAL_id_data[i]==0x00){ EMIAL_id_data[i]=DATA_Packet_ID;EMIAL_id_HA[i]=DATA_Packet_Control;EMIAL_id_PCS++;break;}
             if(EMIAL_id_data[i]==DATA_Packet_ID)
             {
-                if(DATA_Packet_Control==EMIAL_id_data[i])break;
+                if(DATA_Packet_Control==EMIAL_id_HA[i])break;
                 else {EMIAL_id_HA[i]=DATA_Packet_Control;break;}
             }
         }

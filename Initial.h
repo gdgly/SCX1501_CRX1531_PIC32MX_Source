@@ -340,6 +340,7 @@ extern UINT8 FLAG_POER_on;
 
     extern UINT8 FG_send_Faile_again;      //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
     extern UINT32 TIME_one_hour;         //2015.1.30追加修改1小时查询一次HA状态
+    extern UINT8 FG_mial_com_fail;   //在邮件中表示429MHz通讯失败，
 #endif
 
 

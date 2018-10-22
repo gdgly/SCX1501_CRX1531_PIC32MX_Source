@@ -391,8 +391,8 @@ void UART_Decode(void)
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x34;      //4              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x35;      //5
-                                    U1TXREG=0xD4;     //0x16B+0x33+0x33
+                                    U1TXREG=0x36;      //6
+                                    U1TXREG=0xD5;     //0x16B+0x33+0x33
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -559,6 +559,16 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
             HA_uart[HA_uart_Length]=50;
             HA_uart_Length++;
         }
+        else if(EMIAL_id_HA[j]==0xFF){
+            HA_uart[HA_uart_Length]=102;      //fail
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=97;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=105;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=108;
+            HA_uart_Length++;
+        }
     #endif
 
 
@@ -626,76 +636,7 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
        }
        EMIAL_id_PCS=0;
   // HA_uart_send_APP();
-
-
-//    UINT8 h,l;
-//    UINT16 m,i,j;
-//    UINT32 h0;
-//
-//    m=EMIAL_id_PCS_x*18+18;            //计算数据长度
-//    HA_uart[6]=m%256;
-//    HA_uart[7]=m/256;
-//
-//    Read_Time(number_time);           //计算邮件标题
-//    for(i=1;i<7;i++){
-//        if(i!=4){
-//            h=number_time[i];
-//            if(i<=3)j=22-(i-1)*3;
-//            else j=22-(i-2)*3;
-//            l=h&0x0F;
-//            HA_uart[j+1]=l+0x30;
-//            h=h&0xF0;
-//            h=h>>4;
-//            HA_uart[j]=h+0x30;
-//        }
-//    }
-//    HA_uart[24]=0x00;   //邮件标题结束符
-//
-//    for(j=0;j<EMIAL_id_PCS_x;j++){     //计算邮件内容
-//        HA_uart[j*18+25]=HA_uart[25];
-//        HA_uart[j*18+26]=HA_uart[26];
-//        HA_uart[j*18+27]=HA_uart[27];
-//        h0=EMIAL_id_data[j];
-//        for(i=8;i>0;i--){
-//            h=h0%10;
-//            HA_uart[j*18+27+i]=h+0x30;
-//            h0=h0/10;
-//        }
-//        HA_uart[j*18+36]=HA_uart[36];
-//        for(i=0;i<5;i++){
-//            if((EMIAL_id_HA[j]==0x81)||(EMIAL_id_HA[j]==0x85))HA_uart[37+j*18+i]=HA_uart_open[i];
-//            else if((EMIAL_id_HA[j]==0x82)||(EMIAL_id_HA[j]==0x86))HA_uart[37+j*18+i]=HA_uart_close[i];
-//            else if((EMIAL_id_HA[j]==0x83)||(EMIAL_id_HA[j]==0x87))HA_uart[37+j*18+i]=HA_uart_err[i];
-//        }
-//        HA_uart[j*18+42]=HA_uart[42];
-//    }
-//    HA_uart[(EMIAL_id_PCS_x-1)*18+43]=0x00;   //邮件内容结束符
-//
-//    m=0;                       //计算CRC16
-//    j=EMIAL_id_PCS_x*18+26;
-//    for(i=8;i<j;i++)m=m+HA_uart[i];
-//    HA_uart[(EMIAL_id_PCS_x-1)*18+44]=m%256;
-//    HA_uart[(EMIAL_id_PCS_x-1)*18+45]=m/256;
-//
-//    j=j+2;
-//        for(i=0;i<j;i++){
-//            U1TXREG=HA_uart[i];
-//            if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-//        }
-//       Delay100us(300);
-//       TIME_email_Repeat=200;
-//       FLAG_email_Repeat=0;
-//       UART_send_count=0;
-//
-//       for(i=0;i<64;i++){
-//           Email_check_ID[i]=EMIAL_id_data[i];
-//           EMIAL_id_data[i]=0;
-//           Emial_check_Control[i]=EMIAL_id_HA[i];
-//           EMIAL_id_HA[i]=0;
-//       }
-//       EMIAL_id_PCS=0;
-//  // HA_uart_send_APP();
-    
+  
  #endif
 }
 void HA_uart_email_Repeat(void)

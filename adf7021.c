@@ -799,7 +799,7 @@ void ADF7021_change_TXorRX(void)
    if((FLAG_email_Repeat==1)&&(TIME_email_Repeat==0)){
        TIME_email_Repeat=9000;
        UART_send_count++;
-       if(UART_send_count>3)FLAG_email_Repeat=0;
+       if(UART_send_count>10)FLAG_email_Repeat=0;
        HA_uart_email_Repeat();
    }
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
@@ -842,7 +842,10 @@ void ADF7021_change_TXorRX(void)
                                    Weekday_alarm=Weekday_alarm<<xmv[4];
                                    if(((Emial_time_data[i_n][4]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==Emial_time_data[i_n][2])&&(xmv[1]==Emial_time_data[i_n][3])){
                                        for(i_m=0;i_m<ID_DATA_PCS;i_m++)Emial_time_OUT(i_m);
-                                       FLAG_Emial_time=1;
+                                       //FLAG_Emial_time=1;
+                                       HA_Change_email_time=0;
+                                       HA_Change_email_Step=1;
+
                                        Emial_time_place=i_n;
                                    }
                             }
