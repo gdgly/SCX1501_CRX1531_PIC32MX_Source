@@ -180,6 +180,9 @@ main_start:
     Receiver_LED_RX=0;
     Receiver_LED_OUT=0;
 #endif
+#if defined(__Product_PIC32MX2_WIFI__)
+    TIME_WIFI_LAN_SELECT=10;
+#endif
 
     TIME_EMC=10;
     while(1)

@@ -142,6 +142,7 @@ void ID_learn(void)
      if((TIME_email_send)&&(HA_Change_email_time==0))--TIME_email_send;
      if(FLAG_all_Erase_time)--FLAG_all_Erase_time;
      if(HA_Change_email_time)--HA_Change_email_time;
+     if(TIME_WIFI_LAN_SELECT)--TIME_WIFI_LAN_SELECT;
 
      if(FLAG_all_Erase==0)          //EEPROM所有数据擦出时，以下CODE不执行
      {

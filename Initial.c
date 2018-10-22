@@ -178,6 +178,9 @@ UINT8 FLAG_HA_ERR_bit=0;
     UINT16 HA_uart_Length=0;
 
     UINT8 FLAG_Write_Read_compare=0;
+
+    UINT8 TIME_WIFI_LAN_SELECT=0;
+    UINT8 FLAG_WIFI_LAN_SELECT=0;
 #endif
 
 
@@ -298,14 +301,20 @@ void VHF_GPIO_INIT(void){
        
      WIFI_L_Login_IO=1;// Input   wifi集中通讯机登录键   低电平有效
      WIFI_USBLogin_IO=1;// Input   wifi集中通讯机USB升级键   低电平有效
-     WIFI_Useless0_IO=1;// Input  样机板后面没有用
-     WIFI_Useless1_IO=0;// output  样机板后面没有用    测试版作为LED2       //测试，测试完后需要删除
-     WIFI_Useless1=1;                                                      //测试，测试完后需要删除
+//     WIFI_Useless0_IO=1;// Input  样机板后面没有用
+//     WIFI_Useless1_IO=0;// output  样机板后面没有用    测试版作为LED2       //测试，测试完后需要删除
+//     WIFI_Useless1=1;                                                      //测试，测试完后需要删除
      WIFI_USBOC_IO=1;//Input   wifi集中USB保护监测   低电平有效
      WIFI_LED_RX_IO=0;//output   wifi集中通讯机受信指示 低电平有效
      WIFI_LED_RX=0;
      WIFI_LED_TX_IO=0;// output   wifi集中通讯机送信指示 低电平有效
      WIFI_LED_TX=0;
+
+     WIFI_LAN_SELECT_IO=1;  // Input   有线LAN、WIFI切换
+     WIFI_POWER_IO=0;   // output  WIFI电源  低电平有效
+     WIFI_POWER=1;
+     LAN_POWER_IO=0;// output  LAN电源  低电平有效
+     LAN_POWER=1;
    #endif
 
 }
