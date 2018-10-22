@@ -1,3 +1,0 @@
-concentrated devices  -->  集中通讯机Download；
-Receiver  -->  受信器Download；
-WIFI firmware  -->  WIFI DFU；

@@ -43,6 +43,7 @@
     <Elem>../../Application test/linker_scripts</Elem>
     <Elem>D:/Program Files/Microchip/xc32/v1.21/pic32mx/include</Elem>
     <Elem>../../PIC32_Bootloaders PIC32MX250F0128D/Firmware/Bootloader/linker_scripts/others</Elem>
+    <Elem>../../Application Ver5.0 PIC32MX250F128D  TELEC/linker_scripts</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

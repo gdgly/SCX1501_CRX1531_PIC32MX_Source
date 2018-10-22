@@ -37,9 +37,13 @@ void SendTxData(void);
 void ID_Decode_OUT(void);
 void Signal_DATA_Decode(UINT8 NUM_Type);
 void BEEP_and_LED(void);
+
+ #if defined(__Product_PIC32MX2_WIFI__)
 void SWITCH_DIP_check_app(void);
 void Email_check_app(void);
 void Email_check_mail(void);
+void  HA_Cache_ha_switch(void);
+ #endif
 
 void ID_Decode_Initial_INT(void)
 {
@@ -173,7 +177,7 @@ void ID_Decode_IDCheck(void)
             eeprom_IDcheck();
             if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
              #if defined(__Product_PIC32MX2_WIFI__)
-                if((FLAG_ID_Login_OK==0)&&(DATA_Packet_Control!=0x40)&&(DATA_Packet_ID_buf!=0)){
+                if((FLAG_ID_Login_OK==0)&&(DATA_Packet_Control_buf!=0x40)&&(DATA_Packet_ID_buf!=0)){            //2015.4.1修正1 在登录模式下 不允许自动送信登录，只允许手动送信登录
 
                        if(ID_DATA_PCS>=32){
                            eeprom_IDcheck_0x00();
@@ -184,7 +188,7 @@ void ID_Decode_IDCheck(void)
                 }
             #endif
             #if defined(__Product_PIC32MX2_Receiver__)
-               if((FLAG_ID_Login_OK==0)&&(DATA_Packet_Control!=0x40)&&(DATA_Packet_ID_buf!=0)&&(Freq_Scanning_CH_bak==0)){
+               if((FLAG_ID_Login_OK==0)&&(DATA_Packet_Control_buf!=0x40)&&(DATA_Packet_ID_buf!=0)&&(Freq_Scanning_CH_bak==0)){     //2015.4.1修正1 在登录模式下 不允许自动送信登录，只允许手动送信登录
                     FLAG_ID_Login_OK=1;
                     ID_Receiver_Login=DATA_Packet_ID_buf;
                    
@@ -592,12 +596,15 @@ void ID_Decode_OUT(void)
   #if defined(__32MX250F128D__)
      if((FLAG_TIME_No_response==1)&&(TIME_No_response==0)){
          HA_uart_send_APP();
+         HA_Cache_ha_switch();  //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
          FLAG_TIME_No_response=0;
-         FG_mial_com_fail=1;
+         if(FG_HA_Inquiry_NO_again_send==1)FG_mial_com_fail=0;
+         else FG_mial_com_fail=1;
      }
     if(((read_TIMER_Semi_open<0x3F)&&(read_TIMER_Semi_open>0))||(((SWITCH_DIP_bak!=SWITCH_DIP)||(SWITCH_DIP_id_data_bak!=DATA_Packet_ID))&&(Freq_Scanning_CH_save_HA==1))){
         SWITCH_DIP_check_app(); //检测现在的值与缓存中SWITCH_DIP,如果变化FG_WIFI_SWITCH_DIP=1;
         HA_uart_send_APP();
+        HA_Cache_ha_switch();  //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
     }
  #endif
  /********************以下是遥控板和APP一起邮件送信**********************/
@@ -637,11 +644,11 @@ void ID_Decode_OUT(void)
  #endif    
 }
 
+ #if defined(__Product_PIC32MX2_WIFI__)
 void SWITCH_DIP_check_app(void)
 {
- #if defined(__Product_PIC32MX2_WIFI__)
     UINT8 i;
-        for(i=0;i<64;i++)
+        for(i=0;i<35;i++)
         {
             if(SWITCH_DIP_id_data[i]==0x00){SWITCH_DIP_id_data[i]=DATA_Packet_ID;SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
             if(SWITCH_DIP_id_data[i]==DATA_Packet_ID)
@@ -650,14 +657,12 @@ void SWITCH_DIP_check_app(void)
                 else {SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
             }
         }
- #endif
 }
 
 void Email_check_app(void)
 {
- #if defined(__Product_PIC32MX2_WIFI__)
     UINT8 i;
-        for(i=0;i<64;i++)
+        for(i=0;i<35;i++)
         {
             if(EMIAL_id_data[i]==0x00){ EMIAL_id_data[i]=DATA_Packet_ID;EMIAL_id_HA[i]=DATA_Packet_Control;EMIAL_id_PCS++;break;}
             if(EMIAL_id_data[i]==DATA_Packet_ID)
@@ -666,25 +671,35 @@ void Email_check_app(void)
                 else {EMIAL_id_HA[i]=DATA_Packet_Control;break;}
             }
         }
- #endif
+}
+void HA_Cache_ha_switch(void)  //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+{
+    UINT8 i;
+        for(i=0;i<35;i++)
+        {
+//            if(HA_Cache_IDdata[i]==0x00){ HA_Cache_IDdata[i]=DATA_Packet_ID;HA_Cache_ha[i]=HA_Cache_ha_bak;HA_Cache_SWITCH_DIP[i]=HA_Cache_SWITCH_DIP_bak;break;}
+//            if(HA_Cache_IDdata[i]==DATA_Packet_ID){HA_Cache_ha[i]=HA_Cache_ha_bak;HA_Cache_SWITCH_DIP[i]=HA_Cache_SWITCH_DIP_bak;}
+            if(HA_Cache_IDdata[i]==0x00){ HA_Cache_IDdata[i]=DATA_Packet_ID;HA_Cache_ha[i]=DATA_Packet_Control;HA_Cache_SWITCH_DIP[i]=SWITCH_DIP;break;}
+            if(HA_Cache_IDdata[i]==DATA_Packet_ID){HA_Cache_ha[i]=DATA_Packet_Control;HA_Cache_SWITCH_DIP[i]=SWITCH_DIP;}
+        }
 }
 
-void Email_check_mail(void)
+void  Email_check_mail(void)
 {
- #if defined(__Product_PIC32MX2_WIFI__)
     UINT8 i,j;
-        for(i=0;i<64;i++)
+        for(i=0;i<35;i++)
         {
             FLAG_Email_check=0;
-            for(j=0;j<64;j++)
+            for(j=0;j<35;j++)
             {
                 if((Email_check_ID[j]==EMIAL_id_data[i])&&(Emial_check_Control[j]==EMIAL_id_HA[i])){FLAG_Email_check=1;j=64;}
             }
             if(FLAG_Email_check==0){FLAG_Email_check=1;return;}
             else FLAG_Email_check=0;
         }
- #endif
+
 }
+ #endif
 
 void  Freq_Scanning(void)
 {

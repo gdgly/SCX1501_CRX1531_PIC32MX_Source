@@ -257,13 +257,6 @@ extern UINT32 RF_SET_RX_test[6];
 extern UINT16 X_COUNT ;
 extern UINT16 X_ERR ;//记录错误的个数
 extern UINT8 X_HIS; //历史记录   误码率测试用
-extern UINT8 FLAG_TELEC_mode;
-extern UINT8 FLAG_TELEC_CH;
-extern UINT8 TIME_TELEC_mode;
-extern UINT8 TIME_TELEC_CH;
-extern UINT8 FLAG_TELEC_CH_dec;
-extern UINT8 TIME_TELEC_CH_dec;
-extern UINT8 TELEC_Frequency_CH;
 
 extern UINT16 TIME_Fine_Calibration;   //窄带下中频滤波器100KHz精校
 //*********************************************
@@ -316,15 +309,15 @@ extern UINT8 FG_auto_open_time;
     extern UINT16 TIME_alarm_AUTO;
     extern UINT8 AUTO_HA_Inquiry;
     extern UINT8 HA_uart[1200];
-    extern UINT32 EMIAL_id_data[64];
-    extern UINT8  EMIAL_id_HA[64];
+    extern UINT32 EMIAL_id_data[35];
+    extern UINT8  EMIAL_id_HA[35];
     extern UINT8  EMIAL_id_PCS;
     extern UINT8  FLAG_email_send;
     extern UINT16 TIME_email_send;
-    extern UINT32 Email_check_ID[64];
-    extern UINT8  Emial_check_Control[64];
-    extern UINT32 SWITCH_DIP_id_data[64];
-    extern UINT8  SWITCH_DIP_id_DIP[64];
+    extern UINT32 Email_check_ID[35];
+    extern UINT8  Emial_check_Control[35];
+    extern UINT32 SWITCH_DIP_id_data[35];
+    extern UINT8  SWITCH_DIP_id_DIP[35];
     extern UINT8 SWITCH_DIP;
     extern UINT8 SWITCH_DIP_bak;
     extern UINT32 SWITCH_DIP_id_data_bak;
@@ -360,6 +353,16 @@ extern UINT8 FG_auto_open_time;
     extern UINT8 FG_Second;      //2015.3.5追加修改自动某ID发送一次失败，追加再发送一次,第二次的标志位
     extern UINT32 TIME_one_hour;         //2015.1.30追加修改1小时查询一次HA状态
     extern UINT8 FG_mial_com_fail;   //在邮件中表示429MHz通讯失败，
+    extern UINT8 FG_send_Faile_notice;  //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
+    extern UINT16 TIME_send_Faile_notice; //2015.3.31追加修改   1Hz LED通知
+    extern UINT8 Emial_Cache_HA;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    extern UINT8 Emial_Cache_SWITCH;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    extern UINT8 HA_Cache_SWITCH_DIP[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    extern UINT8 HA_Cache_ha[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    extern UINT32 HA_Cache_IDdata[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    extern UINT8 HA_Cache_SWITCH_DIP_bak;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    extern UINT8 HA_Cache_ha_bak;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    extern UINT8 FG_HA_Inquiry_NO_again_send;
 #endif
 
 

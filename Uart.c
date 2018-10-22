@@ -90,6 +90,8 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
     if((UART_DATA_buffer[2]==0x06)&&(UART_DATA_buffer[3]==0x80)){
         uart_x.uc[0]=UART_DATA_buffer[8];
         uart_x.uc[1]=UART_DATA_buffer[9];
+        if(uart_x.ui==0x0101)FG_HA_Inquiry_NO_again_send=1;       //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+        else FG_HA_Inquiry_NO_again_send=0;
         switch(uart_x.ui){
             case 0x0101:                                           //卷帘门依次单个操作，HA状态取得
             case 0x0102:
@@ -202,9 +204,38 @@ void UART_Decode(void)
                                 eeprom_IDcheck_UART();
                                 if(FLAG_IDCheck_OK==1){
                                     //if(Control_code==0x00){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
-                                    if((Control_code==0xBF)||(Control_code==0x00)||(Control_code==0x02)||(Control_code==0x08)){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
-                                    FLAG_IDCheck_OK=0;
-                                    FLAG_UART_ok=1;}
+                                    if((uart_y.ui==0x0101)&&(Control_code==0x01)){      //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+                                        Emial_Cache_HA=0;
+                                        Emial_Cache_SWITCH=0;
+                                        Email_check_TO_APP();
+                                        uart_send_APP_Head();
+                                        U1TXREG=0x08;
+                                        U1TXREG=0x00;
+                                        Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+                                        U1TXREG=0x01;
+                                        U1TXREG=0x01;
+                                        U1TXREG=0x00;
+                                        m=2;
+                                        U1TXREG=UART1_DATA[11];
+                                        m=m+UART1_DATA[11];
+                                        U1TXREG=UART1_DATA[12];
+                                        m=m+UART1_DATA[12];
+                                        U1TXREG=UART1_DATA[13];
+                                        m=m+UART1_DATA[13];
+                                        Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+                                        U1TXREG=Emial_Cache_HA;
+                                        m=m+Emial_Cache_HA;
+                                        U1TXREG=Emial_Cache_SWITCH;
+                                        m=m+Emial_Cache_SWITCH;
+                                        U1TXREG=m%256;
+                                        U1TXREG=m/256;
+                                    }
+                                    else {
+                                        if((Control_code==0xBF)||(Control_code==0x00)||(Control_code==0x02)||(Control_code==0x08)){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
+                                        FLAG_IDCheck_OK=0;
+                                        FLAG_UART_ok=1;
+                                       }
+                                }
                                 else {
                                     HA_uart_app[8]=UART1_DATA[8];
                                     HA_uart_app[9]=UART1_DATA[9];
@@ -374,7 +405,7 @@ void UART_Decode(void)
                             }
                             else uart_send_APP_Public(0x03,1);
                             break;
-                case 0x010F:                                            //APP获取卷帘门ID全部
+                case 0x010F:                                            //APP获取软件版本
                             for(i=8;i<11;i++)  m+=UART1_DATA[i];
                             n=UART1_DATA[11]+UART1_DATA[12]*256;
                             if(m==n){
@@ -630,11 +661,11 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
        FLAG_email_Repeat=1;
        UART_send_count=0;
 
-       for(i=0;i<64;i++){
+       for(i=0;i<35;i++){
            Email_check_ID[i]=EMIAL_id_data[i];
-           EMIAL_id_data[i]=0;
+           //EMIAL_id_data[i]=0;
            Emial_check_Control[i]=EMIAL_id_HA[i];
-           EMIAL_id_HA[i]=0;
+           //EMIAL_id_HA[i]=0;
        }
        EMIAL_id_PCS=0;
   // HA_uart_send_APP();
@@ -678,7 +709,10 @@ void HA_uart_send_APP(void)
         HA_uart_app[13]=b0.IDB[2];
         HA_uart_app[15]=0xFF;
         if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==0)) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
-        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1)){FG_Second=1;APP_check_char=0;}
+        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1)){FG_send_Faile_again=2;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.4.2追加修改自动某ID发送一次失败，追加再发送两次
+        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==2)){
+            FG_Second=1;APP_check_char=0;FG_send_Faile_notice=1;
+        }    //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
         if(UART_DATA_buffer[8]==0x10){HA_uart_app[14]=0xFF;HA_uart_app[15]=0x00;}
     }
     else if(read_TIMER_Semi_open!=0){HA_uart_app[14]=read_TIMER_Semi_open-1;read_TIMER_Semi_open=0;HA_uart_app[15]=0x00;}
@@ -687,6 +721,8 @@ void HA_uart_send_APP(void)
     else if((DATA_Packet_Control==0x83)||(DATA_Packet_Control==0x87)){HA_uart_app[14]=03;HA_uart_app[15]=SWITCH_DIP;}
     else if((DATA_Packet_Control==0x84)||(DATA_Packet_Control==0x88)){HA_uart_app[14]=04;HA_uart_app[15]=SWITCH_DIP;}
     //HA_uart_app[15]=0x00;
+    HA_Cache_ha_bak=HA_uart_app[14];
+    HA_Cache_SWITCH_DIP_bak=HA_uart_app[15];
     SWITCH_DIP_bak=SWITCH_DIP;
     SWITCH_DIP_id_data_bak=DATA_Packet_ID;
     m=0;

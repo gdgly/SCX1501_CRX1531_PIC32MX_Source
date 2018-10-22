@@ -166,6 +166,7 @@ void ID_learn(void)
      if(FLAG_all_Erase_time)--FLAG_all_Erase_time;
      if(HA_Change_email_time)--HA_Change_email_time;
      if(TIME_Fine_Calibration)--TIME_Fine_Calibration;
+     if(TIME_send_Faile_notice)--TIME_send_Faile_notice;   //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
      if(TIME_WIFI_LAN_SELECT)--TIME_WIFI_LAN_SELECT;
      if(TIME_one_hour)--TIME_one_hour;         //2015.1.30追加修改1小时查询一次HA状态
 
@@ -316,7 +317,7 @@ void all_Erase_EEPROM(void)
     UINT8 xm[32]={0};
 
     FLAG_APP_BYTE=0;
-    for(i=0;i<64;i++){EMIAL_id_data[i]=0;EMIAL_id_HA[i]=0;EMIAL_id_PCS=0;Email_check_ID[i]=0xff;Emial_check_Control[i]=0xff;}
+    for(i=0;i<35;i++){EMIAL_id_data[i]=0;EMIAL_id_HA[i]=0;EMIAL_id_PCS=0;Email_check_ID[i]=0x00;Emial_check_Control[i]=0x00;HA_Cache_SWITCH_DIP[i]=0;HA_Cache_ha[i]=0;HA_Cache_IDdata[i]=0;}
 
     if((WIFI_L_Login==0)&&(WIFI_USBLogin==0)){FLAG_all_Erase=1;FLAG_all_Erase_time=300;}
     else {FLAG_all_Erase=0;TIMER300ms=0;TIMER1s=0;}
@@ -460,6 +461,14 @@ void eeprom_IDcheck_0x00(void)
     UINT16 i;
    for(i=0;i<ID_DATA_PCS;i++){
        if(ID_Receiver_DATA[i]==0x00){INquiry_0x00=i;i=ID_DATA_PCS;FLAG_IDCheck_OK_0x00=1;}
+   }
+}
+
+void Email_check_TO_APP(void)     //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+{
+    UINT16 i;
+   for(i=0;i<35;i++){
+       if(HA_Cache_IDdata[i]==ID_data.IDL){Emial_Cache_HA=HA_Cache_ha[i]&0x0F;Emial_Cache_SWITCH=HA_Cache_SWITCH_DIP[i];i=64;}
    }
 }
 #endif
