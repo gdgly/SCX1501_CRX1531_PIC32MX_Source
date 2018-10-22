@@ -35,7 +35,7 @@ UINT8  Control_bak=0;
 UINT16  TIMER1s=0;
 UINT16  TIMER300ms=0;
 UINT16  TIMER18ms=0;
-UINT8   TIMER250ms_STOP=0;
+UINT16   TIMER250ms_STOP=0;
 UINT16  TIMER60s=0;
 UINT8   HA_Status=0;
 UINT8   Emial_Control=0;
@@ -110,7 +110,7 @@ UINT8 FLAG_open_Sensor=0;
 UINT8 FLAG_close_Sensor=0;
 UINT8 FLAG_HA_ERR_Sensor=0;
 UINT8 FLAG_HA_ERR_bit=0;
-UINT8 TIMER_Semi_open;
+UINT16 TIMER_Semi_open;
 UINT8 FLAG__Semi_open_T=0;
 
 UINT16  TIME_auto_out=0;
@@ -244,6 +244,9 @@ UINT8 FLAG_POER_on=0;
 
     UINT8 FG_WIFI_SWITCH_DIP=0;
     UINT16 TIME_APP_Inquiry_HA=0;
+
+    UINT8 FG_send_Faile_again=0;      //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
+    UINT32 TIME_one_hour=0;         //2015.1.30追加修改1小时查询一次HA状态
 #endif
 
 
@@ -579,6 +582,7 @@ void RF_test_mode(void )
 
     TIME_WIFI_LAN_SELECT=10;
     SWITCH_DIP_bak=0xFF;
+    TIME_one_hour=1000;         //2015.1.30追加修改1小时查询一次HA状态
 #endif
 }
 

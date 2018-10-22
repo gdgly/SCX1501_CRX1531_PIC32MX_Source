@@ -13,6 +13,7 @@
 extern unsigned char number_time[7];
 void PCF8563_Init(void);
 extern UINT16 Hex_Decimal(UINT8 value_h,UINT8 value_m);
+extern void one_hour_HA_Inquiry_Function(void);
 #endif
 
 extern unsigned char number_time[7];

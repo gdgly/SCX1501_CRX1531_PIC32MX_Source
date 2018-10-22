@@ -403,6 +403,24 @@ void alarm_OUT_to_AUTO(UINT16 value10,UINT16 value11)
         }
 #endif
 }
+
+#if defined(__Product_PIC32MX2_WIFI__)
+void one_hour_HA_Inquiry_Function(void)        //2015.1.30追加修改1小时查询一次HA状态
+{
+    UINT8 i;
+    uni_rom_id fg;
+    FLAG_AUTO_SEND_START=1;
+    for(i=0;i<ID_DATA_PCS;i++){
+        AUTO_SEND_DATA_pcs++;
+        fg.IDL=ID_Receiver_DATA[i];
+        AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][0]=fg.IDB[0];
+        AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][1]=fg.IDB[1];
+        AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][2]=fg.IDB[2];
+        AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][3]=0x00;
+    }
+}
+#endif
+
 void Emial_time_OUT(UINT16 value10)
 {
 #if defined(__Product_PIC32MX2_WIFI__)

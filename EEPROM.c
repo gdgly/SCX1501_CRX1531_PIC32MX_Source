@@ -142,6 +142,8 @@ void ID_learn(void)
 #if defined(__Product_PIC32MX2_WIFI__)
  if(FG_10ms){
      FG_10ms = 0;
+     if(TIME_EMC)--TIME_EMC;
+     
      if(rssi_TIME)--rssi_TIME;
      if(TIME_APP_Inquiry_HA)--TIME_APP_Inquiry_HA;
      if(TIME_UART)--TIME_UART;
@@ -152,6 +154,7 @@ void ID_learn(void)
      if(FLAG_all_Erase_time)--FLAG_all_Erase_time;
      if(HA_Change_email_time)--HA_Change_email_time;
      if(TIME_WIFI_LAN_SELECT)--TIME_WIFI_LAN_SELECT;
+     if(TIME_one_hour)--TIME_one_hour;         //2015.1.30追加修改1小时查询一次HA状态
 
      if(FLAG_all_Erase==0)          //EEPROM所有数据擦出时，以下CODE不执行
      {
@@ -194,9 +197,10 @@ void ID_learn(void)
                      if((FLAG_ID_Login_OK==1)&&(FLAG_ID_Login_OK_bank==0)){
                          //FLAG_ID_Login_OK_bank=1;     //追加多次ID登录
                          FLAG_ID_Login_OK=0;                   //追加多次ID登录
-                         if(FLAG_IDCheck_OK==1)FLAG_IDCheck_OK=0;
+                         if(FLAG_IDCheck_OK==1){FLAG_IDCheck_OK=0;Confirm_BEEP_and_LED();}
                          else{
                              BEEP_and_LED();
+                             FLAG_Receiver_IDCheck=0;
                              TIME_Login_EXIT_rest=6000;       //追加多次ID登录
                              if(FLAG_IDCheck_OK_0x00==1){
                                  FLAG_IDCheck_OK_0x00=0;
@@ -238,7 +242,7 @@ void ID_Login_EXIT_Initial(void)
 }
 void all_Erase_EEPROM_next(void)
 {
-    UINT16 i;
+    UINT16 i,m1,m2,m3;
     UINT8 xm[32]={0};
  #if defined(__Product_PIC32MX2_WIFI__)
     if(FLAG_all_Erase==1){
@@ -254,15 +258,34 @@ void all_Erase_EEPROM_next(void)
 //                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
 //                xm[0]=0xFF;
 //                Write(&xm[0],0xFDE,1);
-                for(i=0;i<32;i++)xm[i]=0xFF;
-                for(i=0;i<128;i++){
-                    Write(&xm[0],i*32,32);
+
+//                for(i=0;i<32;i++)xm[i]=0xFF;
+//                for(i=0;i<128;i++){
+//                    Write(&xm[0],i*32,32);
+//                    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//                    ClearWDT(); // Service the WDT
+//                    if(TIMER300ms==0){TIMER300ms=300;WIFI_LED_TX=!WIFI_LED_TX;WIFI_LED_RX=!WIFI_LED_RX;}
+//                }
+
+                 xm[0]=0;
+                 xm[1]=0;
+                 Write(&xm[0],0x7FE,2);
+                 Delay100us(100);
+                 xm[0]=0;
+                 xm[1]=0;
+                 xm[2]=0;
+                 for(i=0;i<32;i++){
+                    m2=i/10;
+                    m3=i%10;
+                    Write(&xm[0],32*m2+m3*3,3);//写入数据到24LC16
                     Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
                     ClearWDT(); // Service the WDT
                     if(TIMER300ms==0){TIMER300ms=300;WIFI_LED_TX=!WIFI_LED_TX;WIFI_LED_RX=!WIFI_LED_RX;}
-                }
+                 }
+
+
             }
-            if(TIMER1s==0)SoftReset();
+            if(TIMER1s==0);//{FLAG_all_Erase_OK==0;FLAG_all_Erase=0;TIMER300ms=0;TIMER1s=0;SoftReset();}
             else ClearWDT(); // Service the WDT
         }
     }

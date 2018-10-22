@@ -22,6 +22,8 @@
 
 #if defined(__32MX220F032D__)
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
+
+    #define		PIC32MX2_Receiver_mode   1              //模式选择  0=RX      1=TX and RX
 #endif
 
     //============================================
@@ -161,7 +163,7 @@ extern UINT8  Control_bak;
 extern UINT16  TIMER1s;
 extern UINT16  TIMER300ms;
 extern UINT16  TIMER18ms;
-extern UINT8   TIMER250ms_STOP;
+extern UINT16   TIMER250ms_STOP;
 extern UINT16  TIMER60s;
 extern UINT8   HA_Status;
 extern UINT8   Emial_Control;
@@ -265,7 +267,7 @@ extern UINT8 FLAG_open_Sensor;
 extern UINT8 FLAG_close_Sensor;
 extern UINT8 FLAG_HA_ERR_Sensor;
 extern UINT8 FLAG_HA_ERR_bit;
-extern UINT8 TIMER_Semi_open;
+extern UINT16 TIMER_Semi_open;
 extern UINT8 FLAG__Semi_open_T;
 
 extern UINT16  TIME_auto_out;
@@ -334,6 +336,9 @@ extern UINT8 FLAG_POER_on;
 
     extern UINT8 FG_WIFI_SWITCH_DIP;
     extern UINT16 TIME_APP_Inquiry_HA;
+
+    extern UINT8 FG_send_Faile_again;      //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
+    extern UINT32 TIME_one_hour;         //2015.1.30追加修改1小时查询一次HA状态
 #endif
 
 
