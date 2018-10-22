@@ -203,245 +203,35 @@ UINT8 dd_read_rssi_7021_reg(UINT8 readback_config)
 
 void dd_set_TX_mode(void)
 {
-       
-	ADF70XX_REG_T register_value;
-          //dd_set_ADF7021_ReInitial();
-        //write R1, turn on VCO
-	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(800);		//delay 800us
+   UINT8 i;
+   ADF70XX_REG_T register_value;
 
-	//write R3, turn on TX/RX clocks
-	register_value.whole_reg = 0x29915CD3;//0x2991A0D3;
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
+     for(i=0;i<5;i++){
+        if(i==2)register_value.whole_reg =RF_SET_TX_REGISTER_0[TX_Freq_CH-1];
+        else register_value.whole_reg =RF_SET_TX_DATA[i];
+        dd_write_7021_reg(&register_value.byte[0]);
 
-	//write R0, turn on PLL
-	//register_value.whole_reg = 0x0154DC30;       //CH=426.075MHz
-        //register_value.whole_reg = 0x01575710;   //CH=429.175MHz
-        //register_value.whole_reg = 0x01576140;//CH=429.225MHz
-        //if(TX_Freq_CH==1)register_value.whole_reg = 0x0154DC30;       //CH=426.075MHz
-        if(TX_Freq_CH==2)register_value.whole_reg = 0x01575710;   //CH=429.175MHz
-        else if(TX_Freq_CH==4)register_value.whole_reg = 0x01575C30;  //CH=429.200MHz
-        else if(TX_Freq_CH==6)register_value.whole_reg = 0x01576140;//CH=429.225MHz
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(40);		//delay 40us
+        if(i==0)Delayus(800);
+        else  Delayus(40);
+    }
 
-	//write R2, turn on PA
-	register_value.whole_reg = 0x00566882;//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
-        //register_value.whole_reg = 0x006E6882;                     //2013年11月29日修改  TX频偏 2K 2FSK  功率:51（10dBM）       （0x006E6882）
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改   2FSK linear（0x00200004）   频偏不设置
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-
-//	register_value.whole_reg = 0x00001915;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//        Delayus(40);		//delay 40us
-//
-//	register_value.whole_reg = 0x0504C986;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//        Delayus(40);		//delay 40us
-//
-//	register_value.whole_reg = 0x329668EA;
-//	dd_write_7021_reg(&register_value.byte[0]);
 }
 
-void dd_set_RX_mode(void)
-{
-#if defined(__Product_PIC32MX2_WIFI__)
-	ADF70XX_REG_T register_value;
-          //dd_set_ADF7021_ReInitial();
-
-	//	for ADF7021DB2 864M
-
-	//write R1, turn on VCO
-	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
-	dd_write_7021_reg(&register_value.byte[0]);
-
-        register_value.whole_reg =0x00500882; //0x00680882;        //2013年11月22日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
-        //register_value.whole_reg =0x00680882; //0x00680882;        //2013年11月29日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
-	dd_write_7021_reg(&register_value.byte[0]);
-
-	//write R3, turn on TX/RX clocks
-	register_value.whole_reg = 0x29915CD3;
-	dd_write_7021_reg(&register_value.byte[0]);
-
-	//write R6 here, if fine IF filter cal is wanted
-
-
-//	//write R5 to start IF filter cal
-//	register_value.whole_reg = 0x00001915;	//write R5 to start IF filter cal
-//	dd_write_7021_reg(&register_value.byte[0]);
-//	Delay100us(2);		//delay 0.2ms
-//
-//	register_value.whole_reg = 0x0504C986;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//
-//	register_value.whole_reg = 0x000231E9;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//
-//	//write R11, configure sync word detect
-//	register_value.whole_reg = 0x329668EA;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//
-//	register_value.whole_reg = 0x0000003B;
-//	dd_write_7021_reg(&register_value.byte[0]);
-//
-//	register_value.whole_reg = 0x0000010C;
-//	dd_write_7021_reg(&register_value.byte[0]);
-
-	//write R0, turn on PLL
-	register_value.whole_reg = 0x0954C7B0;    //CH=426.075MHz
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(40);		//delay 40us
-
-	//write R4, turn on demodulation
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改   2FSK linear（0x00200004）  频偏不设置
-	dd_write_7021_reg(&register_value.byte[0]);
-
-
-
-        	//write R10, turn on PLL
-	register_value.whole_reg = 0x049668FA;
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(40);		//delay 40us
-
-#endif
-}
 void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 {
-  ADF70XX_REG_T register_value;
-  //dd_set_ADF7021_ReInitial();
-    if(Mode==1)     //ADF7021 TX Mode
+    UINT8 i;
+    ADF70XX_REG_T register_value;
+
+    if(Mode==0)        //ADF7021 RX Mode
     {
+        for(i=0;i<6;i++){
+            if(i==3)register_value.whole_reg =RF_SET_RX_REGISTER_0[CH-1];
+            else if(i==5)register_value.whole_reg =RF_SET_RX_REGISTER_A[CH-1];
+            else register_value.whole_reg =RF_SET_RX_DATA[i];
+            dd_write_7021_reg(&register_value.byte[0]);
 
-#if defined(__Product_PIC32MX2_WIFI__)
-        //write R1, turn on VCO
-	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(800);		//delay 800us
-
-	//write R3, turn on TX/RX clocks
-	register_value.whole_reg = 0x29915CD3;//0x2991A0D3;
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-
-
-
-    	switch (CH){
-            case 1:
-                    register_value.whole_reg = 0x0154DC30; //CH=426.075MHz
-                    break;
-            case 2:
-                    register_value.whole_reg = 0x01575710;   //CH=429.175MHz
-                    break;
-            case 3:
-                    register_value.whole_reg = 0x015759A0;  //CH=429.1875MHz
-                    break;
-            case 4:
-                    register_value.whole_reg = 0x01575C30;  //CH=429.200MHz
-                    break;
-            case 5:
-                    register_value.whole_reg = 0x01575EC0; //CH=429.2125MHz
-                    break;
-            case 6:
-                    register_value.whole_reg = 0x01576140;//CH=429.225MHz
-                    break;
-//            case 7:
-//                    register_value.whole_reg = 0x015763D0;//CH=429.2375MHz
-//                    break;
-            default:
-                   break;
-	}
-        dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-        	//write R2, turn on PA
-	register_value.whole_reg = 0x00566882;//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
-        //register_value.whole_reg = 0x006E6882;                     //2013年11月29日修改  TX频偏 2K 2FSK  功率:51（10dBM）       （0x006E6882）
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-
-
-
-
-
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改   2FSK linear（0x00200004）   频偏不设置
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-
-
-#endif
-
-    }
-    else        //ADF7021 RX Mode
-    {
-
-
-
-	//write R1, turn on VCO
-	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
-	dd_write_7021_reg(&register_value.byte[0]);
-
-        register_value.whole_reg =0x00500882; //0x00680882;        //2013年11月22日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
-        //register_value.whole_reg =0x00680882; //0x00680882;        //2013年11月29日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
-	dd_write_7021_reg(&register_value.byte[0]);
-
-	//write R3, turn on TX/RX clocks
-	register_value.whole_reg = 0x29915CD3;
-	dd_write_7021_reg(&register_value.byte[0]);
-
-
-
-
-
-    	switch (CH){
-            case 1:
-                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-                    break;
-            case 2:
-                    register_value.whole_reg = 0x09574290;//CH=429.175MHz
-                    break;
-            case 3:
-                    //register_value.whole_reg = 0x09574520;//CH=429.1875MHz
-                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-                    break;
-            case 4:
-                    register_value.whole_reg = 0x095747B0;//CH=429.200MHz
-                    break;
-            case 5:
-                    //register_value.whole_reg = 0x09574A40;//CH=429.2125MHz
-                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
-                    break;
-            case 6:
-                    register_value.whole_reg = 0x09574CD0;//CH=429.225MHz
-                    break;
-//            case 7:
-//                    register_value.whole_reg = 0x09574F60;//CH=429.2375MHz
-//                    break;
-            default:
-                   break;
-	}
-        dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us 
-        	//write R4, turn on demodulation
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
-        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）  频偏不设置
-	dd_write_7021_reg(&register_value.byte[0]);
-
-
-
-
-	//write R10, turn on PLL
-	if((CH==1)||(CH==3)||(CH==5))register_value.whole_reg = 0x049668FA;
-        else register_value.whole_reg = 0x049668EA;
-	dd_write_7021_reg(&register_value.byte[0]);
-	Delayus(40);		//delay 40us
+            if((i==3)||(i==5))Delayus(40);
+        }
     }
 }
 void dd_set_ADF7021_Power_on(void)
@@ -729,17 +519,16 @@ void ADF7021_change_TXorRX(void)
 
    if((FLAG_UART_ok==1)||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
        if(FLAG_rssi_Freq==0){
-           rssi_TIME=2;    //发射时10ms间隔搜索空信道   //1
+           rssi_TIME=1;    //发射时10ms间隔搜索空信道
            FLAG_rssi_Freq=1;
            rssi_COUNT=0;
            TX_Freq_CH=TX_Freq_CH+2;
            if(TX_Freq_CH>6)TX_Freq_CH=2;
            dd_set_ADF7021_Freq(0,TX_Freq_CH);
-           rssi_Wait_T=10;
        }
        if(rssi_TIME==0){
            FLAG_rssi_Freq=0;
-           if(rssi_COUNT>=20){FLAG_UART_ok=0;FLAG_HA_START=0;FLAG_AUTO_SEND_ok=0;SendTxData();TX_Freq_CH=0;
+           if(rssi_COUNT>=10){FLAG_UART_ok=0;FLAG_HA_START=0;FLAG_AUTO_SEND_ok=0;SendTxData();TX_Freq_CH=0;
                               #if defined(__Product_PIC32MX2_WIFI__)
                               TIME_No_response=300;FLAG_TIME_No_response=1;      //2014.10.11修改   150
                               #endif
@@ -749,11 +538,11 @@ void ADF7021_change_TXorRX(void)
 //       FLAG_UART_ok=0;FLAG_HA_START=0;SendTxData();TX_Freq_CH=0;
    }
 
-    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)&&(rssi_Wait_T==0)){
+    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
        rssi=dd_read_rssi_7021_reg(0x14);
-       if(rssi<=24){          //34
+       if(rssi<=34){
            rssi_COUNT++;
-           if(rssi_COUNT>20)rssi_COUNT=20;    //10
+           if(rssi_COUNT>10)rssi_COUNT=10;
        }
        else rssi_COUNT=0;
    }
