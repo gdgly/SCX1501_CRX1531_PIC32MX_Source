@@ -14,10 +14,6 @@
 #include "Uart.h"
 #include "pcf8563.h"
 
- #if defined(__Product_PIC32MX2_WIFI__)
-    UINT32 Email_check_ID[64]={0x00};
-    UINT8  Emial_check_Control[64]={0x00};
- #endif
 
 void ID_Decode_function(void);
 void  Freq_Scanning(void);
@@ -28,7 +24,8 @@ void SendTxData(void);
 void ID_Decode_OUT(void);
 void Signal_DATA_Decode(UINT8 NUM_Type);
 void BEEP_and_LED(void);
-void Email_check(void);
+void Email_check_app(void);
+void Email_check_mail(void);
 
 void ID_Decode_Initial_INT(void)
 {
@@ -89,6 +86,7 @@ void ID_code_function(void)
 void ID_Decode_function(void)
 {
     UINT16 DATA_Packet_Syn_bak=0;
+     TIME_EMC=10;
      switch (rxphase){
         case 0:
                 DATA_Packet_Syn=DATA_Packet_Syn<<1;
@@ -345,7 +343,7 @@ void ID_Decode_OUT(void)
                }       
      else {
            if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
-           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status+4;FLAG_HA_START=1;}   //受信器自动发送HA状态码为实际HA码+4
            FLAG_Receiver_BEEP=0;
            if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
            else Receiver_LED_OUT=0;
@@ -361,65 +359,74 @@ void ID_Decode_OUT(void)
      else if(TIMER1s) WIFI_LED_RX=1;
      else WIFI_LED_RX=0;
 
-//     if(FLAG_HA_Inquiry==1){
-//         if((DATA_Packet_Control_0==0x81)||(DATA_Packet_Control_0==0x82)||(DATA_Packet_Control_0==0x83)){
-//             FLAG_HA_Inquiry=0;
-//             HA_uart_send_APP();
-//         }
-//     }
-//     if((Freq_Scanning_CH_save==1)&&((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x82)||(DATA_Packet_Control==0x83))){
-//         Email_check();
-//         if(((Emial_ID!=DATA_Packet_ID)&&(FLAG_Email_check==1))||((Emial_ID==DATA_Packet_ID)&&(Emial_Control!=DATA_Packet_Control))){
-//               HA_uart_send();
-//               Emial_ID=DATA_Packet_ID;
-//               Emial_Control=DATA_Packet_Control;
-//               Freq_Scanning_CH_save=0;
-//         }
-//     }
-
-         if((DATA_Packet_Control_0==0x81)||(DATA_Packet_Control_0==0x82)||(DATA_Packet_Control_0==0x83)){
-             if((FLAG_HA_Inquiry==1)||((Freq_Scanning_CH_save==1)&&((Emial_Control!=DATA_Packet_Control_0)||(Emial_ID!=DATA_Packet_ID)))){
-                     HA_uart_send_APP();
-                     Email_check();
-                     if(((Emial_ID!=DATA_Packet_ID)&&(FLAG_Email_check==1))||((Emial_ID==DATA_Packet_ID)&&(Emial_Control!=DATA_Packet_Control_0))){
-                           HA_uart_send();    //发邮件
-                           Emial_ID=DATA_Packet_ID;
-                           Emial_Control=DATA_Packet_Control_0;
-                     }
-                     //DATA_Packet_Control_0=0x00;
-                     Freq_Scanning_CH_save=0;
-                     FLAG_HA_Inquiry=0;
-             }
+     if(FLAG_HA_Inquiry==1){
+         if((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x83)){
+             FLAG_HA_Inquiry=0;
+             HA_uart_send_APP();
+             Email_check_app();
+             DATA_Packet_Control_0=0;
+             FLAG_email_send=1;
+             TIME_email_send=650;
          }
-
+     }
+    if((FLAG_email_send==1)&&(TIME_email_send==0)){
+        FLAG_email_send=0;
+        Email_check_mail();
+        if(FLAG_Email_check==1)HA_uart_email(EMIAL_id_PCS);     //上次邮件发送内容和本次内容不一样
+    }
+     if((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x87)&&((Emial_Control!=DATA_Packet_Control_0)||(Emial_ID!=DATA_Packet_ID))){
+          HA_uart_send_APP();
+          EMIAL_id_data[0]=DATA_Packet_ID;
+          EMIAL_id_HA[0]=DATA_Packet_Control; 
+          HA_uart_email(1);
+          Emial_ID=DATA_Packet_ID;
+          Emial_Control=DATA_Packet_Control;
+          DATA_Packet_Control_0=0;
+     }
  #endif    
 }
-void Email_check(void)
+
+void Email_check_app(void)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
     UINT8 i;
-    if(Emial_ID!=DATA_Packet_ID)
-    {
         for(i=0;i<64;i++)
         {
-            if(Email_check_ID[i]==0x00){Email_check_ID[i]=DATA_Packet_ID;Emial_check_Control[i]=DATA_Packet_Control;FLAG_Email_check=1;break;}
-            if(Email_check_ID[i]==DATA_Packet_ID)
+            if(EMIAL_id_data[i]==0x00){EMIAL_id_data[i]=DATA_Packet_ID;EMIAL_id_HA[i]=DATA_Packet_Control;EMIAL_id_PCS++;break;}
+            if(EMIAL_id_data[i]==DATA_Packet_ID)
             {
-                if(DATA_Packet_Control==Emial_check_Control[i]){FLAG_Email_check=0;break;}
-                else {Emial_check_Control[i]=DATA_Packet_Control;FLAG_Email_check=1;break;}
+                if(DATA_Packet_Control==EMIAL_id_data[i])break;
+                else {EMIAL_id_HA[i]=DATA_Packet_Control;break;}
             }
         }
-    }
+ #endif
+}
+
+void Email_check_mail(void)
+{
+ #if defined(__Product_PIC32MX2_WIFI__)
+    UINT8 i,j;
+        for(i=0;i<64;i++)
+        {
+            FLAG_Email_check=0;
+            for(j=0;j<64;j++)
+            {
+                if((Email_check_ID[i]==EMIAL_id_data[j])&&(Emial_check_Control[i]==EMIAL_id_HA[j])){FLAG_Email_check=1;j=64;}
+            }
+            if(FLAG_Email_check==0){FLAG_Email_check=1;break;}
+            else FLAG_Email_check=0;
+        }
  #endif
 }
 
 void  Freq_Scanning(void)
 {
-    if((FLAG_Receiver_Scanning==1)&&(FLAG_APP_RX==1)&&(FLAG_UART_ok==0))
+    //if((FLAG_Receiver_Scanning==1)&&(FLAG_APP_RX==1)&&(FLAG_UART_ok==0))
+    if(((FLAG_Receiver_Scanning==1)||(TIME_EMC==0))&&(FLAG_APP_RX==1)&&(FLAG_UART_ok==0))
     {
         FLAG_Receiver_Scanning=0;
         Freq_Scanning_CH++;
-        if(Freq_Scanning_CH>6)Freq_Scanning_CH=1;
+        if(Freq_Scanning_CH>6){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
         dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
         TIMER18ms=18;//18;
 

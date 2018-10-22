@@ -192,14 +192,18 @@ void UART_Decode(void)
 #endif
 }
 
-void HA_uart_send(void)
+void HA_uart_email(UINT8 EMIAL_id_PCS_x)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
-    UINT8 i,j,h,l;
-    UINT16 m;
+    UINT8 h,l;
+    UINT16 m,i,j;
     UINT32 h0;
 
-    Read_Time(number_time);
+    m=EMIAL_id_PCS_x*18+18;            //计算数据长度
+    HA_uart[6]=m%256;
+    HA_uart[7]=m/256;
+
+    Read_Time(number_time);           //计算邮件标题
     for(i=1;i<7;i++){
         if(i!=4){
             h=number_time[i];
@@ -212,23 +216,36 @@ void HA_uart_send(void)
             HA_uart[j]=h+0x30;
         }
     }
-    h0=DATA_Packet_ID;
-    for(i=8;i>0;i--){
-        h=h0%10;
-        HA_uart[27+i]=h+0x30;
-        h0=h0/10;
+    HA_uart[24]=0x00;   //邮件标题结束符
+    
+    for(j=0;j<EMIAL_id_PCS_x;j++){     //计算邮件内容
+        HA_uart[j*18+25]=HA_uart[25];
+        HA_uart[j*18+26]=HA_uart[26];
+        HA_uart[j*18+27]=HA_uart[27];
+        h0=EMIAL_id_data[j];
+        for(i=8;i>0;i--){
+            h=h0%10;
+            HA_uart[j*18+27+i]=h+0x30;
+            h0=h0/10;
+        }
+        HA_uart[j*18+36]=HA_uart[36];
+        for(i=0;i<5;i++){
+            if((EMIAL_id_HA[j]==0x81)||(EMIAL_id_HA[j]==0x85))HA_uart[37+j*18+i]=HA_uart_open[i];
+            else if((EMIAL_id_HA[j]==0x82)||(EMIAL_id_HA[j]==0x86))HA_uart[37+j*18+i]=HA_uart_close[i];
+            else if((EMIAL_id_HA[j]==0x83)||(EMIAL_id_HA[j]==0x87))HA_uart[37+j*18+i]=HA_uart_err[i];
+        }
+        HA_uart[j*18+42]=HA_uart[42];
     }
-    for(i=0;i<5;i++){
-        if(DATA_Packet_Control==0x81)HA_uart[37+i]=HA_uart_open[i];
-        else if(DATA_Packet_Control==0x82)HA_uart[37+i]=HA_uart_close[i];  
-        else if(DATA_Packet_Control==0x83)HA_uart[37+i]=HA_uart_err[i];
-    }
-    m=0;
-    for(i=8;i<43;i++)m=m+HA_uart[i];
-    HA_uart[43]=m%256;
-    HA_uart[44]=m/256;
+    HA_uart[(EMIAL_id_PCS_x-1)*18+43]=0x00;   //邮件内容结束符
 
-        for(i=0;i<45;i++){
+    m=0;                       //计算CRC16
+    j=EMIAL_id_PCS_x*18+26;
+    for(i=8;i<j;i++)m=m+HA_uart[i];
+    HA_uart[(EMIAL_id_PCS_x-1)*18+44]=m%256;
+    HA_uart[(EMIAL_id_PCS_x-1)*18+45]=m/256;
+
+    j=j+2;
+        for(i=0;i<j;i++){
             U1TXREG=HA_uart[i];
             if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
         }
@@ -237,6 +254,13 @@ void HA_uart_send(void)
        FLAG_email_Repeat=0;
        UART_send_count=0;
 
+       for(i=0;i<64;i++){
+           Email_check_ID[i]=EMIAL_id_data[i];
+           EMIAL_id_data[i]=0;
+           Emial_check_Control[i]=EMIAL_id_HA[i];
+           EMIAL_id_HA[i]=0;
+       }
+       EMIAL_id_PCS=0;
   // HA_uart_send_APP();
     
  #endif
@@ -263,9 +287,9 @@ void HA_uart_send_APP(void)
     HA_uart_app[8]=b0.IDB[0];
     HA_uart_app[9]=b0.IDB[1];
     HA_uart_app[10]=b0.IDB[2];
-    if(DATA_Packet_Control==0x81)HA_uart_app[11]=01;
-    else if(DATA_Packet_Control==0x82)HA_uart_app[11]=02;
-    else if(DATA_Packet_Control==0x83)HA_uart_app[11]=03;
+    if((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x85))HA_uart_app[11]=01;
+    else if((DATA_Packet_Control==0x82)||(DATA_Packet_Control==0x86))HA_uart_app[11]=02;
+    else if((DATA_Packet_Control==0x83)||(DATA_Packet_Control==0x87))HA_uart_app[11]=03;
     m=0;
     for(i=8;i<13;i++)m=m+HA_uart_app[i];
     HA_uart_app[13]=m%256;

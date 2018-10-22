@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES6/main.c</file>
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES6/Uart.c</file>
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES6/adf7021.c</file>
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES6/EEPROM.c</file>
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES6/pcf8563.c</file>
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES6/Initial.c</file>
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES6/ID_Decode.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES7/main.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES7/ID_Decode.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES7/Uart.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES7/Initial.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES7/EEPROM.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/Application%20ES7/adf7021.c</file>
     </open-files>
 </project-private>

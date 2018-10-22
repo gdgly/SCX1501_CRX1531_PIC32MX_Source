@@ -152,13 +152,27 @@ int main(void)
     FLAG_HA_L_signal=1;
     FLAG_HA_ERR_signal=1;
 
+#if defined(__Product_PIC32MX2_Receiver__)
+    Receiver_LED_OUT=1;    
+    for(time_3sec=0;time_3sec<1000;time_3sec++){
+    Delay100us(10);
+    ClearWDT(); // Service the WDT
+    }
+    time_3sec=10;
+    Receiver_LED_OUT=0;
+#endif
+
+    TIME_EMC=10;
+    dd_set_RX_mode();
     while(1)
-    {          
+    {
+        //if(time_3sec==0){time_3sec=10;Receiver_LED_TX=!Receiver_LED_TX;}
+
         ClearWDT(); // Service the WDT
         ADF7021_change_TXorRX();
         ID_Decode_IDCheck();
         ID_Decode_OUT();
-        Freq_Scanning();
+        //Freq_Scanning();
         ID_learn();
 
      }

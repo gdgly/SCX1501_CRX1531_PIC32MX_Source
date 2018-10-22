@@ -205,7 +205,6 @@ extern UINT8  rssi_COUNT;
 extern UINT8  rssi_TIME;
 extern UINT8  TX_Freq_CH;
 
-extern UINT8 HA_uart[45];
 extern UINT8 HA_uart_app[15];
 
 extern UINT8 FLAG_APP_TX;
@@ -216,6 +215,9 @@ extern UINT8 FLAG_UART_0xBB;
 extern UINT8  FLAG_UART_ok;
 extern UINT8  FLAG_ADF7021_ReInitial;
 extern UINT8 FLAG_IDCheck_OK;
+extern UINT16 time_3sec;
+
+extern UINT8 TIME_EMC;
 
 #if defined(__Product_PIC32MX2_WIFI__)
     extern UINT8 WIFI_alarm_data[200][10];
@@ -225,6 +227,14 @@ extern UINT8 FLAG_IDCheck_OK;
     extern UINT8 AUTO_SEND_DATA_pcs;
     extern UINT16 TIME_alarm_AUTO;
     extern UINT8 AUTO_HA_Inquiry;
+    extern UINT8 HA_uart[1200];
+    extern UINT32 EMIAL_id_data[64];
+    extern UINT8  EMIAL_id_HA[64];
+    extern UINT8  EMIAL_id_PCS;
+    extern UINT8  FLAG_email_send;
+    extern UINT16 TIME_email_send;
+    extern UINT32 Email_check_ID[64];
+    extern UINT8  Emial_check_Control[64];
 #endif
 
 

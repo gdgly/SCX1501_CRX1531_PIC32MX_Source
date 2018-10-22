@@ -39,6 +39,10 @@ void ID_learn(void)
  #if defined(__Product_PIC32MX2_Receiver__)
  if(FG_10ms){
      FG_10ms = 0;
+
+//     if(time_3sec)--time_3sec;
+     if(TIME_EMC)--TIME_EMC;
+
      if(rssi_TIME)--rssi_TIME;
      if(TIMER60s)--TIMER60s;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
@@ -95,6 +99,7 @@ void ID_learn(void)
      if(TIME_UART)--TIME_UART;
      if(TIME_alarm_AUTO)--TIME_alarm_AUTO;
      if(TIME_email_Repeat)--TIME_email_Repeat;
+     if(TIME_email_send)--TIME_email_send;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
        else if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
           else {TIME_Receiver_Login=0;COUNT_Receiver_Login=0;}
@@ -200,7 +205,10 @@ void ID_Login_EXIT_Initial(void)
 void all_Erase_EEPROM(void)
 {
 #if defined(__Product_PIC32MX2_WIFI__)
+    UINT16 i;
     UINT8 xm[3]={0};
+
+    for(i=0;i<64;i++){EMIAL_id_data[i]=0;EMIAL_id_HA[i]=0;EMIAL_id_PCS=0;Email_check_ID[i]=0xff;Emial_check_Control[i]=0xff;}
     
     TIMER1s=3000;
     while((WIFI_L_Login==0)&&(WIFI_USBLogin==0)){

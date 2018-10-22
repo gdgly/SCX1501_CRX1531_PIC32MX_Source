@@ -68,18 +68,6 @@ UINT8  rssi_COUNT=0;
 UINT8  rssi_TIME=0;
 UINT8  TX_Freq_CH=0;
 
-UINT8 HA_uart[45]={0xBB,0x00,0x20,0x00,0x00,0x00,0x23,0x00,          //头
-                   0x32,0x30,0x00,0x00,       //年
-                   0x2E,0x00,0x00,          //月
-                   0x2E,0x00,0x00,         //日
-                   0x20,0x00,0x00,        //小时
-                   0x3A,0x00,0x00,       //分钟
-                   0x20,0x49,0x44,0x3D,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,  //ID=xxxxxxxx
-                   0x00,      //标题结束符
-                   0x00,0x00,0x00,0x00,0x00, //邮件内容   如：OPEN
-                   0x00,       //邮件内容结束符
-                   0x00,0x00   //校验码
-                   };
 UINT8 HA_uart_app[15]={0xBB,0x00,0x07,0x00,0x00,0x00,0x5,0x00,
                    0x00,0x00,0x00,0x00,0x00,
                    0x00,0x00};
@@ -92,6 +80,9 @@ UINT8 FLAG_UART_0xBB=0;
 UINT8 FLAG_UART_ok=0;
 UINT8 FLAG_ADF7021_ReInitial=0;
 UINT8 FLAG_IDCheck_OK=0;
+UINT16 time_3sec=0;
+
+UINT8 TIME_EMC=0;   //静电测试
 
 #if defined(__Product_PIC32MX2_WIFI__)
     UINT8 WIFI_alarm_data[200][10]={0};
@@ -101,6 +92,26 @@ UINT8 FLAG_IDCheck_OK=0;
     UINT8 AUTO_SEND_DATA_pcs=0;
     UINT16 TIME_alarm_AUTO=0;
     UINT8 AUTO_HA_Inquiry=0;
+    UINT8 HA_uart[1200]={0xBB,0x00,0x20,0x00,0x00,0x00,0x23,0x00,          //头
+                       0x32,0x30,0x00,0x00,       //年
+                       0x2E,0x00,0x00,          //月
+                       0x2E,0x00,0x00,         //日
+                       0x20,0x00,0x00,        //小时
+                       0x3A,0x00,0x00,       //分钟
+                       0x00,      //标题结束符
+                       //以下邮件内容
+                       0x49,0x44,0x3D,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x20,  //ID=xxxxxxxx
+                       0x00,0x00,0x00,0x00,0x00,0x0d, //   如：OPEN
+                       0x00,       //邮件内容结束符
+                       0x00,0x00   //校验码
+                       };
+    UINT32 EMIAL_id_data[64];
+    UINT8  EMIAL_id_HA[64];
+    UINT8  EMIAL_id_PCS=0;
+    UINT8  FLAG_email_send=0;
+    UINT16 TIME_email_send=0;
+    UINT32 Email_check_ID[64]={0x00};
+    UINT8  Emial_check_Control[64]={0x00};
 #endif
 
 
@@ -180,7 +191,7 @@ void VHF_GPIO_INIT(void){
       Receiver_Buzzer_IO=0;// Output   受信机蜂鸣器  高电平有效
       Receiver_Buzzer=0;
       Receiver_LED_OUT_IO=0;// Output   受信机继电器动作输出  低电平有效
-      Receiver_LED_OUT=0;
+      Receiver_LED_OUT=1;
       Receiver_LED_TX_IO=0;// Output   受信机送信指示  低电平有效
       Receiver_LED_TX=0;
       Receiver_LED_RX_IO=0;// Output   受信机受信指示  低电平有效

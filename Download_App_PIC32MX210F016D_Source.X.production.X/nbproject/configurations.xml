@@ -27,7 +27,7 @@
         <targetDevice>PIC32MX210F016D</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PICkit3PlatformTool</platformTool>
+        <platformTool>ICD3PlatformTool</platformTool>
         <languageToolchain></languageToolchain>
         <languageToolchainVersion></languageToolchainVersion>
         <platform>3</platform>
