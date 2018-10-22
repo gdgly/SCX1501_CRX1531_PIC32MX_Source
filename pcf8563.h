@@ -20,3 +20,6 @@ extern void Set_Time(unsigned char *time_arr);
 extern void alarm_pcf8563(unsigned char *time_alarm);
 extern void NEW_set_alarm_pcf8563(UINT16 value0);
 extern void alarm_OUT_bak(UINT16 value10);
+extern void alarm_OUT_to_AUTO(UINT16 value10,UINT16 value11);
+extern void APP_UART_OUT(UINT16 value10);
+extern void Emial_time_OUT(UINT16 value10);

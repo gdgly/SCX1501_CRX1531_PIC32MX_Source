@@ -118,8 +118,9 @@ extern FLAG FLAG_APP;
         #define		FLAG_HA_Emial    	FLAG_APP.BIT.Bit21
         #define		FLAG_HA_Inquiry    	FLAG_APP.BIT.Bit22
 
-        #define		FG_10ms 	        FLAG_APP.BIT.Bit24
+        #define		FG_10ms 	        FLAG_APP.BIT.Bit23
 
+        #define		FLAG_all_Erase_loop    	FLAG_APP.BIT.Bit24
         #define		FLAG_all_Erase    	FLAG_APP.BIT.Bit25
         #define		FLAG_all_Erase_OK    	FLAG_APP.BIT.Bit26
 
@@ -183,9 +184,8 @@ extern UINT8 Control_code;
 extern UINT8 ID_INT_CODE;
 
 extern UINT16 UART_DATA_i;
-extern UINT8  UART_DATA_cnt;
-extern UINT8  UART1_DATA[27];
-extern UINT8  UART_DATA_buffer[27];
+extern UINT16  UART_DATA_cnt;
+
 extern UINT8  TIME_UART;
 extern UINT8  UART_send_count;
 extern UINT16 TIME_email_Repeat;
@@ -205,7 +205,7 @@ extern UINT8  rssi_COUNT;
 extern UINT8  rssi_TIME;
 extern UINT8  TX_Freq_CH;
 
-extern UINT8 HA_uart_app[15];
+extern UINT8 HA_uart_app[18];
 
 extern UINT8 FLAG_APP_TX;
 extern UINT8 FLAG_APP_RX;
@@ -217,11 +217,20 @@ extern UINT8  FLAG_ADF7021_ReInitial;
 extern UINT8 FLAG_IDCheck_OK;
 extern UINT16 time_3sec;
 
+extern UINT16 FLAG_all_Erase_time;
+
 extern UINT8 TIME_EMC;
 
 #if defined(__Product_PIC32MX2_WIFI__)
-    extern UINT8 WIFI_alarm_data[200][10];
+    //extern UINT8  UART1_DATA[106];
+    //extern UINT8  UART_DATA_buffer[106];
+    extern UINT8  UART1_DATA[493];
+    extern UINT8  UART_DATA_buffer[493];
+    //extern UINT8 WIFI_alarm_data[200][10];
+    extern UINT8 WIFI_alarm_data[12][103];
     extern UINT8 WIFI_alarm_data_PCS;
+    extern UINT8 Emial_time_data[10][7];
+    extern UINT8 Emial_time_data_PCS;
     extern UINT8 WIFI_alarm_Hours_Minutes[2];
     extern UINT8 AUTO_SEND_DATA[200][4];
     extern UINT8 AUTO_SEND_DATA_pcs;
@@ -235,6 +244,16 @@ extern UINT8 TIME_EMC;
     extern UINT16 TIME_email_send;
     extern UINT32 Email_check_ID[64];
     extern UINT8  Emial_check_Control[64];
+    extern UINT8  Sunrise_sunset_DATA[480];
+    extern UINT8 SUN_ON_OFF_seat[3];
+    extern UINT8 SUN_Weekdays_alarm;
+    extern UINT8 HA_Change_send_email[3];
+    extern UINT16 HA_Change_email_time;
+    extern UINT8 HA_Change_email_Step;
+    extern UINT8 FLAG_HA_Change_ERROR;
+    extern UINT8 FLAG_Emial_time;
+    extern UINT8 Emial_time_place;
+    extern UINT16 HA_uart_Length;
 #endif
 
 

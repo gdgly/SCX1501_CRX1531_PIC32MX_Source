@@ -452,9 +452,9 @@ void dd_set_ADF7021_Power_on(void)
 //                Delayus(1000);             //delay 1ms
 //	}
         ADF7021_CE = 0;
-        Delayus(20000);             //delay 1ms
+        Delay100us(200);             //delay 1ms
         ADF7021_CE = 1;
-        Delayus(20000);             //delay 1ms        
+        Delay100us(200);             //delay 1ms
         m_RFNormalBuf[0]=0xFF;
         m_RFNormalBuf[1]=0xFF;
         for(i=2;i<=21;i++)m_RFNormalBuf[i]=0x55;
@@ -489,7 +489,7 @@ void dd_read_RSSI(void)
 
 void ADF7021_change_TXorRX(void)
 {
-    UINT8 i;
+    UINT8 i,i_m,i_n;
     UINT8 HA_j=0;
     UINT8 xmv[10]={0};
     UINT8 Weekday_alarm;
@@ -522,8 +522,9 @@ void ADF7021_change_TXorRX(void)
            FLAG_close=0;
            FLAG_open=0;
            HA_Status=0x83;
-           FLAG_426MHz_Reply=1;    //在遥控板和APP控制下，EER都输出
-//           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           //FLAG_426MHz_Reply=1;    //在遥控板和APP控制下，EER都输出
+           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           else FLAG_APP_Reply=1;
            //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
        }
    }
@@ -546,11 +547,10 @@ void ADF7021_change_TXorRX(void)
        UART_Decode();
    }
    if((FLAG_email_Repeat==1)&&(TIME_email_Repeat==0)){
-       TIME_email_Repeat=200;
+       TIME_email_Repeat=9000;
        UART_send_count++;
        if(UART_send_count>3)FLAG_email_Repeat=0;
-       if(FLAG_HA_Emial==1)HA_uart_email_Repeat();
-       else FLAG_email_Repeat=0;
+       HA_uart_email_Repeat();
    }
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
@@ -565,17 +565,29 @@ void ADF7021_change_TXorRX(void)
     if(PCF8563_INT==0){
         Read_Time(&xmv[0]);
         Minutes_x=xmv[2]*60+xmv[1];
+        if(SUN_Weekdays_alarm!=xmv[5]){SUN_time_get(SUN_ON_OFF_seat[2]);NEW_set_alarm_pcf8563(Minutes_x);}
         if((WIFI_alarm_Hours_Minutes[0]==xmv[2])&&(WIFI_alarm_Hours_Minutes[1]==xmv[1])){
-            AUTO_SEND_DATA_pcs=0;
-            for(i=0;i<WIFI_alarm_data_PCS;i++){
-                if(WIFI_alarm_data[i][4]==0x10){
-                    if((xmv[6]==WIFI_alarm_data[i][5])&&(xmv[5]==WIFI_alarm_data[i][6])&&(xmv[3]==WIFI_alarm_data[i][7])
-                            &&(xmv[2]==WIFI_alarm_data[i][8])&&(xmv[1]==WIFI_alarm_data[i][9]))alarm_OUT_bak(i);
+            for(i=0;i<22;i++){
+                if(i<12){
+                            if(WIFI_alarm_data[i][1]==0x01){
+                                   Weekday_alarm=0x01;
+                                   Weekday_alarm=Weekday_alarm<<xmv[4];
+                                   if(((WIFI_alarm_data[i][5]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==WIFI_alarm_data[i][3])&&(xmv[1]==WIFI_alarm_data[i][4])){
+                                       for(i_m=0;i_m<WIFI_alarm_data[i][6];i_m++)alarm_OUT_to_AUTO(i,i_m);
+                                   }
+                            }
                 }
-                else if(WIFI_alarm_data[i][4]==0x20){
-                    Weekday_alarm=0x01;
-                    Weekday_alarm=Weekday_alarm<<xmv[4];
-                   if(((WIFI_alarm_data[i][7]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==WIFI_alarm_data[i][8])&&(xmv[1]==WIFI_alarm_data[i][9]))alarm_OUT_bak(i);
+                else {
+                            i_n=i-12;
+                            if(Emial_time_data[i_n][1]==0x01){
+                                   Weekday_alarm=0x01;
+                                   Weekday_alarm=Weekday_alarm<<xmv[4];
+                                   if(((Emial_time_data[i_n][4]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==Emial_time_data[i_n][2])&&(xmv[1]==Emial_time_data[i_n][3])){
+                                       for(i_m=0;i_m<ID_DATA_PCS;i_m++)Emial_time_OUT(i_m);
+                                       FLAG_Emial_time=1;
+                                       Emial_time_place=i_n;
+                                   }
+                            }
                 }
             }
             NEW_set_alarm_pcf8563(Minutes_x);
@@ -585,6 +597,30 @@ void ADF7021_change_TXorRX(void)
            Write_pcf8563(&xmv[0],0x01,1);
         }
     }
+   
+//    if(PCF8563_INT==0){
+//        Read_Time(&xmv[0]);
+//        Minutes_x=xmv[2]*60+xmv[1];
+//        if((WIFI_alarm_Hours_Minutes[0]==xmv[2])&&(WIFI_alarm_Hours_Minutes[1]==xmv[1])){
+//            AUTO_SEND_DATA_pcs=0;
+//            for(i=0;i<WIFI_alarm_data_PCS;i++){
+//                if(WIFI_alarm_data[i][4]==0x10){
+//                    if((xmv[6]==WIFI_alarm_data[i][5])&&(xmv[5]==WIFI_alarm_data[i][6])&&(xmv[3]==WIFI_alarm_data[i][7])
+//                            &&(xmv[2]==WIFI_alarm_data[i][8])&&(xmv[1]==WIFI_alarm_data[i][9]))alarm_OUT_bak(i);
+//                }
+//                else if(WIFI_alarm_data[i][4]==0x20){
+//                    Weekday_alarm=0x01;
+//                    Weekday_alarm=Weekday_alarm<<xmv[4];
+//                   if(((WIFI_alarm_data[i][7]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==WIFI_alarm_data[i][8])&&(xmv[1]==WIFI_alarm_data[i][9]))alarm_OUT_bak(i);
+//                }
+//            }
+//            NEW_set_alarm_pcf8563(Minutes_x);
+//        }
+//        else {
+//           xmv[0]=2;
+//           Write_pcf8563(&xmv[0],0x01,1);
+//        }
+//    }
 
     if(FLAG_AUTO_SEND_START==1){
         if((TIME_alarm_AUTO==0)&&(FLAG_AUTO_SEND_ok==0)){
@@ -592,19 +628,14 @@ void ADF7021_change_TXorRX(void)
             ID_data.IDB[1]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][1];
             ID_data.IDB[2]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][2];
             ID_data.IDB[3]=0x00;
-//            if(AUTO_HA_Inquiry==0){
-//                AUTO_HA_Inquiry=1;
-                Control_code=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][3];
-//                TIME_alarm_AUTO=200;
-//            }
-//            else {
-//                AUTO_HA_Inquiry=0;
-//                Control_code=0x00;
-                TIME_alarm_AUTO=400;
-                AUTO_SEND_DATA_pcs--;
-                FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;    //表示APP查询
-//            }
-            FLAG_AUTO_SEND_ok=1;
+            Control_code=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][3];
+            if(ID_data.IDL!=0){                   //如果ID=0的话，不允许发送
+                TIME_alarm_AUTO=250;                
+                FLAG_HA_Inquiry=1;
+                DATA_Packet_Control_0=0x00;    //表示APP查询
+                FLAG_AUTO_SEND_ok=1;
+            }
+            AUTO_SEND_DATA_pcs--;
             if(AUTO_SEND_DATA_pcs==0)FLAG_AUTO_SEND_START=0;
         }
     }
