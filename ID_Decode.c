@@ -66,11 +66,21 @@ void __ISR(_EXTERNAL_2_VECTOR, ipl6) ExternalHandler(void)
     if(FLAG_APP_RX==1)
         ID_Decode_function();
     else if(FLAG_APP_TX==1)ID_code_function();
+    else if(FG_test_rx==1){
+      X_COUNT ++;
+      if((ADF7021_DATA_rx== X_HIS)&&(X_COUNT != 1))X_ERR++;
+      X_HIS = ADF7021_DATA_rx;
+  }
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
     if(FLAG_APP_RX==1)
         ID_Decode_function();
     else if(FLAG_APP_TX==1)ID_code_function();
+    else if(FG_test_rx==1){
+      X_COUNT ++;
+      if((ADF7021_DATA_rx== X_HIS)&&(X_COUNT != 1))X_ERR++;
+      X_HIS = ADF7021_DATA_rx;
+  }
  #endif
     //ADF7021_CLKOUT=!ADF7021_CLKOUT;//测试，测试完后需要删除
     IFS0bits.INT2IF = 0;
@@ -98,7 +108,7 @@ void ID_code_function(void)
 
 void ID_Decode_function(void)
 {
-    UINT16 DATA_Packet_Syn_bak=0;
+   UINT16 DATA_Packet_Syn_bak=0;
      TIME_EMC=10;
      switch (rxphase){
         case 0:

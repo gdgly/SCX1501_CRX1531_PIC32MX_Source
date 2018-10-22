@@ -95,10 +95,6 @@ extern FLAG FLAG_APP;
         #define		FLAG_AUTO_SEND_ok		FLAG_APP.BIT.Bit1      
         #define		Freq_Scanning_CH_save_HA	FLAG_APP.BIT.Bit2
 
-//        #define		FLAG_APP_SW1		FLAG_APP.BIT.Bit0      //test use
-//        #define		FLAG_APP_SW2		FLAG_APP.BIT.Bit1      //test use
-//        #define		FLAG_APP_SW3		FLAG_APP.BIT.Bit2      //test use
-
 	#define		FLAG_rssi_Freq		FLAG_APP.BIT.Bit3
 	#define		FLAG_Receiver_BEEP	FLAG_APP.BIT.Bit4
 
@@ -236,6 +232,35 @@ extern UINT8 FLAG_TIME_No_response;
 extern UINT8 SWITCH_DIP;
 extern UINT8 read_TIMER_Semi_open;
 
+extern UINT32 RF_SET_TX_DATA[5];
+extern UINT32 RF_SET_TX_REGISTER_0[6];
+extern UINT32 RF_SET_RX_DATA[6];
+extern UINT32 RF_SET_RX_REGISTER_0[6];
+extern UINT32 RF_SET_RX_REGISTER_A[6];
+
+//*********以下为测试代码所用变量****************
+extern UINT8 Tx_Rx_mode;
+extern FLAG FLAG_test;
+	//************************************************
+	//************************************************
+	#define 	FLAG_test_BYTE		FLAG_test.BYTE
+	//------------------------------------------------
+        //#define		FLAG_Receiver_Scanning	FLAG_test.BIT.Bit0
+        #define		FG_test_tx_1010	        FLAG_test.BIT.Bit1
+        //#define		X_HIS	                FLAG_test.BIT.Bit2    //历史记录   误码率测试用
+        #define		FG_test_tx_on		FLAG_test.BIT.Bit3
+        #define		FG_test_tx_off	        FLAG_test.BIT.Bit4
+        #define		FG_test_mode	        FLAG_test.BIT.Bit5
+        //#define		FG_test1	        FLAG_test.BIT.Bit6
+        #define		FG_test_rx		FLAG_test.BIT.Bit7
+extern UINT32 RF_SET_TX_carrier_test[6];
+extern UINT32 RF_SET_TX_1010pattern[6];
+extern UINT32 RF_SET_RX_test[6];
+extern UINT16 X_COUNT ;
+extern UINT16 X_ERR ;//记录错误的个数
+extern UINT8 X_HIS; //历史记录   误码率测试用
+//*********************************************
+
 #if defined(__Product_PIC32MX2_Receiver__)
 extern UINT16  TIMER_err_1s;
 extern UINT16  TIMER_Sensor_open_1s;
@@ -306,6 +331,7 @@ extern UINT8 HA_Status_buf;
 extern void VHF_GPIO_INIT(void);		// CPU端口设置
 extern void Delayus(unsigned int timer);
 extern void Delay100us(unsigned int timer);
+extern void RF_test_mode(void );
 
 
 //以下是IO 方向定义
@@ -345,7 +371,7 @@ extern void Delay100us(unsigned int timer);
     #define  Receiver_OUT_STOP_IO    TRISCbits.TRISC0  // Output 受信机继电器STOP  高电平有效
     #define  Receiver_OUT_VENT_IO    TRISBbits.TRISB3  // Output 受信机继电器STOP  高电平有效
 
-    #define  Receiver_test_IO    TRISBbits.TRISB10  // INPUT 受信机测试脚  高电平有效
+    #define  Receiver_test_IO    TRISBbits.TRISB10  // INPUT 受信机测试脚  低电平有效
     #define  DIP_switch1_IO         TRISBbits.TRISB11 // Input   DIP_switch1  低电平有效
     #define  DIP_switch2_IO         TRISBbits.TRISB5 // Input   DIP_switch2  低电平有效
     #define  DIP_switch3_IO         TRISAbits.TRISA0 // Input   DIP_switch3  低电平有效
@@ -365,7 +391,7 @@ extern void Delay100us(unsigned int timer);
     #define ADF7021_DATA_CLK_IO           TRISCbits.TRISC3 // Input
     #define ADF7021_DATA_IO               TRISAbits.TRISA9 // Output
 
-    #define ADF7021_CLKOUT_IO             TRISBbits.TRISB4 // Input
+    //#define ADF7021_CLKOUT_IO             TRISBbits.TRISB4 // Input
     #define ADF7021_INT_LOCK_IO           TRISAbits.TRISA8 // Input
 
    #define	SDAIO                   TRISCbits.TRISC2 // Input AND output
@@ -383,6 +409,8 @@ extern void Delay100us(unsigned int timer);
     #define  WIFI_LAN_SELECT_IO   TRISCbits.TRISC6 // Input   有线LAN、WIFI切换
     #define  WIFI_POWER_IO        TRISAbits.TRISA10 // output  WIFI电源  低电平有效
     #define  LAN_POWER_IO         TRISBbits.TRISB13 // output  LAN电源  低电平有效
+
+    #define WIFI_test_IO          TRISBbits.TRISB4  // INPUT WIFI测试脚  低电平有效
 
 #endif
 
@@ -427,7 +455,7 @@ extern void Delay100us(unsigned int timer);
     #define  Receiver_OUT_STOP    LATCbits.LATC0  // Output   受信机继电器stop  高电平有效
     #define  Receiver_OUT_VENT    LATBbits.LATB3   // Output 受信机继电器STOP  高电平有效
 
-    #define  Receiver_test    PORTBbits.RB10   // Input 受信机测试脚  高电平有效
+    #define  Receiver_test    PORTBbits.RB10   // Input 受信机测试脚  低电平有效
     #define  DIP_switch1         PORTBbits.RB11 // Input   DIP_switch1  低电平有效
     #define  DIP_switch2         PORTBbits.RB5 // Input   DIP_switch2  低电平有效
     #define  DIP_switch3         PORTAbits.RA0 // Input   DIP_switch3  低电平有效
@@ -449,7 +477,7 @@ extern void Delay100us(unsigned int timer);
     #define ADF7021_DATA_tx           LATAbits.LATA9     // Output
     #define ADF7021_DATA_rx           PORTAbits.RA9     // Input
 
-    #define ADF7021_CLKOUT             PORTBbits.RB4 // Input
+    //#define ADF7021_CLKOUT             PORTBbits.RB4 // Input
     #define ADF7021_INT_LOCK           PORTAbits.RA8 // Input
 
     #define	SDA                     LATCbits.LATC2     // Output
@@ -468,6 +496,8 @@ extern void Delay100us(unsigned int timer);
     #define  WIFI_LAN_SELECT  PORTCbits.RC6 // Input   有线LAN、WIFI切换
     #define  WIFI_POWER       LATAbits.LATA10  // output  WIFI电源  低电平有效
     #define  LAN_POWER        LATBbits.LATB13  // output  LAN电源  低电平有效
+
+    #define  WIFI_test        PORTBbits.RB4   // Input WIFI测试脚  低电平有效
 
 //特别注意，在追加I/O时，用到PA口，请不要用LATAbits寄存器，请使用LATACLR，LATASET。
 
