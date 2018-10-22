@@ -2,10 +2,10 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>App_PIC32MX230F064D_Source</name>
-            <creation-uuid>67d44748-aa6c-4d2c-8e8f-c068c3260b05</creation-uuid>
+            <name>Download_App_PIC32MX210F016D_Source.X.production</name>
+            <creation-uuid>c986baf7-f2d8-4aa4-b32d-3230c4eac8d4</creation-uuid>
             <make-project-type>0</make-project-type>
-            <c-extensions>c</c-extensions>
+            <c-extensions/>
             <cpp-extensions/>
             <header-extensions/>
             <sourceEncoding>GB2312</sourceEncoding>

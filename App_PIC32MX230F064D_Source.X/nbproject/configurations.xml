@@ -4,7 +4,6 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>D:/Program Files/Microchip/xc32/v1.20/pic32mx/include/proc/p32mx230f064d.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LibraryFiles"
                    displayName="Library Files"
@@ -13,7 +12,7 @@
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <itemPath>../linker_scripts/btl_32MX230F064D_generic.ld</itemPath>
+      <itemPath>../linker_scripts/app_32MX230F064D.ld</itemPath>
     </logicalFolder>
     <logicalFolder name="ObjectFiles"
                    displayName="Object Files"
@@ -27,6 +26,9 @@
       <itemPath>../adf7021.c</itemPath>
       <itemPath>../ID_Decode.c</itemPath>
       <itemPath>../Timers.c</itemPath>
+      <itemPath>../Uart.c</itemPath>
+      <itemPath>../EEPROM.c</itemPath>
+      <itemPath>../pcf8563.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -38,6 +40,8 @@
     <Elem>../</Elem>
     <Elem>D:/Program Files/Microchip/xc32/v1.20/pic32mx/include/proc</Elem>
     <Elem>../../Bootloader/linker_scripts/others</Elem>
+    <Elem>../../Application test/linker_scripts</Elem>
+    <Elem>D:/Program Files/Microchip/xc32/v1.21/pic32mx/include</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -47,7 +51,7 @@
         <targetDevice>PIC32MX230F064D</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>ICD3PlatformTool</platformTool>
+        <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>1.21</languageToolchainVersion>
         <platform>3</platform>
@@ -120,7 +124,7 @@
         <property key="save-temps" value="false"/>
         <property key="wpo-lto" value="false"/>
       </C32Global>
-      <ICD3PlatformTool>
+      <PICkit3PlatformTool>
         <property key="ADC 1" value="true"/>
         <property key="AutoSelectMemRanges" value="auto"/>
         <property key="CHANGE NOTICE" value="true"/>
@@ -156,20 +160,20 @@
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
         <property key="UART1" value="true"/>
         <property key="UART2" value="true"/>
-        <property key="debugoptions.useswbreakpoints" value="false"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="false"/>
         <property key="memories.configurationmemory" value="false"/>
-        <property key="memories.eeprom" value="true"/>
+        <property key="memories.eeprom" value="false"/>
         <property key="memories.flashdata" value="true"/>
-        <property key="memories.id" value="true"/>
+        <property key="memories.id" value="false"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x1d00ffff"/>
         <property key="memories.programmemory.start" value="0x1d000000"/>
-        <property key="poweroptions.powerenable" value="false"/>
+        <property key="poweroptions.powerenable" value="true"/>
+        <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveprogramrange.end" value="0x1d00ffff"/>
@@ -179,7 +183,7 @@
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
         <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
-      </ICD3PlatformTool>
+      </PICkit3PlatformTool>
     </conf>
   </confs>
 </configurationDescriptor>

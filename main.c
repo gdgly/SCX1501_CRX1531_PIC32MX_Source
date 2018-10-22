@@ -1,3 +1,4 @@
+
 /*********************************************************************
  *
  *                  Boot Loader Simple Application
@@ -58,6 +59,9 @@ Note: make sure the boot loader and your application, both use the same fuse set
 #include "adf7021.h"
 #include "ID_Decode.h"
 #include "Timers.h"
+#include "Uart.h"
+#include "EEPROM.h"
+#include "pcf8563.h"
 
 #if   (((__PIC32_FEATURE_SET__ >= 100) && (__PIC32_FEATURE_SET__ <= 299)))
     #define __PIC32MX1XX_2XX__
@@ -96,10 +100,12 @@ Note: make sure the boot loader and your application, both use the same fuse set
     // For PIC32MX1xx, PIC32MX2xx devices the output divisor is set to 2 to produce max 40MHz clock.
     #if defined(__32MX230F064D__)
         #pragma config FPLLODIV = DIV_2         // PLL Output Divider: Divide by 2  SYSCLK=40M
+        #pragma config WDTPS = PS128 // WDT timeout period = 1ms
     #endif
 
     #if defined(__32MX210F016D__)
-        #pragma config FPLLODIV = DIV_4         // PLL Output Divider: Divide by 8    SYSCLK=10M
+        #pragma config FPLLODIV = DIV_4 //DIV_4         // PLL Output Divider: Divide by 8    SYSCLK=10M
+        #pragma config WDTPS = PS128 // WDT timeout period = 1ms
     #endif
 #elif defined(__PIC32MX3XX_7XX__)
     // For PIC32MX3xx, PIC32MX4xx, PIC32MX5xx, PIC32MX6xx and PIC32MX7xx
@@ -120,10 +126,12 @@ Note: make sure the boot loader and your application, both use the same fuse set
 #define CORE_TICK_RATE	       (SYS_FREQ/2/TOGGLES_PER_SEC)
 
 ////////////////////////////////////////////////////////////
-//
+
 int main(void)
 {
    DDPCONbits.JTAGEN = 0; // Disable JTAG
+    // WDT timeout period is set in the Device Configuration (WDTPS)
+    EnableWDT(); // Enable the WDT
 	//unsigned int pb_clock;
    SYSTEMConfig(SYS_FREQ, SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
 
@@ -135,30 +143,37 @@ int main(void)
     //ID_Decode_Initial_CNx();
     ID_Decode_Initial_INT();
     timer2_Init();
+    Uart1_Init();
     INTEnableSystemMultiVectoredInt();
 
+    all_Erase_EEPROM();
+    ID_EEPROM_Initial();
     dd_set_ADF7021_Power_on();
-    //dd_set_RX_mode();
+    FLAG_HA_L_signal=1;
+    FLAG_HA_ERR_signal=1;
+
+#if defined(__Product_PIC32MX2_Receiver__)
+    Receiver_LED_OUT=1;    
+    for(time_3sec=0;time_3sec<1000;time_3sec++){
+    Delay100us(10);
+    ClearWDT(); // Service the WDT
+    }
+    time_3sec=10;
+    Receiver_LED_OUT=0;
+#endif
+
+    TIME_EMC=10;
     while(1)
     {
-        ADF7021_test();
-        ID_Decode_IDCheck();
-        //Freq_Scanning();
+        //if(time_3sec==0){time_3sec=10;Receiver_LED_TX=!Receiver_LED_TX;}
 
-           // dd_set_TX_mode();
-       // Delayus(1000);
-//        Receiver_LED_RX=((ReadCoreTimer() & 0x0200000) != 0);
-//        Receiver_LED_TX=((ReadCoreTimer() & 0x0200000) != 0);
-//        ADF7021_SLE=!ADF7021_SLE;//((ReadCoreTimer() & 0x0200000) != 0);
-//        ADF7021_SDATA=!ADF7021_SDATA;//((ReadCoreTimer() & 0x0200000) != 0);
-//        ADF7021_SCLK=!ADF7021_SCLK;//((ReadCoreTimer() & 0x0200000) != 0);
-//        ADF7021_CE=!ADF7021_CE;//((ReadCoreTimer() & 0x0200000) != 0);
-//       if(ADF7021_MUXOUT==1)
-//       {
-//         dd_read_RSSI();
-//         if(rssi>15)Receiver_LED_RX=0;
-//          else Receiver_LED_RX=1;
-//       }
+        ClearWDT(); // Service the WDT
+        ADF7021_change_TXorRX();
+        ID_Decode_IDCheck();
+        ID_Decode_OUT();
+        Freq_Scanning();
+        ID_learn();
+
      }
 	return 0;
 }
