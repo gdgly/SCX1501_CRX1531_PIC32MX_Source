@@ -335,6 +335,7 @@ void ID_Decode_OUT(void)
                }       
      else {
            if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
            FLAG_Receiver_BEEP=0;
            if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
            else Receiver_LED_OUT=0;
@@ -356,7 +357,7 @@ void ID_Decode_OUT(void)
              HA_uart_send_APP();
          }
      }
-     if((Freq_Scanning_CH_save==1)&&(Emial_Control!=DATA_Packet_Control)){
+     if((Freq_Scanning_CH_save==1)&&(Emial_Control!=DATA_Packet_Control)&&((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x82)||(DATA_Packet_Control==0x83))){
        HA_uart_send();
        Emial_Control=DATA_Packet_Control;
        Freq_Scanning_CH_save=0;

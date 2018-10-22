@@ -80,6 +80,7 @@ void ID_learn(void)
      FG_10ms = 0;
      if(rssi_TIME)--rssi_TIME;
      if(TIME_UART)--TIME_UART;
+     if(TIME_email_Repeat)--TIME_email_Repeat;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
        else if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
           else {TIME_Receiver_Login=0;COUNT_Receiver_Login=0;}

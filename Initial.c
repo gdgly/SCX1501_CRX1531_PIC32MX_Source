@@ -50,6 +50,7 @@ UINT8  UART1_DATA[18]={0};
 UINT8  UART_DATA_buffer[18]={0};
 UINT8  TIME_UART=0;
 UINT8  UART_send_count=0;
+UINT16 TIME_email_Repeat=0;
 
 UINT8  TIME_10ms=0;
 UINT8  COUNT_Receiver_Login=0;
@@ -103,6 +104,7 @@ void VHF_GPIO_INIT(void){
     TRISBbits.TRISB11=1;
     TRISBbits.TRISB14=1;
     TRISAbits.TRISA0=1;
+        HA_Status=0x81;
  #endif
 //    RTCCONbits.ON=0;
 //    RTCCONbits.RTCCLKON=0;

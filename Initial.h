@@ -118,6 +118,9 @@ extern FLAG FLAG_APP;
 
         #define		FLAG_all_Erase    	FLAG_APP.BIT.Bit25
         #define		FLAG_all_Erase_OK    	FLAG_APP.BIT.Bit26
+
+        #define		FLAG_426MHz_Reply    	FLAG_APP.BIT.Bit27
+        #define		FLAG_email_Repeat    	FLAG_APP.BIT.Bit28
 	//************************************************
 
 
@@ -177,6 +180,7 @@ extern UINT8  UART1_DATA[18];
 extern UINT8  UART_DATA_buffer[18];
 extern UINT8  TIME_UART;
 extern UINT8  UART_send_count;
+extern UINT16 TIME_email_Repeat;
 
 extern UINT8  TIME_10ms;
 extern UINT8  COUNT_Receiver_Login;

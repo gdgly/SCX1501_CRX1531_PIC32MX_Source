@@ -227,11 +227,13 @@ void dd_set_TX_mode(void)
 	Delayus(40);		//delay 40us
 
 	//write R2, turn on PA
-	register_value.whole_reg = 0x00564882;//0x00536882;//0x006B6882;			//Ramp Rate = 16 codes/bit, TX level = 2;
+	register_value.whole_reg = 0x00566882;//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
+        //register_value.whole_reg = 0x006E6882;                     //2013年11月29日修改  TX频偏 2K 2FSK  功率:51（10dBM）       （0x006E6882）
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K（0x00289A14）-->2K（0x00268614）
+	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
+        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
@@ -257,7 +259,8 @@ void dd_set_RX_mode(void)
 	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
 	dd_write_7021_reg(&register_value.byte[0]);
         
-	register_value.whole_reg =0x00500882; //0x00680882;
+        register_value.whole_reg =0x00500882; //0x00680882;        //2013年11月22日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
+        //register_value.whole_reg =0x00680882; //0x00680882;        //2013年11月29日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
 	dd_write_7021_reg(&register_value.byte[0]);        
 
 	//write R3, turn on TX/RX clocks
@@ -294,7 +297,8 @@ void dd_set_RX_mode(void)
 	Delayus(40);		//delay 40us
 
 	//write R4, turn on demodulation
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K（0x00289A14）-->2K（0x00268614）
+	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
+        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）
 	dd_write_7021_reg(&register_value.byte[0]);
 
 }
@@ -331,7 +335,8 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
         dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
         	//write R2, turn on PA
-	register_value.whole_reg = 0x00564882;//0x00536882;//0x006B6882;			//Ramp Rate = 16 codes/bit, TX level = 2;
+	register_value.whole_reg = 0x00566882;//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
+        //register_value.whole_reg = 0x006E6882;                     //2013年11月29日修改  TX频偏 2K 2FSK  功率:51（10dBM）       （0x006E6882）
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
     }
@@ -391,7 +396,8 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
         dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us 
         	//write R4, turn on demodulation
-	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K（0x00289A14）-->2K（0x00268614）
+	register_value.whole_reg = 0x00289A14;//0x00268614;       //2013年11月22日修改  频偏 1.6K 2FSK correlator（0x00289A14）-->2K 2FSK correlator（0x00268614）
+        //register_value.whole_reg = 0x00200004;                    //2013年11月29日修改  频偏 2K 2FSK linear（0x00200004）
 	dd_write_7021_reg(&register_value.byte[0]);
     }
 }
@@ -457,13 +463,13 @@ void ADF7021_change_TXorRX(void)
 //   }
 
    if((HA_L_signal==1)&&(HA_ERR_signal==1)){
-       TIMER60s=6000;
+       TIMER60s=5;
        if((DATA_Packet_Control==0x08)&&(FLAG_open==0)&&(FLAG_APP_TX==0)){
            FLAG_open=1;
            FLAG_close=0;
            FLAG_HA_ERR=0;
            HA_Status=0x81;
-           if(Freq_Scanning_CH_save==0){ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           if(Freq_Scanning_CH_save==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
            //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
        }
    }
@@ -473,7 +479,7 @@ void ADF7021_change_TXorRX(void)
            FLAG_open=0;
            FLAG_HA_ERR=0;
            HA_Status=0x82;
-           if(Freq_Scanning_CH_save==0){ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           if(Freq_Scanning_CH_save==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
            //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
        }
    }
@@ -483,7 +489,7 @@ void ADF7021_change_TXorRX(void)
            FLAG_close=0;
            FLAG_open=0;
            HA_Status=0x83;
-           if(Freq_Scanning_CH_save==0){ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+           if(Freq_Scanning_CH_save==0)FLAG_426MHz_Reply=1;//{ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
            //ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;
        }
    }
@@ -542,6 +548,13 @@ void ADF7021_change_TXorRX(void)
        FLAG_UART_R=0;
        //WIFI_Useless1=1;
        UART_Decode();
+   }
+   if((FLAG_email_Repeat==1)&&(TIME_email_Repeat==0)){
+       TIME_email_Repeat=200;
+       UART_send_count++;
+       if(UART_send_count>3)FLAG_email_Repeat=0;
+       if(FLAG_HA_Emial==1)HA_uart_email_Repeat();
+       else FLAG_email_Repeat=0;
    }
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
