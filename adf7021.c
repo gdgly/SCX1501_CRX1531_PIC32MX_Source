@@ -267,8 +267,14 @@ void dd_set_TX_mode(void)
 	Delayus(40);		//delay 40us
 
 	//write R2, turn on PA
-	register_value.whole_reg = 0x00566882;//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
+#if defined(__Product_PIC32MX2_WIFI__)
+        register_value.whole_reg = 0x00566882;//天线是内部天线
+	//register_value.whole_reg = 0x0057F882;//天线是外置天线
+#endif
+#if defined(__Product_PIC32MX2_Receiver__)
+	register_value.whole_reg = 0x00566882;//天线是内部天线//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
         //register_value.whole_reg = 0x006E6882;                     //2013年11月29日修改  TX频偏 2K 2FSK  功率:51（10dBM）       （0x006E6882）
+#endif
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
@@ -915,7 +921,7 @@ AUTO_SEND_exit:
            FLAG_rssi_Freq=1;
            rssi_COUNT=0;
            TX_Freq_CH=TX_Freq_CH+2;
-           if(TX_Freq_CH>2)TX_Freq_CH=2;
+           if(TX_Freq_CH>4)TX_Freq_CH=2;
            dd_set_ADF7021_Freq(0,TX_Freq_CH);
        }
        if(rssi_TIME==0){

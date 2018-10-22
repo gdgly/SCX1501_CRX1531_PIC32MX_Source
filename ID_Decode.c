@@ -121,12 +121,15 @@ void ID_Decode_function(void)
                                  else FLAG_Receiver_Scanning=1;
                                 }
                 //if(DATA_Packet_Syn==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;}
-                if((DATA_Packet_Syn&0xFFFFFFFF)==0x55555555){rxphase=1;TIMER18ms=2000;DATA_Packet_Syn=0;DATA_Packet_Head=0;
+ #if defined(__Product_PIC32MX2_WIFI__)
+                if((DATA_Packet_Syn&0xFFFFFFFF)==0x55555555){rxphase=1;TIMER18ms=2000;DATA_Packet_Syn=0;DATA_Packet_Head=0;}
+ #endif
  #if defined(__Product_PIC32MX2_Receiver__)
+                if((DATA_Packet_Syn&0xFFFFFFFF)==0x55555555){rxphase=1;TIMER18ms=800;DATA_Packet_Syn=0;DATA_Packet_Head=0;
                                                              Receiver_LED_RX=1;
                                                              TIMER300ms=500; //if(TIMER300ms==0)TIMER300ms=100;
- #endif
-                                                             }
+                }
+ #endif                                                            
                 break;
 	case 1:
                 DATA_Packet_Head=DATA_Packet_Head<<1;
@@ -188,7 +191,7 @@ void ID_Decode_IDCheck(void)
                }
             #endif
             }
-            else if((FLAG_IDCheck_OK==1)||(DATA_Packet_ID==0xFFFFFE))
+            else if((FLAG_IDCheck_OK==1)||(DATA_Packet_ID_buf==0xFFFFFE))
             {
                 FLAG_IDCheck_OK=0;
                 if(Freq_Scanning_CH_bak==0){Freq_Scanning_CH_save=1;Freq_Scanning_CH_save_HA=0; }  //当前收到426M控制   但保存记录下收到信号的频率信道,0代表426M
@@ -720,18 +723,24 @@ void  Freq_Scanning(void)
         if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))Freq_Scanning_CH=1;
         else {
                Freq_Scanning_CH=Freq_Scanning_CH+2;
-               if(Freq_Scanning_CH>6){Freq_Scanning_CH=2;dd_set_ADF7021_ReInitial();}
+               if(Freq_Scanning_CH>4){Freq_Scanning_CH=2;dd_set_ADF7021_ReInitial();}
         }
         dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
         TIMER18ms=18;//18;
  #endif
  #if defined(__Product_PIC32MX2_Receiver__)
         #if PIC32MX2_Receiver_mode               //TX and RX
+//            Freq_Scanning_CH++;
+//            if(Freq_Scanning_CH>6){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
+//            dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
+//            if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))TIMER18ms=36; //36
+//            else TIMER18ms=18;
+        
             Freq_Scanning_CH++;
-            if(Freq_Scanning_CH>6){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
+            if(Freq_Scanning_CH==3)Freq_Scanning_CH=4;
+            if(Freq_Scanning_CH>4){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
             dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
-            if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))TIMER18ms=36; //36
-            else TIMER18ms=18;
+            TIMER18ms=18;
         #else                                   //RX
             Freq_Scanning_CH=1;
             dd_set_ADF7021_ReInitial();

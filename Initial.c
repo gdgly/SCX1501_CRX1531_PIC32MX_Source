@@ -92,9 +92,11 @@ UINT8 read_TIMER_Semi_open=0;
 UINT8 Tx_Rx_mode=0;
 FLAG FLAG_test;
                             /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
-UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000010F};
+UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000010F};     //天线是内部天线
+//UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x0057F882,0x00289A14,0x0000010F};       //天线是外置天线
                             /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
-UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000040F};
+UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000040F};    //天线是内部天线
+//UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x0057F882,0x00289A14,0x0000040F};      //天线是外置天线
                     /****说明 REG1      REG2        REG3        REG0    REG4    REGA******/
 UINT32 RF_SET_RX_test[6]={0x031B5011,0x00D00882,0x29920893,0x0954C7B0,0x8024E294,0x049668EA};
 UINT16 X_COUNT = 0;
@@ -122,6 +124,7 @@ UINT8 DIP_switch_data=0;
 UINT8 FLAG_DIP_switch=0;
 UINT8 TIME_DIP_switch=0;
 UINT8 FLAG_POER_on=0;
+
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -582,7 +585,7 @@ void RF_test_mode(void )
 
     TIME_WIFI_LAN_SELECT=10;
     SWITCH_DIP_bak=0xFF;
-    TIME_one_hour=1000;         //2015.1.30追加修改1小时查询一次HA状态
+    TIME_one_hour=1000;    //1000     //2015.1.30追加修改1小时查询一次HA状态
 #endif
 }
 

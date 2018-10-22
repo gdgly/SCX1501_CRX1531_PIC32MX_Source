@@ -125,10 +125,10 @@ void ID_learn(void)
                  else{
                      BEEP_and_LED();
                      TIME_Login_EXIT_rest=6000;       //追加多次ID登录
-                     if((FLAG_ID_Login==1)&&(DATA_Packet_ID!=0xFFFFFE))ID_EEPROM_write();
+                     if((FLAG_ID_Login==1)&&(ID_Receiver_Login!=0xFFFFFE))ID_EEPROM_write();
                      else if(FLAG_ID_Erase_Login==1){
                          if(FLAG_ID_Erase_Login_PCS==1){FLAG_ID_Erase_Login_PCS=0;ID_DATA_PCS=0;}      //追加多次ID登录
-                         if(DATA_Packet_ID!=0xFFFFFE)ID_EEPROM_write();
+                         if(ID_Receiver_Login!=0xFFFFFE)ID_EEPROM_write();
                      }
                  }//end else
              }//  end  if((FLAG_ID_Login_OK==1)&&(FLAG_ID_Login_OK_bank==0))

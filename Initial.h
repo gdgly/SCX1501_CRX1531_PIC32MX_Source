@@ -279,6 +279,7 @@ extern UINT8 DIP_switch_data;
 extern UINT8 FLAG_DIP_switch;
 extern UINT8 TIME_DIP_switch;
 extern UINT8 FLAG_POER_on;
+
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
