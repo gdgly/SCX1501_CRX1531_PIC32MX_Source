@@ -35,7 +35,7 @@ UINT8  Control_bak=0;
 UINT16  TIMER1s=0;
 UINT16  TIMER300ms=0;
 UINT16  TIMER18ms=0;
-UINT16   TIMER250ms_STOP=0;
+UINT8   TIMER250ms_STOP=0;
 UINT16  TIMER60s=0;
 UINT8   HA_Status=0;
 UINT8   Emial_Control=0;
@@ -110,7 +110,7 @@ UINT8 FLAG_open_Sensor=0;
 UINT8 FLAG_close_Sensor=0;
 UINT8 FLAG_HA_ERR_Sensor=0;
 UINT8 FLAG_HA_ERR_bit=0;
-UINT16 TIMER_Semi_open;
+UINT8 TIMER_Semi_open;
 UINT8 FLAG__Semi_open_T=0;
 
 UINT16  TIME_auto_out=0;

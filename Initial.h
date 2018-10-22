@@ -161,7 +161,7 @@ extern UINT8  Control_bak;
 extern UINT16  TIMER1s;
 extern UINT16  TIMER300ms;
 extern UINT16  TIMER18ms;
-extern UINT16   TIMER250ms_STOP;
+extern UINT8   TIMER250ms_STOP;
 extern UINT16  TIMER60s;
 extern UINT8   HA_Status;
 extern UINT8   Emial_Control;
@@ -265,7 +265,7 @@ extern UINT8 FLAG_open_Sensor;
 extern UINT8 FLAG_close_Sensor;
 extern UINT8 FLAG_HA_ERR_Sensor;
 extern UINT8 FLAG_HA_ERR_bit;
-extern UINT16 TIMER_Semi_open;
+extern UINT8 TIMER_Semi_open;
 extern UINT8 FLAG__Semi_open_T;
 
 extern UINT16  TIME_auto_out;

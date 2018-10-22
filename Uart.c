@@ -196,13 +196,12 @@ void UART_Decode(void)
                                 ID_data.IDB[2]=UART1_DATA[13];
                                 ID_data.IDB[3]=0x00;
                                 //UART1_DATA[11];
-                                if((UART1_DATA[14]>=0x80)&&(UART1_DATA[14]<=0xbc)){Control_code=UART1_DATA[14]+1;}
-                                else if(uart_y.ui==0x0110)Control_code=0xBF;
-                                else    Control_code=UART1_DATA[14];
+                                if((UART1_DATA[14]>=0x80)&&(UART1_DATA[14]<=0xbc))Control_code=UART1_DATA[14]+1;
+                                else Control_code=UART1_DATA[14];
                                 eeprom_IDcheck_UART();
                                 if(FLAG_IDCheck_OK==1){
                                     //if(Control_code==0x00){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
-                                    if((Control_code==0xBF)||(Control_code==0x00)||(Control_code==0x02)||(Control_code==0x08)){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
+                                    if((Control_code==0x3F)||(Control_code==0x00)||(Control_code==0x02)||(Control_code==0x08)){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
                                     FLAG_IDCheck_OK=0;
                                     FLAG_UART_ok=1;}
                                 else {
@@ -389,10 +388,10 @@ void UART_Decode(void)
                                     U1TXREG=0x65;      //e
                                     U1TXREG=0x72;      //r
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-                                    U1TXREG=0x34;      //4              //2014.10.11修改
+                                    U1TXREG=0x33;      //3              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
                                     U1TXREG=0x33;      //3
-                                    U1TXREG=0xD2;     //0x16B+0x33+0x33
+                                    U1TXREG=0xD1;     //0x16B+0x33+0x33
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -749,7 +748,7 @@ void HA_uart_send_APP(void)
     HA_uart_app[16]=m%256;
     HA_uart_app[17]=m/256;
 
-    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(HA_uart_app[14]==5)||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))    //2014.10.11修改
+    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))    //2014.10.11修改
     {
         for(i=0;i<18;i++){
             U1TXREG=HA_uart_app[i];
