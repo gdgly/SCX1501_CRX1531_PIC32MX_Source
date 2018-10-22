@@ -360,18 +360,15 @@ void dd_set_RX_mode(void)
 #if defined(__Product_PIC32MX2_Receiver__)
         ADF70XX_REG_T register_value;
 	//write R1, turn on VCO
-	//register_value.whole_reg = 0x031B5011;    //¿í´ø
-        register_value.whole_reg = 0x031BD011;
+	register_value.whole_reg = 0x031B5011; 
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(800);		//delay 800us
 
-        //register_value.whole_reg =0x00D00882;
-        register_value.whole_reg =0x00500882;
+        register_value.whole_reg =0x00800882;  
 	dd_write_7021_reg(&register_value.byte[0]);
 
 	//write R3, turn on TX/RX clocks
-	//register_value.whole_reg = 0x29920893;
-        register_value.whole_reg = 0x29915CD3;
+	register_value.whole_reg = 0x29920893;
 	dd_write_7021_reg(&register_value.byte[0]);
 
 //        register_value.whole_reg = 0x00001915;
@@ -389,8 +386,7 @@ void dd_set_RX_mode(void)
         dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
         	//write R4, turn on demodulation
-	//register_value.whole_reg = 0x8024E294;
-        register_value.whole_reg = 0x00289A14;
+        register_value.whole_reg = 0x00280294;
 	dd_write_7021_reg(&register_value.byte[0]);
 
 	//write R10, turn on PLL
