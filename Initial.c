@@ -102,6 +102,8 @@ UINT32 RF_SET_RX_test[6]={0x031B5011,0x00D00882,0x29920893,0x0954C7B0,0x8024E294
 UINT16 X_COUNT = 0;
 UINT16 X_ERR  = 0 ;//记录错误的个数
 UINT8 X_HIS=0; //历史记录   误码率测试用
+
+UINT16 TIME_Fine_Calibration=0;   //窄带下中频滤波器100KHz精校
 //*********************************************
 
 #if defined(__Product_PIC32MX2_Receiver__)
@@ -501,6 +503,9 @@ void RF_test_mode(void )
     if((HA_L_signal==0)||(HA_Sensor_signal==1))HA_Status=0x82;
 
     FLAG_426MHz_Reply=1;
+    Freq_Scanning_CH=1;
+    dd_set_RX_mode();
+    TIME_Fine_Calibration=9000;
 #endif
 
 
