@@ -93,6 +93,7 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
         switch(uart_x.ui){
             case 0x0101:                                           //卷帘门依次单个操作，HA状态取得
             case 0x0102:
+            case 0x0110:
                         UART_DATA_i=18;
                         if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
                         break;
@@ -184,6 +185,7 @@ void UART_Decode(void)
             uart_y.uc[1]=UART1_DATA[9];
             switch(uart_y.ui){
                 case 0x0101:                                           //卷帘门依次单个HA状态取得
+                case 0x0110:
                           APP_check_char=0;     //2014.10.11修改
                 case 0x0102:                                           //卷帘门依次单个操作
                             for(i=8;i<16;i++)  m+=UART1_DATA[i];
@@ -199,7 +201,7 @@ void UART_Decode(void)
                                 eeprom_IDcheck_UART();
                                 if(FLAG_IDCheck_OK==1){
                                     //if(Control_code==0x00){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
-                                    if((Control_code==0x00)||(Control_code==0x02)||(Control_code==0x08)){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
+                                    if((Control_code==0x3F)||(Control_code==0x00)||(Control_code==0x02)||(Control_code==0x08)){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
                                     FLAG_IDCheck_OK=0;
                                     FLAG_UART_ok=1;}
                                 else {
@@ -717,6 +719,7 @@ void HA_uart_send_APP(void)
     HA_uart_app[9]=0x01;
     if(UART_DATA_buffer[8]==0x01)HA_uart_app[8]=0x01;
     else if(UART_DATA_buffer[8]==0x02)HA_uart_app[8]=0x02;
+    else if(UART_DATA_buffer[8]==0x10)HA_uart_app[8]=0x10;
     else HA_uart_app[8]=0x01;
     HA_uart_app[10]=0x00;
     b0.IDL=DATA_Packet_ID;
@@ -730,11 +733,14 @@ void HA_uart_send_APP(void)
         HA_uart_app[12]=b0.IDB[1];
         HA_uart_app[13]=b0.IDB[2];
     }
+    else if(read_TIMER_Semi_open!=0){HA_uart_app[14]=read_TIMER_Semi_open-1;read_TIMER_Semi_open=0;}
     else if((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x85))HA_uart_app[14]=01;
     else if((DATA_Packet_Control==0x82)||(DATA_Packet_Control==0x86))HA_uart_app[14]=02;
     else if((DATA_Packet_Control==0x83)||(DATA_Packet_Control==0x87))HA_uart_app[14]=03;
     else if((DATA_Packet_Control==0x84)||(DATA_Packet_Control==0x88))HA_uart_app[14]=04;
-    HA_uart_app[15]=0x00;
+    //HA_uart_app[15]=0x00;
+    HA_uart_app[15]=SWITCH_DIP;
+    SWITCH_DIP=0;
     m=0;
     for(i=8;i<16;i++)m=m+HA_uart_app[i];
     HA_uart_app[16]=m%256;

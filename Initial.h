@@ -233,11 +233,8 @@ extern UINT8 TIME_EMC;
 extern UINT16 TIME_No_response;
 extern UINT8 FLAG_TIME_No_response;
 
-extern UINT32 RF_SET_TX_DATA[5];
-extern UINT32 RF_SET_TX_REGISTER_0[6];
-extern UINT32 RF_SET_RX_DATA[6];
-extern UINT32 RF_SET_RX_REGISTER_0[6];
-extern UINT32 RF_SET_RX_REGISTER_A[6];
+extern UINT8 SWITCH_DIP;
+extern UINT8 read_TIMER_Semi_open;
 
 #if defined(__Product_PIC32MX2_Receiver__)
 extern UINT16  TIMER_err_1s;
@@ -253,6 +250,7 @@ extern UINT8 FLAG__Semi_open_T;
 extern UINT16  TIME_auto_out;
 extern UINT16  TIME_auto_close;
 extern UINT8 FG_auto_out;
+extern UINT8 HA_Status_buf;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -348,6 +346,9 @@ extern void Delay100us(unsigned int timer);
     #define  Receiver_OUT_VENT_IO    TRISBbits.TRISB3  // Output 受信机继电器STOP  高电平有效
 
     #define  Receiver_test_IO    TRISBbits.TRISB10  // INPUT 受信机测试脚  高电平有效
+    #define  DIP_switch1_IO         TRISBbits.TRISB11 // Input   DIP_switch1  低电平有效
+    #define  DIP_switch2_IO         TRISBbits.TRISB5 // Input   DIP_switch2  低电平有效
+    #define  DIP_switch3_IO         TRISAbits.TRISA0 // Input   DIP_switch3  低电平有效
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
     /* ADF7021 register interface */
@@ -427,7 +428,9 @@ extern void Delay100us(unsigned int timer);
     #define  Receiver_OUT_VENT    LATBbits.LATB3   // Output 受信机继电器STOP  高电平有效
 
     #define  Receiver_test    PORTBbits.RB10   // Input 受信机测试脚  高电平有效
-
+    #define  DIP_switch1         PORTBbits.RB11 // Input   DIP_switch1  低电平有效
+    #define  DIP_switch2         PORTBbits.RB5 // Input   DIP_switch2  低电平有效
+    #define  DIP_switch3         PORTAbits.RA0 // Input   DIP_switch3  低电平有效
 //特别注意，在追加I/O时，用到PA口，请不要用LATAbits寄存器，请使用LATACLR，LATASET。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)

@@ -172,15 +172,15 @@ main_start:
     time_3sec=10;
     Receiver_LED_OUT=0;
 
-    while(Receiver_test==1){
-        ClearWDT(); // Service the WDT
-        if(HA_L_signal==0)Receiver_LED_TX=1;
-        else Receiver_LED_TX=0;
-        if(HA_ERR_signal==0)Receiver_LED_RX=1;
-        else Receiver_LED_RX=0;
-        if(HA_Sensor_signal==0)Receiver_LED_OUT=1;
-        else Receiver_LED_OUT=0;
-    }
+//    while(Receiver_test==1){
+//        ClearWDT(); // Service the WDT
+//        if(HA_L_signal==0)Receiver_LED_TX=1;
+//        else Receiver_LED_TX=0;
+//        if(HA_ERR_signal==0)Receiver_LED_RX=1;
+//        else Receiver_LED_RX=0;
+//        if(HA_Sensor_signal==0)Receiver_LED_OUT=1;
+//        else Receiver_LED_OUT=0;
+//    }
     Receiver_LED_TX=0;
     Receiver_LED_RX=0;
     Receiver_LED_OUT=0;

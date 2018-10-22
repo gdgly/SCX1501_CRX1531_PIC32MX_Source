@@ -87,21 +87,8 @@ UINT16 time_3sec=0;
 UINT16 FLAG_all_Erase_time=0;
 UINT8 TIME_EMC=0;   //静电测试
 
-                    /****说明 REG1     REG3     REG0      REG2     REG4******/
-//UINT32 RF_SET_TX_DATA[5]={0x031B5011,0x29915CD3,0x00,0x00566882,0x00289A14};   //2FSK频偏：1.5K  带宽：12.5K
-UINT32 RF_SET_TX_DATA[5]={0x031B5011,0x29920893,0x00,0x00D66892,0x8024E294};   //GFSK频偏：4K  带宽：25K
-                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
-UINT32 RF_SET_TX_REGISTER_0[6]={0x0154DC30,0x01575710,0x0154DC30,0x01575C30,0x0154DC30,0x01576140};
-                    /****说明 REG1      REG2        REG3   REG0    REG4    REGA******/
-//UINT32 RF_SET_RX_DATA[6]={0x031B5011,0x00500882,0x29915CD3,0x00,0x00289A14,0x0A};    //2FSK频偏：1.5K  带宽：12.5K
-//UINT32 RF_SET_RX_DATA[6]={0x031B5011,0x00500882,0x29915CD3,0x00,0x80289A14,0x0A};    //2FSK频偏：1.5K  带宽：25K
-//UINT32 RF_SET_RX_DATA[6]={0x031B5011,0x00D00882,0x29920893,0x00,0x8024E294,0x0A};    //2FSK 频偏：4K  带宽：25K
-UINT32 RF_SET_RX_DATA[6]={0x031B5011,0x00D00892,0x29920893,0x00,0x8024E294,0x0A};    //GFSK 频偏：4K  带宽：25K
-                   /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
-UINT32 RF_SET_RX_REGISTER_0[6]={0x0954C7B0,0x09574290,0x0954C7B0,0x095747B0,0x0954C7B0,0x09574CD0};
-                  /****说明  CH=1 426.075    429.175    426.075    429.200    426.075    429.225******/
-UINT32 RF_SET_RX_REGISTER_A[6]={0x049668FA,0x049668EA,0x049668FA,0x049668EA,0x049668FA,0x049668EA};
-
+UINT8 SWITCH_DIP=0;
+UINT8 read_TIMER_Semi_open=0;
 
 #if defined(__Product_PIC32MX2_Receiver__)
 UINT16  TIMER_err_1s=0;
@@ -117,6 +104,7 @@ UINT8 FLAG__Semi_open_T=0;
 UINT16  TIME_auto_out=0;
 UINT16  TIME_auto_close=0;
 UINT8 FG_auto_out=0;
+UINT8 HA_Status_buf=0;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -325,6 +313,9 @@ void VHF_GPIO_INIT(void){
       Receiver_OUT_VENT=0;
 
       Receiver_test_IO=1;
+      DIP_switch1_IO=1;
+      DIP_switch2_IO=1;
+      DIP_switch3_IO=1;
     #endif
 
    #if defined(__Product_PIC32MX2_WIFI__)
