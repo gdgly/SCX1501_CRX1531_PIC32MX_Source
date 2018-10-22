@@ -10,7 +10,7 @@
 #include "initial.h"		// 初始化
 #include "adf7021.h"
 #include "Timers.h"
-
+#include "Uart.h"
 
 void ID_Decode_function(void);
 void  Freq_Scanning(void);
@@ -18,6 +18,7 @@ void ID_code_function(void);
 void SetTxData(void);
 UINT16 SetFixedLengthCode(UINT8 data );
 void SendTxData(void);
+void ID_Decode_OUT(void);
 
 void ID_Decode_Initial_INT(void)
 {
@@ -87,8 +88,8 @@ void ID_Decode_function(void)
                 //if(DATA_Packet_Syn==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;}
                 if((DATA_Packet_Syn&0xFFFFFFFF)==0x55555555){rxphase=1;TIMER18ms=65;DATA_Packet_Syn=0;DATA_Packet_Head=0;
  #if defined(__Product_PIC32MX2_Receiver__)
-                                                             Receiver_LED_OUT=0;
-                                                             if(TIMER300ms==0)TIMER300ms=100;
+                                                             Receiver_LED_RX=1;
+                                                             TIMER300ms=500; //if(TIMER300ms==0)TIMER300ms=100;
  #endif
                                                              }
                 break;
@@ -141,23 +142,62 @@ void ID_Decode_IDCheck(void)
             }
            data_NRZ[i] =data_out;
         }
-        if(data_NRZ[2]==data_NRZ[0]+data_NRZ[1])
+        if(data_NRZ[2]==((data_NRZ[0]+data_NRZ[1])&0xFFFF))
         {
             FLAG_Receiver_OK=1;
             DATA_Packet_ID=(data_NRZ[1]&0x00FF)*65536+data_NRZ[0];
-            if(EEPROM_Receiver_ID==DATA_Packet_ID)
+            eeprom_IDcheck();
+            if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
+                if(FLAG_ID_Login_OK==0){FLAG_ID_Login_OK=1;ID_Receiver_Login=DATA_Packet_ID;}
+            }
+            else if(FLAG_IDCheck_OK==1)
             {
- #if defined(__Product_PIC32MX2_Receiver__)
-                   Receiver_LED_RX=0;           //测试，测试完后需要删除
- #endif
- #if defined(__Product_PIC32MX2_WIFI__)
-                   WIFI_LED_RX=0;
- #endif
-                if(TIMER1s==0)TIMER1s=1000;
+                FLAG_IDCheck_OK=0;
+// #if defined(__Product_PIC32MX2_Receiver__)
+//                   Receiver_LED_OUT=1;           //测试，测试完后需要删除
+// #endif
+// #if defined(__Product_PIC32MX2_WIFI__)
+//                   WIFI_LED_RX=1;
+// #endif
+                DATA_Packet_Control=(data_NRZ[1]&0xFF00)>>8;
+                TIMER1s=1000;
+#if defined(__Product_PIC32MX2_Receiver__)
+                TIMER300ms=500;
+                Receiver_LED_RX=1;
+#endif
+                //FLAG_ADF7021_ReInitial=0;                   //弥补Microchip DC-DC纹波太大，变压器动作中重新复位FSK IC
             }
         }
         else FLAG_Receiver_OK=0;     
     }
+}
+
+void ID_Decode_OUT(void)
+{
+ #if defined(__Product_PIC32MX2_Receiver__)
+    if(TIMER1s){
+                Receiver_LED_OUT=1;
+                if((DATA_Packet_Control&0x08)==0x08)Receiver_OUT_OPEN=1;
+                if((DATA_Packet_Control&0x04)==0x04)Receiver_OUT_STOP=1;
+                if((DATA_Packet_Control&0x02)==0x02)Receiver_OUT_CLOSE=1;
+                if((DATA_Packet_Control&0x0C)==0x0C)TIMER250ms_STOP=250;
+                if((DATA_Packet_Control&0x06)==0x06)TIMER250ms_STOP=250;
+                //if((TIMER1s==995)&&(FLAG_ADF7021_ReInitial==0)){FLAG_ADF7021_ReInitial=1;dd_set_ADF7021_ReInitial();}  //弥补Microchip DC-DC纹波太大，变压器动作中重新复位FSK IC
+               }       
+     else {
+           if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
+           else Receiver_LED_OUT=0;
+           Receiver_OUT_OPEN=0;
+           Receiver_OUT_CLOSE=0;
+           if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
+          }
+    if(TIMER300ms==0)Receiver_LED_RX=0;
+ #endif
+ #if defined(__Product_PIC32MX2_WIFI__)
+     if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
+     else if(TIMER1s) WIFI_LED_RX=1;
+     else WIFI_LED_RX=0;
+ #endif    
 }
 
 
@@ -169,7 +209,7 @@ void  Freq_Scanning(void)
         Freq_Scanning_CH++;
         if(Freq_Scanning_CH>6)Freq_Scanning_CH=1;
         dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
-        TIMER18ms=18;
+        TIMER18ms=18;//18;
 
     }
 }
@@ -179,20 +219,19 @@ void SendTxData(void)
 {
        FLAG_APP_RX=0;
  #if defined(__Product_PIC32MX2_Receiver__)
-      Receiver_LED_RX=1;
-      Receiver_LED_OUT=1;
+      Receiver_LED_RX=0;
+      Receiver_LED_OUT=0;
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
-       WIFI_LED_RX=1;
+       WIFI_LED_RX=0;
  #endif
-
        ADF7021_DATA_IO=0;           //测试
        dd_set_TX_mode();
  #if defined(__Product_PIC32MX2_Receiver__)
-       Receiver_LED_TX=0;
+       Receiver_LED_TX=1;
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
-       WIFI_LED_TX=0;
+       WIFI_LED_TX=1;
  #endif
        SetTxData();
        txphase=0;

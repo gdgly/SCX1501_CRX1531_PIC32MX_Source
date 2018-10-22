@@ -127,7 +127,7 @@ ADF70XX_REG_T dd_read_7021_reg(UINT8 readback_config)
     return register_value;
 }
 
-const unsigned char gain_correction[] = 
+const unsigned char gain_correction[] =
     { 2*86, 0, 0, 0, 2*58, 2*38, 2*24, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0 }; // 7021
 
@@ -198,6 +198,11 @@ UINT8 dd_read_rssi_7021_reg(UINT8 readback_config)
 
 void dd_set_TX_mode(void)
 {
+//        ADF7021_CE = 0;         //以下是测试
+//        Delayus(20000);
+//        ADF7021_CE = 1;
+//        Delayus(20000);        //测试END
+        
 	ADF70XX_REG_T register_value;
         //write R1, turn on VCO
 	register_value.whole_reg = 0x031BD011;
@@ -211,8 +216,8 @@ void dd_set_TX_mode(void)
 
 	//write R0, turn on PLL
 	//register_value.whole_reg = 0x0154DC30;       //CH=426.075MHz
-        //register_value.whole_reg = 0x01575710;   //CH=429.175MHz
-        register_value.whole_reg = 0x01576140;//CH=429.225MHz
+        register_value.whole_reg = 0x01575710;   //CH=429.175MHz
+        //register_value.whole_reg = 0x01576140;//CH=429.225MHz
 	dd_write_7021_reg(&register_value.byte[0]);
 	Delayus(40);		//delay 40us
 
@@ -371,14 +376,21 @@ void dd_set_ADF7021_Power_on(void)
 		//if ( is_use_crystal == TRUE ) 	dd_short_delay(25);	
                 Delayus(1000);             //delay 1ms
 	}
+        Delayus(20000);             //delay 1ms
         m_RFNormalBuf[0]=0xFF;
         m_RFNormalBuf[1]=0xFF;
         for(i=2;i<=21;i++)m_RFNormalBuf[i]=0x55;
         m_RFNormalBuf[22]=0x15;
-        ID_data.IDL=EEPROM_Receiver_ID;
-        Control_code=0x08;
 }
 
+void dd_set_ADF7021_ReInitial(void)
+{
+    ADF7021_CE = 0;
+    Delayus(20);
+    ADF7021_CE = 1;
+    Delayus(20);
+    dd_set_RX_mode();
+}
 
 void dd_read_RSSI(void)
 {
@@ -399,40 +411,42 @@ void dd_read_RSSI(void)
 
 }
 
-void ADF7021_test(void)
+void ADF7021_change_TXorRX(void)
 {
+    UINT8 i;
  #if defined(__Product_PIC32MX2_Receiver__)
-   if((HA_L_signal==0)&&(FLAG_APP_TX==0)&&(FLAG_APP_SW1==0)){
+   if((HA_ERR_signal==0)&&(FLAG_APP_TX==0)&&(FLAG_APP_SW1==0)){
        FLAG_APP_SW1=1;
+       ID_data.IDL=12345678;
        SendTxData();
    }
-   if(HA_L_signal==1)FLAG_APP_SW1=0;
+   if(HA_ERR_signal==1)FLAG_APP_SW1=0;
 
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
        FLAG_APP_RX=1;
-       Receiver_LED_OUT=1;
-       Receiver_LED_TX=1;
-       Receiver_LED_RX=1;
+       Receiver_LED_OUT=0;
+       Receiver_LED_TX=0;
+       Receiver_LED_RX=0;
        ADF7021_DATA_IO=1;
        dd_set_RX_mode();
    }
 
-   if((HA_Sensor_signal==0)&&(FLAG_APP_SW2==0)){
-       FLAG_APP_SW2=1;
-       FLAG_APP_TX=0;
-       FLAG_APP_RX=1;
-       Receiver_LED_TX=1;
-       Receiver_LED_RX=1;
-       Receiver_LED_OUT=1;
-       ADF7021_DATA_IO=1;
-       dd_set_RX_mode();
-   }
-   if(HA_Sensor_signal==1)FLAG_APP_SW2=0;
+//   if((HA_Sensor_signal==0)&&(FLAG_APP_SW2==0)){
+//       FLAG_APP_SW2=1;
+//       FLAG_APP_TX=0;
+//       FLAG_APP_RX=1;
+//       Receiver_LED_TX=0;
+//       Receiver_LED_RX=0;
+//       Receiver_LED_OUT=0;
+//       ADF7021_DATA_IO=1;
+//       dd_set_RX_mode();
+//   }
+//   if(HA_Sensor_signal==1)FLAG_APP_SW2=0;
 
    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
        rssi=dd_read_rssi_7021_reg(0x14);
-       if(rssi>15);//Receiver_LED_OUT=0;
+       if(rssi>25);//TIMER300ms=200;//Receiver_LED_OUT=0;
        else ;//Receiver_LED_OUT=1;
    }
 //   if((Receiver_Login==0)&&(FLAG_APP_SW3==0)){
@@ -447,44 +461,50 @@ void ADF7021_test(void)
 //   if(FLAG_APP_RX==1){
 //       if(Receiver_Login==0)Receiver_LED_TX=1;
 //   }
-       if(TIMER1s==0)Receiver_LED_RX=1;           //测试，测试完后需要删除
-       if(TIMER300ms==0)Receiver_LED_OUT=1;
+//       if(TIMER1s==0)Receiver_LED_OUT=0;           //测试，测试完后需要删除
+//       if(TIMER300ms==0)Receiver_LED_RX=0;
 #endif
    
 #if defined(__Product_PIC32MX2_WIFI__)
-   if((WIFI_L_Login==0)&&(FLAG_APP_TX==0)&&(FLAG_APP_SW1==0)){
-       FLAG_APP_SW1=1;
-       WIFI_Useless1=1;
-       SendTxData();
+//   if((WIFI_L_Login==0)&&(FLAG_APP_TX==0)&&(FLAG_APP_SW1==0)){
+//       FLAG_APP_SW1=1;
+//       //WIFI_Useless1=1;
+//       SendTxData();
+//   }
+//   if(WIFI_L_Login==1)FLAG_APP_SW1=0;
+   if((FLAG_UART_R==1)&&(FLAG_APP_TX==0)){
+       FLAG_UART_R=0;
+       //WIFI_Useless1=1;
+       UART_Decode();
+       if(FLAG_UART_ok==1){FLAG_UART_ok=0;SendTxData();}
    }
-   if(WIFI_L_Login==1)FLAG_APP_SW1=0;
 
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
        FLAG_APP_RX=1;
-       WIFI_Useless1=1;
-       WIFI_LED_TX=1;
-       WIFI_LED_RX=1;
+       //WIFI_Useless1=1;
+       WIFI_LED_TX=0;
+       WIFI_LED_RX=0;
        ADF7021_DATA_IO=1;
        dd_set_RX_mode();
    }
 
    //if(((WIFI_Useless0==0)&&(FLAG_APP_SW2==0))||((FLAG_APP_RX==0)&&(FLAG_APP_RX==0))){
-   if((WIFI_Useless0==0)&&(FLAG_APP_SW2==0)){
-       FLAG_APP_SW2=1;
-       FLAG_APP_TX=0;
-       FLAG_APP_RX=1;
-       WIFI_Useless1=1;
-       WIFI_LED_RX=1;
-       ADF7021_DATA_IO=1;
-       dd_set_RX_mode();
-   }
-   if(WIFI_Useless0==1)FLAG_APP_SW2=0;
-   if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
-       rssi=dd_read_rssi_7021_reg(0x14);
-       if(rssi>15)WIFI_Useless1=0;
-       else WIFI_Useless1=1;
-   }
+//   if((WIFI_Useless0==0)&&(FLAG_APP_SW2==0)){
+//       FLAG_APP_SW2=1;
+//       FLAG_APP_TX=0;
+//       FLAG_APP_RX=1;
+//       WIFI_Useless1=1;
+//       WIFI_LED_RX=1;
+//       ADF7021_DATA_IO=1;
+//       dd_set_RX_mode();
+//   }
+//   if(WIFI_Useless0==1)FLAG_APP_SW2=0;
+//   if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
+//       rssi=dd_read_rssi_7021_reg(0x14);
+//       if(rssi>15);//WIFI_Useless1=0;
+//       else; //WIFI_Useless1=1;
+//   }
 //   if((Receiver_Login==0)&&(FLAG_APP_SW3==0)){
 //       FLAG_APP_SW3=1;
 //       Frequency_CH++;
@@ -497,7 +517,7 @@ void ADF7021_test(void)
 //   if(FLAG_APP_RX==1){
 //       if(Receiver_Login==0)Receiver_LED_TX=1;
 //   }
-       if(TIMER1s==0)WIFI_LED_RX=1;           //测试，测试完后需要删除
+//       if(TIMER1s==0)WIFI_LED_RX=0;           //测试，测试完后需要删除
  #endif
 
 }

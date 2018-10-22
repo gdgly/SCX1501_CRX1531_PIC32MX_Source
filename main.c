@@ -58,6 +58,8 @@ Note: make sure the boot loader and your application, both use the same fuse set
 #include "adf7021.h"
 #include "ID_Decode.h"
 #include "Timers.h"
+#include "Uart.h"
+#include "EEPROM.h"
 
 #if   (((__PIC32_FEATURE_SET__ >= 100) && (__PIC32_FEATURE_SET__ <= 299)))
     #define __PIC32MX1XX_2XX__
@@ -135,16 +137,20 @@ int main(void)
     //ID_Decode_Initial_CNx();
     ID_Decode_Initial_INT();
     timer2_Init();
+    Uart1_Init();
     INTEnableSystemMultiVectoredInt();
 
     dd_set_ADF7021_Power_on();
-    //dd_set_RX_mode();
+    ID_EEPROM_Initial();
     while(1)
     {
-        ADF7021_test();
+        ADF7021_change_TXorRX();
         ID_Decode_IDCheck();
+        ID_Decode_OUT();
         Freq_Scanning();
+        ID_learn();
 
+// ID_EEPROM_write();
            // dd_set_TX_mode();
        // Delayus(1000);
 //        Receiver_LED_RX=((ReadCoreTimer() & 0x0200000) != 0);

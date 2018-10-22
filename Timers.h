@@ -1,5 +1,5 @@
 /***********************************************************************/
-/*  FILE        :Timers.ºÍ                                           */
+/*  FILE        :Timers.H                                             */
 /*  DATE        :Mar, 2013                                             */
 /*  Programmer	:xiang 'R                                              */
 /*  CPU TYPE    :PIC32MX2     Crystal: 10/40M                          */

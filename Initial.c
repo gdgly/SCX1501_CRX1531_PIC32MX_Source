@@ -9,7 +9,7 @@
 #include <plib.h>		// 常用C定义
 #include "initial.h"		// 初始化
 
-UINT32 EEPROM_Receiver_ID=13186823;
+UINT32 EEPROM_Receiver_ID=2000307;//13040292;//13040451;//2000307;//13186823;
 
 FLAG FLAG_APP;
 UINT16 rssi;
@@ -25,17 +25,40 @@ UINT32 DATA_Packet_Code[3]={0};   //C部
 UINT8  DATA_Packet_Code_g=0;
 UINT8  DATA_Packet_Code_i=0;
 UINT32 DATA_Packet_ID=0;
+UINT8  DATA_Packet_Control=0;
 UINT16  TIMER1s=0;
 UINT16  TIMER300ms=0;
 UINT8   TIMER18ms=0;
+UINT8   TIMER250ms_STOP=0;
 UINT8   Freq_Scanning_CH=0;
 UINT8  m_RFNormalBuf[35];
 uni_rom_id ID_data;
 UINT8 Control_code=0;
 UINT8 ID_INT_CODE=0;
+
+UINT16 UART_DATA_i=0;
+UINT8  UART_DATA_cnt=0;
+UINT8  UART1_DATA[15]={0};
+UINT8  UART_DATA_buffer[15]={0};
+
+UINT8  TIME_10ms=0;
+UINT8  COUNT_Receiver_Login=0;
+UINT16 TIME_Receiver_Login=0;
+UINT16 TIME_Receiver_Login_led=0;
+UINT16 TIME_Receiver_Login_restrict=0;
+UINT32 ID_Receiver_Login=0;
+UINT32 ID_Receiver_DATA[256] = {0};//写入EEPROM ID的数据
+UINT16 ID_DATA_PCS=0;
+
 UINT8 FLAG_APP_TX=0;
 UINT8 FLAG_APP_RX=0;
 UINT8 FLAG_SendTxData=0;
+UINT8 FLAG_UART_R=0;
+UINT8 FLAG_UART_0xBB=0;
+UINT8 FLAG_UART_ok=0;
+UINT8 FLAG_ADF7021_ReInitial=0;
+UINT8 FLAG_IDCheck_OK=0;
+
 
 void VHF_GPIO_INIT(void){	
     // CPU端口设置
@@ -109,16 +132,21 @@ void VHF_GPIO_INIT(void){
       HA_Sensor_signal_IO=1;// Input   HA 传感器信号  高电平有效
       Receiver_Login_IO=1;// Input   受信机登录键   低电平有效
       Receiver_Buzzer_IO=0;// Output   受信机蜂鸣器  高电平有效
+      Receiver_Buzzer=0;
       Receiver_LED_OUT_IO=0;// Output   受信机继电器动作输出  低电平有效
-      Receiver_LED_OUT=1;
+      Receiver_LED_OUT=0;
       Receiver_LED_TX_IO=0;// Output   受信机送信指示  低电平有效
-      Receiver_LED_TX=1;
+      Receiver_LED_TX=0;
       Receiver_LED_RX_IO=0;// Output   受信机受信指示  低电平有效
-      Receiver_LED_RX=1;
+      Receiver_LED_RX=0;
       Receiver_OUT_OPEN_IO=0;  // Output   受信机继电器OPEN  高电平有效
+      Receiver_OUT_OPEN=0;
       Receiver_OUT_CLOSE_IO=0;  // Output   受信机继电器CLOSE  高电平有效
+      Receiver_OUT_CLOSE=0;
       Receiver_OUT_STOP_IO=0;  // Output   受信机继电器STOP  高电平有效
+      Receiver_OUT_STOP=0;
       Receiver_OUT_VENT_IO=0;
+      Receiver_OUT_VENT=0;
     #endif
 
    #if defined(__Product_PIC32MX2_WIFI__)
@@ -146,9 +174,9 @@ void VHF_GPIO_INIT(void){
      WIFI_Useless1=1;                                                      //测试，测试完后需要删除
      WIFI_USBOC_IO=1;//Input   wifi集中USB保护监测   低电平有效
      WIFI_LED_RX_IO=0;//output   wifi集中通讯机受信指示 低电平有效
-     WIFI_LED_RX=1;
+     WIFI_LED_RX=0;
      WIFI_LED_TX_IO=0;// output   wifi集中通讯机送信指示 低电平有效
-     WIFI_LED_TX=1;
+     WIFI_LED_TX=0;
    #endif
 
 }
@@ -159,13 +187,24 @@ void VHF_GPIO_INIT(void){
 void Delay100us(unsigned int timer)
 {
 unsigned int x;
-unsigned int y;                    //延时T=(timer)ms
+unsigned int y;                    //延时T=(timer)100us
  for(x=0;x<timer;x++)
-  {for(y=0;y<=200;y++);
+  {
+#if defined(__Product_PIC32MX2_Receiver__)
+     for(y=0;y<=200;y++);
+#endif
+#if defined(__Product_PIC32MX2_WIFI__)
+     for(y=0;y<=400;y++);
+#endif
    }
 }
 void Delayus(unsigned int timer)
 {
-  unsigned int x;            //延时T=(timer)ms
-  for(x=0;x<timer;x++);
+  unsigned int x;            //延时T=(timer)us     //SYSCLK=20M
+#if defined(__Product_PIC32MX2_Receiver__)
+     for(x=0;x<2*timer;x++);
+#endif
+#if defined(__Product_PIC32MX2_WIFI__)
+     for(x=0;x<4*timer;x++);
+#endif
 }

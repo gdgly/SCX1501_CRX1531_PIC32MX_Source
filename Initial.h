@@ -25,6 +25,7 @@
     #define	INT16		short int
     #define	UINT32		unsigned long
     #define	INT32		long
+    #define     NOP()           asm ("nop")
     //--------------------------------------------
 
   typedef union{
@@ -93,6 +94,14 @@ extern FLAG FLAG_APP;
 	#define		FLAG_Receiver_OK	FLAG_APP.BIT.Bit5
         #define		FLAG_Receiver_IDCheck 	FLAG_APP.BIT.Bit6
         #define		FLAG_Receiver_Scanning 	FLAG_APP.BIT.Bit7
+        #define		FLAG_ID_Login 	        FLAG_APP.BIT.Bit8
+        #define		FLAG_ID_Erase_Login 	FLAG_APP.BIT.Bit9
+        #define		FLAG_ID_Login_EXIT 	FLAG_APP.BIT.Bit10
+
+        #define		FLAG_ID_Login_OK 	FLAG_APP.BIT.Bit12
+        #define		FLAG_ID_Login_OK_bank 	FLAG_APP.BIT.Bit13
+
+        #define		FG_10ms 	        FLAG_APP.BIT.Bit24
 	//************************************************
 
 
@@ -110,9 +119,11 @@ extern UINT32 DATA_Packet_Code[3];  //C部
 extern UINT8  DATA_Packet_Code_g;
 extern UINT8  DATA_Packet_Code_i;
 extern UINT32 DATA_Packet_ID;
-extern UINT16 TIMER1s;
+extern UINT8  DATA_Packet_Control;
+extern UINT16  TIMER1s;
 extern UINT16  TIMER300ms;
-extern UINT8  TIMER18ms;
+extern UINT8   TIMER18ms;
+extern UINT8   TIMER250ms_STOP;
 extern UINT8  Freq_Scanning_CH;
 extern UINT8  m_RFNormalBuf[35]; // Buffer for data
                                /* m_RFNormalBuf[0] 帧间隔时间10ms(LSB)
@@ -136,9 +147,28 @@ extern UINT8  m_RFNormalBuf[35]; // Buffer for data
 extern uni_rom_id ID_data;
 extern UINT8 Control_code;
 extern UINT8 ID_INT_CODE;
+
+extern UINT16 UART_DATA_i;
+extern UINT8  UART_DATA_cnt;
+extern UINT8  UART1_DATA[15];
+extern UINT8  UART_DATA_buffer[15];
+extern UINT8  TIME_10ms;
+extern UINT8  COUNT_Receiver_Login;
+extern UINT16  TIME_Receiver_Login;
+extern UINT16 TIME_Receiver_Login_led;
+extern UINT16 TIME_Receiver_Login_restrict;
+extern UINT32 ID_Receiver_Login;
+extern UINT32 ID_Receiver_DATA[256];//写入EEPROM ID的数据
+extern UINT16 ID_DATA_PCS;
+
 extern UINT8 FLAG_APP_TX;
 extern UINT8 FLAG_APP_RX;
 extern UINT8 FLAG_SendTxData;
+extern UINT8  FLAG_UART_R;
+extern UINT8 FLAG_UART_0xBB;
+extern UINT8  FLAG_UART_ok;
+extern UINT8  FLAG_ADF7021_ReInitial;
+extern UINT8 FLAG_IDCheck_OK;
 
 extern void VHF_GPIO_INIT(void);		// CPU端口设置
 extern void Delayus(unsigned int timer);

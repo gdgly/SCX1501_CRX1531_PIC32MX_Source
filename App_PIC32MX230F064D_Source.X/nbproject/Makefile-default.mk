@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=../main.c ../Initial.c ../adf7021.c ../ID_Decode.c ../Timers.c
+SOURCEFILES_QUOTED_IF_SPACED=../main.c ../Initial.c ../adf7021.c ../ID_Decode.c ../Timers.c ../Uart.c ../EEPROM.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/Initial.o ${OBJECTDIR}/_ext/1472/adf7021.o ${OBJECTDIR}/_ext/1472/ID_Decode.o ${OBJECTDIR}/_ext/1472/Timers.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/1472/main.o.d ${OBJECTDIR}/_ext/1472/Initial.o.d ${OBJECTDIR}/_ext/1472/adf7021.o.d ${OBJECTDIR}/_ext/1472/ID_Decode.o.d ${OBJECTDIR}/_ext/1472/Timers.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/Initial.o ${OBJECTDIR}/_ext/1472/adf7021.o ${OBJECTDIR}/_ext/1472/ID_Decode.o ${OBJECTDIR}/_ext/1472/Timers.o ${OBJECTDIR}/_ext/1472/Uart.o ${OBJECTDIR}/_ext/1472/EEPROM.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/1472/main.o.d ${OBJECTDIR}/_ext/1472/Initial.o.d ${OBJECTDIR}/_ext/1472/adf7021.o.d ${OBJECTDIR}/_ext/1472/ID_Decode.o.d ${OBJECTDIR}/_ext/1472/Timers.o.d ${OBJECTDIR}/_ext/1472/Uart.o.d ${OBJECTDIR}/_ext/1472/EEPROM.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/Initial.o ${OBJECTDIR}/_ext/1472/adf7021.o ${OBJECTDIR}/_ext/1472/ID_Decode.o ${OBJECTDIR}/_ext/1472/Timers.o
+OBJECTFILES=${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/Initial.o ${OBJECTDIR}/_ext/1472/adf7021.o ${OBJECTDIR}/_ext/1472/ID_Decode.o ${OBJECTDIR}/_ext/1472/Timers.o ${OBJECTDIR}/_ext/1472/Uart.o ${OBJECTDIR}/_ext/1472/EEPROM.o
 
 # Source Files
-SOURCEFILES=../main.c ../Initial.c ../adf7021.c ../ID_Decode.c ../Timers.c
+SOURCEFILES=../main.c ../Initial.c ../adf7021.c ../ID_Decode.c ../Timers.c ../Uart.c ../EEPROM.c
 
 
 CFLAGS=
@@ -116,6 +116,16 @@ ${OBJECTDIR}/_ext/1472/Timers.o: ../Timers.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/_ext/1472/Timers.o.d 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/Timers.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DPIC32_STARTER_KITS -I".." -MMD -MF "${OBJECTDIR}/_ext/1472/Timers.o.d" -o ${OBJECTDIR}/_ext/1472/Timers.o ../Timers.c   
 	
+${OBJECTDIR}/_ext/1472/Uart.o: ../Uart.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
+	@${RM} ${OBJECTDIR}/_ext/1472/Uart.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/Uart.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DPIC32_STARTER_KITS -I".." -MMD -MF "${OBJECTDIR}/_ext/1472/Uart.o.d" -o ${OBJECTDIR}/_ext/1472/Uart.o ../Uart.c   
+	
+${OBJECTDIR}/_ext/1472/EEPROM.o: ../EEPROM.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
+	@${RM} ${OBJECTDIR}/_ext/1472/EEPROM.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/EEPROM.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DPIC32_STARTER_KITS -I".." -MMD -MF "${OBJECTDIR}/_ext/1472/EEPROM.o.d" -o ${OBJECTDIR}/_ext/1472/EEPROM.o ../EEPROM.c   
+	
 else
 ${OBJECTDIR}/_ext/1472/main.o: ../main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/_ext/1472 
@@ -141,6 +151,16 @@ ${OBJECTDIR}/_ext/1472/Timers.o: ../Timers.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/Timers.o.d 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/Timers.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DPIC32_STARTER_KITS -I".." -MMD -MF "${OBJECTDIR}/_ext/1472/Timers.o.d" -o ${OBJECTDIR}/_ext/1472/Timers.o ../Timers.c   
+	
+${OBJECTDIR}/_ext/1472/Uart.o: ../Uart.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
+	@${RM} ${OBJECTDIR}/_ext/1472/Uart.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/Uart.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DPIC32_STARTER_KITS -I".." -MMD -MF "${OBJECTDIR}/_ext/1472/Uart.o.d" -o ${OBJECTDIR}/_ext/1472/Uart.o ../Uart.c   
+	
+${OBJECTDIR}/_ext/1472/EEPROM.o: ../EEPROM.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
+	@${RM} ${OBJECTDIR}/_ext/1472/EEPROM.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/EEPROM.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DPIC32_STARTER_KITS -I".." -MMD -MF "${OBJECTDIR}/_ext/1472/EEPROM.o.d" -o ${OBJECTDIR}/_ext/1472/EEPROM.o ../EEPROM.c   
 	
 endif
 
