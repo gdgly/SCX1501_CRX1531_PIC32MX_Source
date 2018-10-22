@@ -20,6 +20,7 @@ extern UINT8 dd_read_rssi_7021_reg(UINT8 readback_config);
 extern void dd_read_RSSI(void);
 extern void ADF7021_change_TXorRX(void);
 extern void dd_set_ADF7021_ReInitial(void);
+extern void DIP_switch_Get(void);
 
 //*********以下为测试代码所用****************
 extern void dd_set_TX_mode_carrier(void);

@@ -87,7 +87,6 @@ UINT16 time_3sec=0;
 UINT16 FLAG_all_Erase_time=0;
 UINT8 TIME_EMC=0;   //静电测试
 
-UINT8 SWITCH_DIP=0;
 UINT8 read_TIMER_Semi_open=0;
 
                     /****说明 REG1     REG3     REG0      REG2     REG4******/
@@ -129,6 +128,11 @@ UINT16  TIME_auto_out=0;
 UINT16  TIME_auto_close=0;
 UINT8 FG_auto_out=0;
 UINT8 HA_Status_buf=0;
+UINT8 DIP_switch_data_bak=0;
+UINT8 DIP_switch_data=0;
+UINT8 FLAG_DIP_switch=0;
+UINT8 TIME_DIP_switch=0;
+UINT8 FLAG_POER_on=0;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -184,6 +188,11 @@ UINT8 HA_Status_buf=0;
     UINT16 TIME_email_send=0;
     UINT32 Email_check_ID[64]={0x00};
     UINT8  Emial_check_Control[64]={0x00};
+    UINT32 SWITCH_DIP_id_data[64];
+    UINT8  SWITCH_DIP_id_DIP[64];
+    UINT8 SWITCH_DIP=0;
+    UINT8 SWITCH_DIP_bak=0;
+    UINT32 SWITCH_DIP_id_data_bak=0;
 //                                     //东北OPEN ,东北CLOSE, 关东OPEN ,关东CLOSE,关西OPEN ,关西CLOSE ,九州OPEN ,九州CLOSE,北海道OPEN,北海CLOSE,冲绳OPEN ,冲绳CLOSE,预备1OPEN ,预1CLOSE ,预备2OPEN,预2CLOSE ,预备3OPEN,预备3CLOSE,预备4OPEN,预4CLOSE ,
 //    UINT8  Sunrise_sunset_DATA[480]={  0x07,0x00,0x16,0x55,0x06,0x58,0x17,0x06,0x07,0x13,0x17,0x25,0x07,0x31,0x17,0x47,0x07,0x11,0x16,0x41,0x07,0x28,0x18,0x13,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,     //一月份
 //                                       0x06,0x31,0x17,0x30,0x06,0x33,0x17,0x37,0x06,0x49,0x17,0x55,0x07,0x08,0x18,0x17,0x06,0x36,0x17,0x22,0x07,0x11,0x18,0x35,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,     //二月份
@@ -243,6 +252,9 @@ UINT8 HA_Status_buf=0;
 
     UINT16 INquiry_0x00=0;
     UINT8 FLAG_IDCheck_OK_0x00=0;
+
+    UINT8 FG_WIFI_SWITCH_DIP=0;
+    UINT16 TIME_APP_Inquiry_HA=0;
 #endif
 
 
@@ -389,14 +401,14 @@ void RF_test_mode(void )
   UINT8 uart_data,Boot_i;
 
 #if defined(__Product_PIC32MX2_Receiver__)
-  Receiver_LED_OUT=1;
-  for(Boot_i=0;Boot_i<6;Boot_i++){
-      for(time_3sec=0;time_3sec<6000;time_3sec++){
-         Delayus(80);   //80us
-         ClearWDT(); // Service the WDT
-      }
-      Receiver_LED_OUT=!Receiver_LED_OUT;
-  }
+//  Receiver_LED_OUT=1;
+//  for(Boot_i=0;Boot_i<6;Boot_i++){
+//      for(time_3sec=0;time_3sec<600;time_3sec++){
+//         Delayus(240);   //80us
+//         ClearWDT(); // Service the WDT
+//      }
+//      Receiver_LED_OUT=!Receiver_LED_OUT;
+//  }
   Receiver_LED_OUT=0;
 
 
@@ -480,6 +492,11 @@ void RF_test_mode(void )
     Receiver_LED_RX=0;
 //    FG_Receiver_LED_RX=0;
     Receiver_LED_OUT=0;
+
+    DIP_switch_data=0;
+    DIP_switch_Get();
+    DIP_switch_data_bak=DIP_switch_data;
+    FLAG_426MHz_Reply=1;
 #endif
 
 
@@ -564,6 +581,7 @@ void RF_test_mode(void )
 
 
     TIME_WIFI_LAN_SELECT=10;
+    SWITCH_DIP_bak=0xFF;
 #endif
 }
 

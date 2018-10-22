@@ -89,6 +89,7 @@ void ID_learn(void)
      if(TIMER_err_1s)--TIMER_err_1s;
      if(TIMER_Sensor_open_1s)--TIMER_Sensor_open_1s;
      if(TIMER_Sensor_close_1s)--TIMER_Sensor_close_1s;
+     if(TIME_DIP_switch)--TIME_DIP_switch;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
        else if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
           else {TIME_Receiver_Login=0;COUNT_Receiver_Login=0;}
@@ -134,12 +135,16 @@ void ID_learn(void)
              if(TIME_Login_EXIT_rest)--TIME_Login_EXIT_rest;
               else ID_Login_EXIT_Initial();
          } //end if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))
+     
+     
+     DIP_switch_Get();
  }
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
  if(FG_10ms){
      FG_10ms = 0;
      if(rssi_TIME)--rssi_TIME;
+     if(TIME_APP_Inquiry_HA)--TIME_APP_Inquiry_HA;
      if(TIME_UART)--TIME_UART;
      if(TIME_No_response)--TIME_No_response;
      if(TIME_alarm_AUTO)--TIME_alarm_AUTO;
@@ -300,6 +305,9 @@ void ID_EEPROM_Initial(void)
         xn.IDB[2]=xm[2];
         xn.IDB[3]=0;
         ID_Receiver_DATA[i]=xn.IDL;
+#if defined(__Product_PIC32MX2_Receiver__)
+        if((FLAG_POER_on==0)&&(ID_Receiver_DATA[i]!=0)){FLAG_POER_on=1;DATA_Packet_ID=ID_Receiver_DATA[i];}
+#endif
     }
 #if defined(__Product_PIC32MX2_Receiver__)
     Read(&xm[0],0x7E5,1);
