@@ -312,7 +312,7 @@ void ID_EEPROM_Initial(void)
                else Read(&xm[0],0x800+i*128,103);
                if(i>10)m1=i-1;
                else m1=i;
-               if((xm[0]==0x00)||(xm[0]>12)||(xm[1]>1)||(xm[2]>8)||(xm[3]>24)||(xm[4]>60)||(xm[5]>0x80)||(xm[6]>0x20)){
+               if((xm[0]==0x00)||(xm[0]>12)||(xm[1]>1)||(xm[2]>8)||(xm[3]>0x24)||(xm[4]>0x60)||(xm[5]>0x80)||(xm[6]>0x20)){
                    WIFI_alarm_data[m1][0]=m1+1;
                    for(j=1;j<103;j++)WIFI_alarm_data[m1][j]=0x00;
                }
@@ -336,16 +336,16 @@ void ID_EEPROM_Initial(void)
     for(i=0;i<10;i++){
        ClearWDT(); // Service the WDT
        m2=i/4;
-       m3=i%4;       
-       Read(&xm[0],0xF00+32*m2+m3*7,7);       
-       if((xm[0]==0x00)||(xm[0]>10)||(xm[1]>1)||(xm[2]>24)||(xm[3]>60)||(xm[4]>0x80)){
+       m3=i%4;
+       Read(&xm[0],0xF00+32*m2+m3*7,7);
+       if((xm[0]==0x00)||(xm[0]>10)||(xm[1]>1)||(xm[2]>0x24)||(xm[3]>0x60)||(xm[4]>0x80)){
            Emial_time_data[i][0]=i+1;
-           for(j=1;j<103;j++)Emial_time_data[i][j]=0x00;
+           for(j=1;j<7;j++)Emial_time_data[i][j]=0x00;
        }
        else {
            Emial_time_data[i][0]=i+1;
-           for(j=1;j<103;j++)Emial_time_data[i][j]=xm[j];
-       }             
+           for(j=1;j<7;j++)Emial_time_data[i][j]=xm[j];
+       }
     }
 
     Read_Time(&xm[0]);
@@ -434,7 +434,7 @@ void Sunrise_sunset_EEPROM_write(void){         //日出日落表格数据DATA设置保存
 }
 void SUN_time_get(UINT8 value){         //查询某月某地在日出日落表格数据DATA中的OPEN CLOSE时间
     UINT8 xm[10]={0};
-    UINT8 i;
+    UINT16 i;                        //UINT8 i; -----> UINT16 i;     2014年7月23日修正
     if((value>0)&&(value<=10)){
         Read_Time(&xm[0]);
         i=(xm[5]-1)*40+(value-1)*4;
@@ -453,23 +453,50 @@ void alarm_EEPROM_write(void)
     UINT8 xm[10]={0};
     UINT16 m1,m2,m3;
     UINT16 RTC_Minutes;
+    UINT8 Write_Read_compare[103];
+    UINT8 WIFI_alarm_data_Cache[103];
+    UINT8 Write_Read_compare_count=0;
+
+    for(i=0;i<103;i++){Write_Read_compare[i]=0;WIFI_alarm_data_Cache[i]=0;}
+    FLAG_Write_Read_compare=0;
 
     m1=UART1_DATA[11];
     m2=18+UART1_DATA[17]*3;
-    for(i=11;i<m2;i++)WIFI_alarm_data[m1-1][i-11]=UART1_DATA[i];
-    for(j=i;j<103;j++)WIFI_alarm_data[m1-1][j]=0x00;
-    Write(WIFI_alarm_data[m1-1],0x800+(m1-1)*128,32);    //写入数据到24LC16
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Write(&WIFI_alarm_data[m1-1][32],0x800+(m1-1)*128+32,32);
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Write(&WIFI_alarm_data[m1-1][64],0x800+(m1-1)*128+64,32);
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Write(&WIFI_alarm_data[m1-1][96],0x800+(m1-1)*128+96,7);
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Read_Time(&xm[0]);
-    RTC_Minutes=xm[2]*60+xm[1];
-    NEW_set_alarm_pcf8563(RTC_Minutes);    
+    for(i=11;i<m2;i++)WIFI_alarm_data_Cache[i-11]=UART1_DATA[i];  //WIFI_alarm_data[m1-1][i-11]=UART1_DATA[i];
+    for(j=i;j<103;j++)WIFI_alarm_data_Cache[j]=0x00;  //WIFI_alarm_data[m1-1][j]=0x00;
 
+    while((FLAG_Write_Read_compare==0)&&(Write_Read_compare_count<3))
+    {
+//                Write(WIFI_alarm_data[m1-1],0x800+(m1-1)*128,32);    //写入数据到24LC16
+//                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//                Write(&WIFI_alarm_data[m1-1][32],0x800+(m1-1)*128+32,32);
+//                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//                Write(&WIFI_alarm_data[m1-1][64],0x800+(m1-1)*128+64,32);
+//                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//                Write(&WIFI_alarm_data[m1-1][96],0x800+(m1-1)*128+96,7);
+//                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+                Write(&WIFI_alarm_data_Cache[0],0x800+(m1-1)*128,32);    //写入数据到24LC16
+                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+                Write(&WIFI_alarm_data_Cache[32],0x800+(m1-1)*128+32,32);
+                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+                Write(&WIFI_alarm_data_Cache[64],0x800+(m1-1)*128+64,32);
+                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+                Write(&WIFI_alarm_data_Cache[96],0x800+(m1-1)*128+96,7);
+                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        Read(&Write_Read_compare[0],0x800+(m1-1)*128,103);
+        for(i=0;i<103;i++){
+            if(Write_Read_compare[i]==WIFI_alarm_data_Cache[i])FLAG_Write_Read_compare=1;
+            else {FLAG_Write_Read_compare=0;i=103;}
+        }
+        Write_Read_compare_count++;
+    }
+
+    if(FLAG_Write_Read_compare==1){
+        for(i=0;i<103;i++)WIFI_alarm_data[m1-1][i]=WIFI_alarm_data_Cache[i];
+        Read_Time(&xm[0]);
+        RTC_Minutes=xm[2]*60+xm[1];
+        NEW_set_alarm_pcf8563(RTC_Minutes);
+    }
 //    xmm.IDB[0]=UART1_DATA[8];
 //    xmm.IDB[1]=UART1_DATA[9];
 //    xmm.IDB[2]=UART1_DATA[10];
@@ -525,24 +552,37 @@ void SUN_EEPROM_write(void)
     UINT8 xmmmmmm[103]={0};
     UINT16 m1,m2,m3;
     UINT16 RTC_Minutes;
+    UINT8 Write_Read_compare[2][103];
+    UINT8 Write_Read_compare_SUN[3];
+    UINT8 WIFI_alarm_data_Cache[2][103];
+    UINT8 SUN_ON_OFF_seat_Cache[3];
+    UINT8 Write_Read_compare_count=0;
 
-    SUN_ON_OFF_seat[0]=UART1_DATA[11];   //0x7DD 日出ON/OFF  ON=1  OFF=0
-    SUN_ON_OFF_seat[1]=UART1_DATA[12];  //0x7DE 日落ON/OFF  ON=1  OFF=0
-    SUN_ON_OFF_seat[2]=UART1_DATA[13];  //0x7DF 日本地点  1=东北, 2=关东,3=关西,4=九州
-    Write(&SUN_ON_OFF_seat[0],0x7DD,3);
-    WIFI_alarm_data[10][0]=11;
-    WIFI_alarm_data[10][1]=UART1_DATA[11];
-    WIFI_alarm_data[10][2]=0x08;
-    WIFI_alarm_data[10][3]=0;         //在EEPROM中的日出日落时间数据为0，是靠SUN_time_get(SUN_ON_OFF_seat[2])函数在表中查询获取
-    WIFI_alarm_data[10][4]=0;
-    WIFI_alarm_data[11][0]=12;
-    WIFI_alarm_data[11][1]=UART1_DATA[12];
-    WIFI_alarm_data[11][2]=0x02;
-    WIFI_alarm_data[11][3]=0;       //在EEPROM中的日出日落时间数据为0，是靠SUN_time_get(SUN_ON_OFF_seat[2])函数在表中查询获取
-    WIFI_alarm_data[11][4]=0;
+    for(i=0;i<103;i++){Write_Read_compare[0][i]=0;Write_Read_compare[1][i]=0;WIFI_alarm_data_Cache[0][i]=0;WIFI_alarm_data_Cache[1][i]=0;}
+    for(i=0;i<3;i++){Write_Read_compare_SUN[i]=0;SUN_ON_OFF_seat_Cache[i]=0;}
+    FLAG_Write_Read_compare=0;
+
+//    SUN_ON_OFF_seat[0]=UART1_DATA[11];   //0x7DD 日出ON/OFF  ON=1  OFF=0
+//    SUN_ON_OFF_seat[1]=UART1_DATA[12];  //0x7DE 日落ON/OFF  ON=1  OFF=0
+//    SUN_ON_OFF_seat[2]=UART1_DATA[13];  //0x7DF 日本地点  1=东北, 2=关东,3=关西,4=九州
+//    Write(&SUN_ON_OFF_seat[0],0x7DD,3);
+    SUN_ON_OFF_seat_Cache[0]=UART1_DATA[11];   //0x7DD 日出ON/OFF  ON=1  OFF=0
+    SUN_ON_OFF_seat_Cache[1]=UART1_DATA[12];  //0x7DE 日落ON/OFF  ON=1  OFF=0
+    SUN_ON_OFF_seat_Cache[2]=UART1_DATA[13];  //0x7DF 日本地点  1=东北, 2=关东,3=关西,4=九州
+
+    WIFI_alarm_data_Cache[0][0]=11;
+    WIFI_alarm_data_Cache[0][1]=UART1_DATA[11];
+    WIFI_alarm_data_Cache[0][2]=0x08;
+    WIFI_alarm_data_Cache[0][3]=0;         //在EEPROM中的日出日落时间数据为0，是靠SUN_time_get(SUN_ON_OFF_seat[2])函数在表中查询获取
+    WIFI_alarm_data_Cache[0][4]=0;
+    WIFI_alarm_data_Cache[1][0]=12;
+    WIFI_alarm_data_Cache[1][1]=UART1_DATA[12];
+    WIFI_alarm_data_Cache[1][2]=0x02;
+    WIFI_alarm_data_Cache[1][3]=0;       //在EEPROM中的日出日落时间数据为0，是靠SUN_time_get(SUN_ON_OFF_seat[2])函数在表中查询获取
+    WIFI_alarm_data_Cache[1][4]=0;
     m2=16+UART1_DATA[15]*3;
-    for(i=14;i<m2;i++){WIFI_alarm_data[10][i-9]=UART1_DATA[i];WIFI_alarm_data[11][i-9]=UART1_DATA[i];}
-    for(i=m2-9;i<103;i++){WIFI_alarm_data[10][i]=0x00;WIFI_alarm_data[11][i]=0x00;}
+    for(i=14;i<m2;i++){WIFI_alarm_data_Cache[0][i-9]=UART1_DATA[i];WIFI_alarm_data_Cache[1][i-9]=UART1_DATA[i];}
+    for(i=m2-9;i<103;i++){WIFI_alarm_data_Cache[0][i]=0x00;WIFI_alarm_data_Cache[1][i]=0x00;}
 //    Write(&WIFI_alarm_data[10][0],0x800+11*128,32);    //写入数据到24LC16
 //    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
 //    Write(&WIFI_alarm_data[10][32],0x800+11*128+32,32);
@@ -559,21 +599,56 @@ void SUN_EEPROM_write(void)
 //    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
 //    Write(&WIFI_alarm_data[11][96],0x800+12*128+96,7);
 //    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    for(i=11;i<13;i++){
-        Write(&WIFI_alarm_data[i-1][0],0x800+i*128,32);    //写入数据到24LC16
+
+    while((FLAG_Write_Read_compare==0)&&(Write_Read_compare_count<5))
+    {
+//                    for(i=11;i<13;i++){
+//                        Write(&WIFI_alarm_data[i-1][0],0x800+i*128,32);    //写入数据到24LC16
+//                        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//                        Write(&WIFI_alarm_data[i-1][32],0x800+i*128+32,32);
+//                        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//                        Write(&WIFI_alarm_data[i-1][64],0x800+i*128+64,32);
+//                        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//                        Write(&WIFI_alarm_data[i-1][96],0x800+i*128+96,7);
+//                        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//                    }
+//                    Write(&SUN_ON_OFF_seat[0],0x7DD,3);
+        for(i=11;i<13;i++){
+            Write(&WIFI_alarm_data_Cache[i-11][0],0x800+i*128,32);    //写入数据到24LC16
+            Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+            Write(&WIFI_alarm_data_Cache[i-11][32],0x800+i*128+32,32);
+            Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+            Write(&WIFI_alarm_data_Cache[i-11][64],0x800+i*128+64,32);
+            Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+            Write(&WIFI_alarm_data_Cache[i-11][96],0x800+i*128+96,7);
+            Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        }
+        Write(&SUN_ON_OFF_seat_Cache[0],0x7DD,3);
         Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-        Write(&WIFI_alarm_data[i-1][32],0x800+i*128+32,32);
-        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-        Write(&WIFI_alarm_data[i-1][64],0x800+i*128+64,32);
-        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-        Write(&WIFI_alarm_data[i-1][96],0x800+i*128+96,7);
-        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms        
+        Read(&Write_Read_compare_SUN[0],0x7DD,3);
+        for(i=0;i<3;i++){
+            if(Write_Read_compare_SUN[i]==SUN_ON_OFF_seat_Cache[i])FLAG_Write_Read_compare=1;
+            else {FLAG_Write_Read_compare=0;i=3;}
+        }
+        if(FLAG_Write_Read_compare==1){
+            Read(&Write_Read_compare[0][0],0x800+11*128,103);
+            Read(&Write_Read_compare[1][0],0x800+12*128,103);
+            for(i=0;i<103;i++){
+                if((Write_Read_compare[0][i]==WIFI_alarm_data_Cache[0][i])&&(Write_Read_compare[1][i]==WIFI_alarm_data_Cache[1][i]))FLAG_Write_Read_compare=1;
+                else {FLAG_Write_Read_compare=0;i=103;}
+            }
+        }
+        Write_Read_compare_count++;
     }
 
-    SUN_time_get(SUN_ON_OFF_seat[2]);
-    Read_Time(&xm[0]);
-    RTC_Minutes=xm[2]*60+xm[1];
-    NEW_set_alarm_pcf8563(RTC_Minutes);
+    if(FLAG_Write_Read_compare==1){
+        for(i=0;i<3;i++)SUN_ON_OFF_seat[i]=SUN_ON_OFF_seat_Cache[i];
+        for(i=0;i<103;i++){WIFI_alarm_data[10][i]=WIFI_alarm_data_Cache[0][i];WIFI_alarm_data[11][i]=WIFI_alarm_data_Cache[1][i];}
+        SUN_time_get(SUN_ON_OFF_seat[2]);
+        Read_Time(&xm[0]);
+        RTC_Minutes=xm[2]*60+xm[1];
+        NEW_set_alarm_pcf8563(RTC_Minutes);
+    }
 }
 void Emial_time_EEPROM_write(void)
 {
@@ -581,26 +656,72 @@ void Emial_time_EEPROM_write(void)
     UINT8 xm[10]={0};
     UINT16 m1,m2,m3;
     UINT16 RTC_Minutes;
+    UINT8 Write_Read_compare[7];
+    UINT8 Emial_time_data_Cache[7];
+    UINT8 Write_Read_compare_count=0;
+
+    for(i=0;i<7;i++){Write_Read_compare[i]=0;Emial_time_data_Cache[i]=0;}
+    FLAG_Write_Read_compare=0;
 
     m1=UART1_DATA[11];
     m2=18;
-    for(i=11;i<m2;i++)Emial_time_data[m1-1][i-11]=UART1_DATA[i];
+    for(i=11;i<m2;i++)Emial_time_data_Cache[i-11]=UART1_DATA[i];   //Emial_time_data[m1-1][i-11]=UART1_DATA[i];
     m1=UART1_DATA[11]-1;
     m2=m1/4;
     m3=m1%4;
-    Write(Emial_time_data[m1],0xF00+32*m2+m3*7,7);//写入数据到24LC16
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-    Read_Time(&xm[0]);
-    RTC_Minutes=xm[2]*60+xm[1];
-    NEW_set_alarm_pcf8563(RTC_Minutes);
+    while((FLAG_Write_Read_compare==0)&&(Write_Read_compare_count<3))
+    {
+    //Write(Emial_time_data[m1],0xF00+32*m2+m3*7,7);//写入数据到24LC16
+    //Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        Write(&Emial_time_data_Cache[0],0xF00+32*m2+m3*7,7);//写入数据到24LC16
+        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        Read(&Write_Read_compare[0],0xF00+32*m2+m3*7,7);
+        for(i=0;i<7;i++){
+            if(Write_Read_compare[i]==Emial_time_data_Cache[i])FLAG_Write_Read_compare=1;
+            else {FLAG_Write_Read_compare=0;i=7;}
+        }
+        Write_Read_compare_count++;
+    }
+
+    if(FLAG_Write_Read_compare==1){
+        for(i=0;i<7;i++)Emial_time_data[m1][i]=Emial_time_data_Cache[i];
+        Read_Time(&xm[0]);
+        RTC_Minutes=xm[2]*60+xm[1];
+        NEW_set_alarm_pcf8563(RTC_Minutes);
+    }
 }
 void HA_Change_EEPROM_write(void)
 {
-    HA_Change_send_email[0]=UART1_DATA[11];
-    HA_Change_send_email[1]=UART1_DATA[12];
-    HA_Change_send_email[2]=UART1_DATA[13];
-    Write(&HA_Change_send_email[0],0x7ED,3);    //写入数据到24LC16
-    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+    UINT16 i;
+    UINT8 Write_Read_compare[3];
+    UINT8 HA_Change_send_email_Cache[3];
+    UINT8 Write_Read_compare_count=0;
+
+    for(i=0;i<3;i++){Write_Read_compare[i]=0;HA_Change_send_email_Cache[i]=0;}
+    FLAG_Write_Read_compare=0;
+
+//                HA_Change_send_email[0]=UART1_DATA[11];
+//                HA_Change_send_email[1]=UART1_DATA[12];
+//                HA_Change_send_email[2]=UART1_DATA[13];
+    HA_Change_send_email_Cache[0]=UART1_DATA[11];
+    HA_Change_send_email_Cache[1]=UART1_DATA[12];
+    HA_Change_send_email_Cache[2]=UART1_DATA[13];
+    while((FLAG_Write_Read_compare==0)&&(Write_Read_compare_count<3))
+    {
+//                Write(&HA_Change_send_email[0],0x7ED,3);    //写入数据到24LC16
+//                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        Write(&HA_Change_send_email_Cache[0],0x7ED,3);    //写入数据到24LC16
+        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        Read(&Write_Read_compare[0],0x7ED,3);
+        for(i=0;i<3;i++){
+            if(Write_Read_compare[i]==HA_Change_send_email_Cache[i])FLAG_Write_Read_compare=1;
+            else {FLAG_Write_Read_compare=0;i=3;}
+        }
+        Write_Read_compare_count++;
+    }    
+    if(FLAG_Write_Read_compare==1){
+        for(i=0;i<3;i++)HA_Change_send_email[i]=HA_Change_send_email_Cache[i];
+    }
 }
 #endif
 

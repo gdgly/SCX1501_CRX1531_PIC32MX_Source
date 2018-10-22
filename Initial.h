@@ -265,6 +265,8 @@ extern UINT8 FLAG_HA_ERR_bit;
     extern UINT8 FLAG_Emial_time;
     extern UINT8 Emial_time_place;
     extern UINT16 HA_uart_Length;
+
+    extern UINT8 FLAG_Write_Read_compare;
 #endif
 
 

@@ -172,6 +172,9 @@ void UART_Decode(void)
     UINT16 n=0;
     uni_rom_id y;
     uni_i uart_y;
+    UINT8 xm00[10]={0};
+    UINT16 RTC_Minutes00;
+
     if(UART1_DATA[2]==0x06){                          /*****2013年11月22日修改  提高Emial稳定性****/
             for(i=0;i<6;i++){
                 if(UART1_DATA[i]==wifi_uart[i]);
@@ -231,6 +234,10 @@ void UART_Decode(void)
                             if(m==n){
                                 if(UART1_DATA[8]==0x05){
                                     Set_Time(&UART1_DATA[11]);       //==0x00  写时钟
+                                    SUN_time_get(SUN_ON_OFF_seat[2]);
+                                    Read_Time(&xm00[0]);
+                                    RTC_Minutes00=xm00[2]*60+xm00[1];
+                                    NEW_set_alarm_pcf8563(RTC_Minutes00);
                                     uart_send_APP_Public(0x05,0);
                                 }
                                 else if(UART1_DATA[8]==0x04){                //==0x01  读时钟
@@ -272,7 +279,8 @@ void UART_Decode(void)
                                         if(FLAG_IDCheck_OK==1){
                                             FLAG_IDCheck_OK=0;
                                             alarm_EEPROM_write();
-                                            uart_send_APP_Public(0x06,0);
+                                            if(FLAG_Write_Read_compare==1)uart_send_APP_Public(0x06,0);
+                                            else uart_send_APP_Public(0x06,1);
                                         }
                                        else uart_send_APP_Public(0x06,1);
                                   }
@@ -296,7 +304,8 @@ void UART_Decode(void)
                                   if((UART1_DATA[11]==0)||(UART1_DATA[11]>0x0A)||(UART1_DATA[13]>0x25)||(UART1_DATA[14]>0x60))uart_send_APP_Public(0x09,1);
                                   else {
                                             Emial_time_EEPROM_write();
-                                            uart_send_APP_Public(0x09,0);
+                                            if(FLAG_Write_Read_compare==1)uart_send_APP_Public(0x09,0);
+                                            else uart_send_APP_Public(0x09,1);
                                   }
                                 }
                                 else uart_send_APP_Emial_time();
@@ -321,7 +330,8 @@ void UART_Decode(void)
                                         if(FLAG_IDCheck_OK==1){
                                             FLAG_IDCheck_OK=0;
                                             SUN_EEPROM_write();
-                                            uart_send_APP_Public(0x0B,0);
+                                            if(FLAG_Write_Read_compare==1)uart_send_APP_Public(0x0B,0);
+                                            else uart_send_APP_Public(0x0B,1);
                                         }
                                         else uart_send_APP_Public(0x0B,1);
                                   }
@@ -343,7 +353,8 @@ void UART_Decode(void)
                             if(m==n){
                                 if(UART1_DATA[8]==0x0D){
                                       HA_Change_EEPROM_write();
-                                      uart_send_APP_Public(0x0D,0);
+                                      if(FLAG_Write_Read_compare==1)uart_send_APP_Public(0x0D,0);
+                                      else uart_send_APP_Public(0x0D,1);
                                 }
                                 else uart_send_APP_HA_Change();
                             }
@@ -374,9 +385,9 @@ void UART_Decode(void)
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x32;      //2
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x34;      //4
-                                    U1TXREG=0xD1;     //0x16B+0x32+0x33
-                                    U1TXREG=0x01;      
+                                    U1TXREG=0x37;      //7
+                                    U1TXREG=0xD4;     //0x16B+0x32+0x37
+                                    U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
                             break;
