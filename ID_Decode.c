@@ -684,13 +684,20 @@ void  Freq_Scanning(void)
     {
         FLAG_Receiver_Scanning=0;
         Freq_Scanning_CH++;
+ #if defined(__Product_PIC32MX2_WIFI__)
+        if(Freq_Scanning_CH==3)Freq_Scanning_CH=4;
+        if(Freq_Scanning_CH==5)Freq_Scanning_CH=6;
+ #endif
         if(Freq_Scanning_CH>6){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
         dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
 
-
-//        TIMER18ms=18;//18;
+ #if defined(__Product_PIC32MX2_WIFI__)
+        TIMER18ms=18;//18;
+ #endif
+ #if defined(__Product_PIC32MX2_Receiver__)
         if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))TIMER18ms=36;
         else TIMER18ms=18;
+ #endif
     }
 }
 

@@ -262,7 +262,7 @@ void all_Erase_EEPROM_next(void)
                     if(TIMER300ms==0){TIMER300ms=300;WIFI_LED_TX=!WIFI_LED_TX;WIFI_LED_RX=!WIFI_LED_RX;}
                 }
             }
-            if(TIMER1s==0){TIMER300ms=0;FLAG_all_Erase=0;FLAG_all_Erase_OK=0;FLAG_all_Erase_loop=0;}
+            if(TIMER1s==0)SoftReset();
             else ClearWDT(); // Service the WDT
         }
     }

@@ -599,9 +599,9 @@ unsigned int y;                    //延时T=(timer)100us
 #endif
    }
 }
-void Delayus(unsigned int timer)
+void Delayus(UINT16 timer)
 {
-  unsigned int x;            //延时T=(timer)us     //SYSCLK=20M
+  UINT16 x;            //延时T=(timer)us     //SYSCLK=20M
 #if defined(__Product_PIC32MX2_Receiver__)
     // for(x=0;x<2*timer;x++);  //特别说明：该行采用XC32的0级优化，即无优化
    for(x=0;x<10*timer;x++);  //特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。

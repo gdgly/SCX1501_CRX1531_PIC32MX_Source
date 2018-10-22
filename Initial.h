@@ -338,7 +338,7 @@ extern UINT8 FLAG_POER_on;
 
 
 extern void VHF_GPIO_INIT(void);		// CPU∂Àø⁄…Ë÷√
-extern void Delayus(unsigned int timer);
+extern void Delayus(UINT16 timer);
 extern void Delay100us(unsigned int timer);
 extern void RF_test_mode(void );
 

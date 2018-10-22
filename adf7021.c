@@ -426,7 +426,9 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 	//write R1, turn on VCO
 	register_value.whole_reg = 0x031B5011;//0x031BD011;      //2013年11月22日修改  天线驱动偏执电流   2.1mA-->1.5mA
 	dd_write_7021_reg(&register_value.byte[0]);
-
+#if defined(__Product_PIC32MX2_Receiver__)
+        if(CH==1)Delayus(800);		//delay 800us
+#endif
         register_value.whole_reg =0x00500882; //0x00680882;        //2013年11月22日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
         //register_value.whole_reg =0x00680882; //0x00680882;        //2013年11月29日修改  TX频偏 1.6K（0x00500882）-->2K（0x00680882）
 	dd_write_7021_reg(&register_value.byte[0]);
