@@ -300,7 +300,6 @@ extern UINT8 FG_auto_open_time;
     extern UINT8  UART_DATA_buffer[493];
     //extern UINT8 WIFI_alarm_data[200][10];
     extern UINT8 WIFI_alarm_data[12][103];
-    extern UINT8 WIFI_alarm_data_planning[103];
     extern UINT8 WIFI_alarm_data_PCS;
     extern UINT8 Emial_time_data[10][7];
     extern UINT8 Emial_time_data_PCS;
@@ -311,7 +310,6 @@ extern UINT8 FG_auto_open_time;
     extern UINT8 AUTO_HA_Inquiry;
     extern UINT8 HA_uart[1200];
     extern UINT32 EMIAL_id_data[35];
-    extern UINT32 EMIAL_id_data_chek;
     extern UINT8  EMIAL_id_HA[35];
     extern UINT8  EMIAL_id_PCS;
     extern UINT8  FLAG_email_send;
@@ -370,6 +368,7 @@ extern UINT8 FG_auto_open_time;
     extern UINT8 FG_HA_Inquiry_NO_again_send;
 
     extern UINT16 time_APP_Start_up;   //2015.04.27ÐÞÕý
+    extern UINT8 FG_HA_uart_send_APP;  //2015.04.28ÐÞÕý
 
 #endif
 

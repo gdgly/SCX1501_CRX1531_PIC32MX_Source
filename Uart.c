@@ -743,15 +743,23 @@ void HA_uart_send_APP(void)
     {
         if((HA_uart_app[14]==5)&&(FG_Second==0));
         else if(time_APP_Start_up==0){     //2015.04.27修正
-            for(i=0;i<18;i++){
-                U1TXREG=HA_uart_app[i];
-                if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-            }
-            APP_check_ID=b0.IDL;
-            APP_check_Control=HA_uart_app[14];
-            APP_check_char=1;
-
-            FG_WIFI_SWITCH_DIP=0;
+//             FG_HA_uart_send_APP=1;
+//             for(i=0;i<35;i++)
+//             {
+//                if(HA_Cache_IDdata[i]==0x00)i=35;
+//                if((HA_Cache_IDdata[i]==b0.IDL)&&(HA_Cache_ha[i]==HA_uart_app[14])){FG_HA_uart_send_APP=0;i=35;}
+//             }
+//             if((FG_HA_uart_send_APP==1)||(HA_uart_app[14]==5)||(APP_check_char==0)){
+                    for(i=0;i<18;i++){
+                        U1TXREG=HA_uart_app[i];
+                        if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+                    }
+                    APP_check_ID=b0.IDL;
+                    APP_check_Control=HA_uart_app[14];
+                    //HA_uart_app[14]=0;
+                    APP_check_char=1;
+                    FG_WIFI_SWITCH_DIP=0;
+//            }
         }
     }
 
@@ -807,53 +815,9 @@ void uart_send_APP_allalarm(void)
     UINT16 i,j;
     UINT16 d0,d1;
     UINT16 d2=0;
-    uni_rom_id num100;
-//                 uart_send_APP_Head();
-//                 d1=UART1_DATA[11]-1;
-//                 d0=10+WIFI_alarm_data[d1][6]*3;
-//                 U1TXREG=d0%256;
-//                 U1TXREG=d0/256;
-//                 Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-//                 U1TXREG=0x07;
-//                 U1TXREG=0x01;
-//                 U1TXREG=0x00;
-//                 d0=0x08;
-//                 for(i=0;i<7;i++){
-//                     U1TXREG=WIFI_alarm_data[d1][i];
-//                     d0=d0+WIFI_alarm_data[d1][i];
-//                     if(i==2)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-//                 }
-//                 d2=WIFI_alarm_data[d1][6]*3;
-//                 for(i=0;i<d2;i++){
-//                        d0=d0+WIFI_alarm_data[d1][i+7];
-//                        U1TXREG=WIFI_alarm_data[d1][i+7];
-//                        if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-//                }
-//                U1TXREG=d0%256;
-//                U1TXREG=d0/256;
-
-
-                 d1=UART1_DATA[11]-1;
-                 for(i=0;i<103;i++){
-                     WIFI_alarm_data_planning[i]=WIFI_alarm_data[d1][i];
-                 }
-                 for(i=0;i<WIFI_alarm_data[d1][6];i++){
-                     d0=i*3;
-                     num100.IDB[0]=WIFI_alarm_data[d1][d0+7];
-                     num100.IDB[1]=WIFI_alarm_data[d1][d0+8];
-                     num100.IDB[2]=WIFI_alarm_data[d1][d0+9];
-                     num100.IDB[3]=0;
-                     for(j=0;j<ID_DATA_PCS;j++){
-                        if(ID_Receiver_DATA[j]==num100.IDL)j=100;
-                     }
-                     if(j!=101){
-                         for(j=d0+10;j<103;j++)WIFI_alarm_data_planning[j-3]=WIFI_alarm_data_planning[j];
-                         WIFI_alarm_data_planning[6]--;
-                     }
-                     ClearWDT(); // Service the WDT
-                 }
                  uart_send_APP_Head();
-                 d0=10+WIFI_alarm_data_planning[6]*3;
+                 d1=UART1_DATA[11]-1;
+                 d0=10+WIFI_alarm_data[d1][6]*3;
                  U1TXREG=d0%256;
                  U1TXREG=d0/256;
                  Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
@@ -862,19 +826,45 @@ void uart_send_APP_allalarm(void)
                  U1TXREG=0x00;
                  d0=0x08;
                  for(i=0;i<7;i++){
-                     U1TXREG=WIFI_alarm_data_planning[i];
-                     d0=d0+WIFI_alarm_data_planning[i];
+                     U1TXREG=WIFI_alarm_data[d1][i];
+                     d0=d0+WIFI_alarm_data[d1][i];
                      if(i==2)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                  }
-                 d2=WIFI_alarm_data_planning[6]*3;
+                 d2=WIFI_alarm_data[d1][6]*3;
                  for(i=0;i<d2;i++){
-                        d0=d0+WIFI_alarm_data_planning[i+7];
-                        U1TXREG=WIFI_alarm_data_planning[i+7];
+                        d0=d0+WIFI_alarm_data[d1][i+7];
+                        U1TXREG=WIFI_alarm_data[d1][i+7];
                         if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                 }
                 U1TXREG=d0%256;
                 U1TXREG=d0/256;
 
+
+//             for(i=8;i<25;i++){
+//                 if(UART1_DATA[i]!=0)d2=1;
+//             }
+//             if(d2==0){
+//                 uart_send_APP_Head();
+//                 d0=WIFI_alarm_data_PCS*10-(WIFI_alarm_data_PCS/2)*3;
+//                 U1TXREG=d0%256;
+//                 U1TXREG=d0/256;
+//                 Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+//                 d0=0;
+//                 d1=0;
+//                 for(i=0;i<WIFI_alarm_data_PCS;i++)
+//                     for(j=0;j<10;j++)
+//                     {
+//                        if((i%2==1)&&(j<3));
+//                        else {
+//                        d0=d0+WIFI_alarm_data[i][j];
+//                        U1TXREG=WIFI_alarm_data[i][j];
+//                        d1++;
+//                        if(d1%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+//                        }
+//                    }
+//                U1TXREG=d0%256;
+//                U1TXREG=d0/256;
+//             }
  #endif
 }
 void uart_send_APP_SUN(void)
@@ -883,55 +873,8 @@ void uart_send_APP_SUN(void)
     UINT16 i,j;
     UINT16 d0,d1;
     UINT16 d2=0;
-    uni_rom_id num100;
-//                 uart_send_APP_Head();
-//                 d0=8+WIFI_alarm_data[10][6]*3;
-//                 U1TXREG=d0%256;
-//                 U1TXREG=d0/256;
-//                 Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-//                 U1TXREG=0x0C;
-//                 U1TXREG=0x01;
-//                 U1TXREG=0x00;
-//                 d0=0x0C+0x01;
-//                 for(i=0;i<3;i++){
-//                     U1TXREG=SUN_ON_OFF_seat[i];
-//                     d0=d0+SUN_ON_OFF_seat[i];
-//                 }
-//                 Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-//                 for(i=0;i<2;i++){
-//                     U1TXREG=WIFI_alarm_data[10][i+5];
-//                     d0=d0+WIFI_alarm_data[10][i+5];
-//                 }
-//                 d2=WIFI_alarm_data[10][6]*3;
-//                 for(i=0;i<d2;i++){
-//                        d0=d0+WIFI_alarm_data[10][i+7];
-//                        U1TXREG=WIFI_alarm_data[10][i+7];
-//                        if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-//                }
-//                U1TXREG=d0%256;
-//                U1TXREG=d0/256;
-
-
-                 for(i=0;i<103;i++){
-                     WIFI_alarm_data_planning[i]=WIFI_alarm_data[10][i];
-                 }
-                 for(i=0;i<WIFI_alarm_data[10][6];i++){
-                     d0=i*3;
-                     num100.IDB[0]=WIFI_alarm_data[d1][d0+7];
-                     num100.IDB[1]=WIFI_alarm_data[d1][d0+8];
-                     num100.IDB[2]=WIFI_alarm_data[d1][d0+9];
-                     num100.IDB[3]=0;
-                     for(j=0;j<ID_DATA_PCS;j++){
-                        if(ID_Receiver_DATA[j]==num100.IDL)j=100;
-                     }
-                     if(j!=101){
-                         for(j=d0+10;j<103;j++)WIFI_alarm_data_planning[j-3]=WIFI_alarm_data_planning[j];
-                         WIFI_alarm_data_planning[6]--;
-                     }
-                     ClearWDT(); // Service the WDT
-                 }
                  uart_send_APP_Head();
-                 d0=8+WIFI_alarm_data_planning[6]*3;
+                 d0=8+WIFI_alarm_data[10][6]*3;
                  U1TXREG=d0%256;
                  U1TXREG=d0/256;
                  Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
@@ -945,17 +888,17 @@ void uart_send_APP_SUN(void)
                  }
                  Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                  for(i=0;i<2;i++){
-                     U1TXREG=WIFI_alarm_data_planning[i+5];
-                     d0=d0+WIFI_alarm_data_planning[i+5];
+                     U1TXREG=WIFI_alarm_data[10][i+5];
+                     d0=d0+WIFI_alarm_data[10][i+5];
                  }
-                 d2=WIFI_alarm_data_planning[6]*3;
+                 d2=WIFI_alarm_data[10][6]*3;
                  for(i=0;i<d2;i++){
-                        d0=d0+WIFI_alarm_data_planning[i+7];
-                        U1TXREG=WIFI_alarm_data_planning[i+7];
+                        d0=d0+WIFI_alarm_data[10][i+7];
+                        U1TXREG=WIFI_alarm_data[10][i+7];
                         if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                 }
                 U1TXREG=d0%256;
-                U1TXREG=d0/256;    
+                U1TXREG=d0/256;
  #endif
 }
 void uart_send_APP_Emial_time(void)

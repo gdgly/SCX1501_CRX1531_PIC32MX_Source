@@ -153,7 +153,6 @@ UINT8 FG_auto_open_time=0;
     UINT8  UART_DATA_buffer[493]={0};
     //UINT8 WIFI_alarm_data[200][10]={0};
     UINT8 WIFI_alarm_data[12][103]={0};
-    UINT8 WIFI_alarm_data_planning[103];
     UINT8 WIFI_alarm_data_PCS=0;
     UINT8 Emial_time_data[10][7]={0};
     UINT8 Emial_time_data_PCS=0;
@@ -195,7 +194,6 @@ UINT8 FG_auto_open_time=0;
                    0x00,0x00   //校验码
                    };
     UINT32 EMIAL_id_data[35];
-    UINT32 EMIAL_id_data_chek;
     UINT8  EMIAL_id_HA[35];
     UINT8  EMIAL_id_PCS=0;
     UINT8  FLAG_email_send=0;
@@ -289,6 +287,7 @@ UINT8 FG_auto_open_time=0;
     UINT8 FG_HA_Inquiry_NO_again_send=0;
 
     UINT16 time_APP_Start_up=0;   //2015.04.27修正
+    UINT8 FG_HA_uart_send_APP=0;  //2015.04.28修正
 
 #endif
 

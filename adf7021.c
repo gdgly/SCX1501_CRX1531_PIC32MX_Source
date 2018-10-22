@@ -944,13 +944,13 @@ void ADF7021_change_TXorRX(void)
     if((FG_send_Faile_notice==1)&&(TIME_send_Faile_notice==0)){            //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
         TIME_send_Faile_notice=50;
         WIFI_LED_TX=!WIFI_LED_TX;
-//        if((AUTO_SEND_DATA_pcs==0)&&(TIME_alarm_AUTO==0)){
+        if((AUTO_SEND_DATA_pcs==0)&&(TIME_alarm_AUTO==0)){
                 for(i=0;i<35;i++)
                 {
                    if(HA_Cache_ha_1Hz[i]==0x05)i=100;
                 }
                 if(i==35){FG_send_Faile_notice=0;WIFI_LED_TX=0;}
-//        }
+        }
     }
 
     if(FLAG_WIFI_LAN_SELECT!=WIFI_LAN_SELECT){TIME_WIFI_LAN_SELECT=10;FLAG_WIFI_LAN_SELECT=WIFI_LAN_SELECT;}
