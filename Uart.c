@@ -718,7 +718,7 @@ void HA_uart_send_APP(void)
 
     HA_uart_app[9]=0x01;
     if(UART_DATA_buffer[8]==0x01)HA_uart_app[8]=0x01;
-    else if(UART_DATA_buffer[8]==0x02)HA_uart_app[8]=0x02;
+    else if(UART_DATA_buffer[8]==0x02){HA_uart_app[8]=0x02;UART_DATA_buffer[8]=0x00;}
     else if(UART_DATA_buffer[8]==0x10)HA_uart_app[8]=0x10;
     else HA_uart_app[8]=0x01;
     HA_uart_app[10]=0x00;
@@ -732,21 +732,23 @@ void HA_uart_send_APP(void)
         HA_uart_app[11]=b0.IDB[0];
         HA_uart_app[12]=b0.IDB[1];
         HA_uart_app[13]=b0.IDB[2];
+        HA_uart_app[15]=0xFF;
+        if(UART_DATA_buffer[8]==0x10){HA_uart_app[14]=0xFF;HA_uart_app[15]=0x00;}
     }
-    else if(read_TIMER_Semi_open!=0){HA_uart_app[14]=read_TIMER_Semi_open-1;read_TIMER_Semi_open=0;}
-    else if((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x85))HA_uart_app[14]=01;
-    else if((DATA_Packet_Control==0x82)||(DATA_Packet_Control==0x86))HA_uart_app[14]=02;
-    else if((DATA_Packet_Control==0x83)||(DATA_Packet_Control==0x87))HA_uart_app[14]=03;
-    else if((DATA_Packet_Control==0x84)||(DATA_Packet_Control==0x88))HA_uart_app[14]=04;
+    else if(read_TIMER_Semi_open!=0){HA_uart_app[14]=read_TIMER_Semi_open-1;read_TIMER_Semi_open=0;HA_uart_app[15]=0x00;}
+    else if((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x85)){HA_uart_app[14]=01;HA_uart_app[15]=SWITCH_DIP;}
+    else if((DATA_Packet_Control==0x82)||(DATA_Packet_Control==0x86)){HA_uart_app[14]=02;HA_uart_app[15]=SWITCH_DIP;}
+    else if((DATA_Packet_Control==0x83)||(DATA_Packet_Control==0x87)){HA_uart_app[14]=03;HA_uart_app[15]=SWITCH_DIP;}
+    else if((DATA_Packet_Control==0x84)||(DATA_Packet_Control==0x88)){HA_uart_app[14]=04;HA_uart_app[15]=SWITCH_DIP;}
     //HA_uart_app[15]=0x00;
-    HA_uart_app[15]=SWITCH_DIP;
-    SWITCH_DIP=0;
+    SWITCH_DIP_bak=SWITCH_DIP;
+    SWITCH_DIP_id_data_bak=DATA_Packet_ID;
     m=0;
     for(i=8;i<16;i++)m=m+HA_uart_app[i];
     HA_uart_app[16]=m%256;
     HA_uart_app[17]=m/256;
 
-    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0))    //2014.10.11ÐÞ¸Ä
+    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))    //2014.10.11ÐÞ¸Ä
     {
         for(i=0;i<18;i++){
             U1TXREG=HA_uart_app[i];
@@ -755,6 +757,7 @@ void HA_uart_send_APP(void)
         APP_check_ID=b0.IDL;
         APP_check_Control=HA_uart_app[14];
         APP_check_char=1;
+        FG_WIFI_SWITCH_DIP=0;
     }
  #endif
 }

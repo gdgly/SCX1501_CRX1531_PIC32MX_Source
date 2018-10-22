@@ -784,21 +784,34 @@ void ADF7021_change_TXorRX(void)
     }
  #endif
 
+ #if defined(__Product_PIC32MX2_Receiver__)
    if((FLAG_UART_ok==1)||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
+ #endif
+#if defined(__Product_PIC32MX2_WIFI__)
+   if(((FLAG_UART_ok==1)&&(TIME_APP_Inquiry_HA==0))||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
+ #endif
        if(FLAG_rssi_Freq==0){
            rssi_TIME=1;    //发射时10ms间隔搜索空信道
            FLAG_rssi_Freq=1;
            rssi_COUNT=0;
            TX_Freq_CH=TX_Freq_CH+2;
-           if(TX_Freq_CH>6)TX_Freq_CH=2;
+           if(TX_Freq_CH>2)TX_Freq_CH=2;
            dd_set_ADF7021_Freq(0,TX_Freq_CH);
        }
        if(rssi_TIME==0){
            FLAG_rssi_Freq=0;
-           if(rssi_COUNT>=10){FLAG_UART_ok=0;FLAG_HA_START=0;FLAG_AUTO_SEND_ok=0;SendTxData();TX_Freq_CH=0;
-                              #if defined(__Product_PIC32MX2_WIFI__)
-                              TIME_No_response=300;FLAG_TIME_No_response=1;      //2014.10.11修改   150
-                              #endif
+           if(rssi_COUNT>=10){
+#if defined(__Product_PIC32MX2_WIFI__)
+                if(FLAG_UART_ok==1)TIME_APP_Inquiry_HA=350;
+#endif
+                FLAG_UART_ok=0;
+                FLAG_HA_START=0;
+                FLAG_AUTO_SEND_ok=0;
+                SendTxData();
+                TX_Freq_CH=0;
+#if defined(__Product_PIC32MX2_WIFI__)
+                TIME_No_response=300;FLAG_TIME_No_response=1;      //2014.10.11修改   150
+#endif
            }
        }
 //       TX_Freq_CH=1;

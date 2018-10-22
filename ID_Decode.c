@@ -37,6 +37,7 @@ void SendTxData(void);
 void ID_Decode_OUT(void);
 void Signal_DATA_Decode(UINT8 NUM_Type);
 void BEEP_and_LED(void);
+void SWITCH_DIP_check_app(void);
 void Email_check_app(void);
 void Email_check_mail(void);
 
@@ -168,22 +169,26 @@ void ID_Decode_IDCheck(void)
         {
             eeprom_IDcheck();
             if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
-                if(FLAG_ID_Login_OK==0){
-                    #if defined(__Product_PIC32MX2_WIFI__)
+             #if defined(__Product_PIC32MX2_WIFI__)
+                if((FLAG_ID_Login_OK==0)&&(DATA_Packet_Control!=0x40)&&(DATA_Packet_ID_buf!=0)){
+
                        if(ID_DATA_PCS>=32){
                            eeprom_IDcheck_0x00();
                            if(FLAG_IDCheck_OK_0x00==0)FLAG_ID_Login_OK=0;
                            else {FLAG_ID_Login_OK=1;ID_Receiver_Login=DATA_Packet_ID_buf;}
                        }
                        else {FLAG_ID_Login_OK=1;ID_Receiver_Login=DATA_Packet_ID_buf;}
-                    #endif
-                    #if defined(__Product_PIC32MX2_Receiver__)
+                }
+            #endif
+            #if defined(__Product_PIC32MX2_Receiver__)
+               if((FLAG_ID_Login_OK==0)&&(DATA_Packet_Control!=0x40)&&(DATA_Packet_ID_buf!=0)){
                     FLAG_ID_Login_OK=1;
                     ID_Receiver_Login=DATA_Packet_ID_buf;
-                    #endif
-                }
+                   
+               }
+            #endif
             }
-            else if(FLAG_IDCheck_OK==1)
+            else if((FLAG_IDCheck_OK==1)||(DATA_Packet_ID==0xFFFFFE))
             {
                 FLAG_IDCheck_OK=0;
                 if(Freq_Scanning_CH_bak==0){Freq_Scanning_CH_save=1;Freq_Scanning_CH_save_HA=0; }  //当前收到426M控制   但保存记录下收到信号的频率信道,0代表426M
@@ -246,7 +251,7 @@ void ID_Decode_IDCheck(void)
                     else {
                         if(((DATA_Packet_Control&0x20)==0x20)||((DATA_Packet_Control&0x40)==0x40))TIMER1s=500;
                         else if((DATA_Packet_Control&0x10)==0x10){
-                            if(HA_Status==0x81)TIMER1s=(TIMER_Semi_open+1)*1000;
+                            if(HA_Status==0x82)TIMER1s=(TIMER_Semi_open+1)*1000;
                         }
                         else  TIMER1s=1000;
                     }
@@ -537,7 +542,8 @@ void ID_Decode_OUT(void)
          HA_uart_send_APP();
          FLAG_TIME_No_response=0;
      }
-    if((read_TIMER_Semi_open<0x3F)&&(read_TIMER_Semi_open>0)){
+    if(((read_TIMER_Semi_open<0x3F)&&(read_TIMER_Semi_open>0))||(((SWITCH_DIP_bak!=SWITCH_DIP)||(SWITCH_DIP_id_data_bak!=DATA_Packet_ID))&&(Freq_Scanning_CH_save_HA==1))){
+        SWITCH_DIP_check_app(); //检测现在的值与缓存中SWITCH_DIP,如果变化FG_WIFI_SWITCH_DIP=1;
         HA_uart_send_APP();
     }
  #endif
@@ -620,6 +626,22 @@ void ID_Decode_OUT(void)
 //          DATA_Packet_Control_0=0;
 //     }
  #endif    
+}
+
+void SWITCH_DIP_check_app(void)
+{
+ #if defined(__Product_PIC32MX2_WIFI__)
+    UINT8 i;
+        for(i=0;i<64;i++)
+        {
+            if(SWITCH_DIP_id_data[i]==0x00){SWITCH_DIP_id_data[i]=DATA_Packet_ID;SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
+            if(SWITCH_DIP_id_data[i]==DATA_Packet_ID)
+            {
+                if(SWITCH_DIP==SWITCH_DIP_id_DIP[i])break;
+                else {SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
+            }
+        }
+ #endif
 }
 
 void Email_check_app(void)

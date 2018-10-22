@@ -241,6 +241,9 @@ UINT8 FLAG_POER_on=0;
 
     UINT16 INquiry_0x00=0;
     UINT8 FLAG_IDCheck_OK_0x00=0;
+
+    UINT8 FG_WIFI_SWITCH_DIP=0;
+    UINT16 TIME_APP_Inquiry_HA=0;
 #endif
 
 
