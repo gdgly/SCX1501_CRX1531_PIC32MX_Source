@@ -140,7 +140,8 @@ void ID_Decode_function(void)
                 if(ADF7021_DATA_rx)DATA_Packet_Head+=1;
                 //DATA_Packet_Head=DATA_Packet_Head&0x0000FFFF;
                 if(TIMER18ms==0)rxphase=0;
-                if(DATA_Packet_Head==0x5515){rxphase=2;DATA_Packet_Syn=0;DATA_Packet_Head=0;DATA_Packet_Code_i=0;}
+                //if(DATA_Packet_Head==0x5515){rxphase=2;DATA_Packet_Syn=0;DATA_Packet_Head=0;DATA_Packet_Code_i=0;}
+                if(DATA_Packet_Head==0x5456){rxphase=2;DATA_Packet_Syn=0;DATA_Packet_Head=0;DATA_Packet_Code_i=0;}
 		break;
         case 2:
                 DATA_Packet_Code_g=DATA_Packet_Code_i/32;
