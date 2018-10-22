@@ -152,7 +152,7 @@ void ID_Decode_function(void)
         case 3:
                 FLAG_Receiver_IDCheck=1;
                 if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5))Freq_Scanning_CH_bak=0;   //暂时记录下收到信号的频率信道,0代表426M
-                else Freq_Scanning_CH_bak=1;                                                                                 //                       1代表429M
+                else Freq_Scanning_CH_bak=1;       //                       1代表429M
                 rxphase=0;
                 DATA_Packet_Syn=0;
                 TIMER18ms=0;   //0ms，接受可靠稳定
@@ -220,7 +220,7 @@ void ID_Decode_IDCheck(void)
                             eeprom_IDcheck();
                             if(DATA_Packet_Control_buf==0xFF){
                                 if(FLAG_IDCheck_OK==1)FLAG_IDCheck_OK=0;
-                                 else{
+                                 else if(ID_DATA_PCS<256){
                                     #if defined(__Product_PIC32MX2_Receiver__)
                                      BEEP_and_LED();         //2014.10.11修改
                                      ID_Receiver_Login=DATA_Packet_ID_buf;
@@ -245,13 +245,25 @@ void ID_Decode_IDCheck(void)
 #endif
 #if defined(__Product_PIC32MX2_Receiver__)
                     if(Freq_Scanning_CH_bak==0){
-                         if(DATA_Packet_Control==0x40){TIMER1s=3000;TIME_auto_out=1000;}
-			 else{
+                       if((DATA_Packet_Control==0x40)&&(Manual_override_TIMER==0)){
+                          FG_auto_manual_mode=1;
+                          TIME_auto_out=890;    // 900
+                          if(FG_First_auto==0){
+                              FG_First_auto=1;
+                              TIMER1s=3000;    //2500
+                          }
+                        }
+                        else if(DATA_Packet_Control==0x40);
+			else{
 			   FG_auto_out=0;
 			   TIME_auto_close=0;
+                           FG_auto_open_time=0;
+                           if(FG_auto_manual_mode==1)//Manual_override_TIMER=13500;   //2分30秒自动无效
+                              Manual_override_TIMER=24480;   //4分30秒自动无效
 		           if((DATA_Packet_Control&0x14)==0x14){if(TIMER1s==0)TIMER1s=3800-30;}
 			   else  TIMER1s=1000;
 			}
+
                     }
                     else {
                         if(((DATA_Packet_Control&0x20)==0x20)||((DATA_Packet_Control&0x40)==0x40))TIMER1s=500;
@@ -312,7 +324,8 @@ void BEEP_and_LED(void)
          ClearWDT(); // Service the WDT
      }
      Receiver_Buzzer=0;
-     Receiver_LED_OUT=0;
+     //Receiver_LED_OUT=0;   //2015.3.23修改
+     TIME_Receiver_LED_OUT=185;   //2015.3.23修改
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
      WIFI_LED_RX=1;
@@ -376,7 +389,7 @@ void ID_Decode_OUT(void)
 //    else Control_i=DATA_Packet_Control&0x0E;
 //    if(HA_Sensor_signal==1)Receiver_LED_TX=0;                      //test 接近信号回路
 //     else Receiver_LED_TX=1;
-
+    if(time_Login_exit_256!=0)return;
     Control_i=DATA_Packet_Control&0xFF;
     if(TIMER1s){
                 switch (Control_i){
@@ -414,8 +427,8 @@ void ID_Decode_OUT(void)
                                 TIMER250ms_STOP=250;
                                 Receiver_OUT_CLOSE=0;
                                 Receiver_OUT_STOP=1;
-                                //Receiver_OUT_OPEN=1;
-                                LATASET=0x0002;
+				if(FG_OUT_OPEN_CLOSE==0){FG_OUT_OPEN_CLOSE=1;TIME_OUT_OPEN_CLOSE=25;}          //2015.3.23修改
+                                if(TIME_OUT_OPEN_CLOSE==0)LATASET=0x0002;  //Receiver_OUT_OPEN=1;
                                 break;
                      case 0x06:                  //close+stop
                                 Receiver_LED_OUT=1;
@@ -423,7 +436,8 @@ void ID_Decode_OUT(void)
                                 //Receiver_OUT_OPEN=0;
                                 LATACLR=0x0002;
                                 Receiver_OUT_STOP=1;
-                                Receiver_OUT_CLOSE=1;   
+				if(FG_OUT_OPEN_CLOSE==0){FG_OUT_OPEN_CLOSE=1;TIME_OUT_OPEN_CLOSE=25;}       //2015.3.23修改
+                                if(TIME_OUT_OPEN_CLOSE==0)Receiver_OUT_CLOSE=1;
                                 break;
                      case 0x01:                  //VENT
                                 Receiver_LED_OUT=1;
@@ -458,14 +472,14 @@ void ID_Decode_OUT(void)
                                         Receiver_OUT_CLOSE=1;
                                 }
                                 else{
-                                    if(FG_auto_out==0){                  //自动送信
+                                    if((FG_auto_out==0)&&(Manual_override_TIMER==0)){                  //自动送信
                                         Receiver_LED_OUT=1;
                                         TIMER250ms_STOP=0;
                                         //Receiver_OUT_VENT=FG_NOT_allow_out;
                                         Receiver_OUT_CLOSE=0;
                                         if(TIMER1s>2000){Receiver_OUT_STOP=1;LATACLR=0x0002;}
                                         else if(TIMER1s>1000){Receiver_OUT_STOP=0;LATACLR=0x0002;}
-                                        else {FG_auto_out=1;Receiver_OUT_STOP=0;LATASET=0x0002;}
+                                        else {FG_auto_open_time=1;Receiver_OUT_STOP=0;LATASET=0x0002;}
                                     }
                                 }
                                 break;
@@ -522,23 +536,24 @@ void ID_Decode_OUT(void)
 //                if((DATA_Packet_Control&0x06)==0x06)TIMER250ms_STOP=250;
                }       
      else {
-           if((FG_auto_out==1)&&(TIME_auto_out==0)){FG_auto_out=0;TIME_auto_close=300;Receiver_LED_OUT=1;}
-	   if(TIME_auto_close){
-                if(TIME_auto_close>200){Receiver_OUT_STOP=1;Receiver_OUT_CLOSE=0;}
-                else if(TIME_auto_close>100){Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=0;}
-	        else {Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=1;}
-	   }
-	   else {
-               Receiver_OUT_CLOSE=0;
+               if((FG_auto_out==1)&&(TIME_auto_out==0)){FG_auto_out=0;TIME_auto_close=270;Receiver_LED_OUT=1;}   //300
+               if(TIME_auto_close){
+                    if(TIME_auto_close>180){Receiver_OUT_STOP=1;Receiver_OUT_CLOSE=0;}  //200
+                    else if(TIME_auto_close>90){Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=0;}   //100
+                    else {Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=1;}	     
+               }
+               else   {FG_auto_manual_mode=0;Receiver_OUT_CLOSE=0;}
+               FG_First_auto=0;
                LATACLR=0x0002;
-               if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
-               else Receiver_LED_OUT=0;
+               if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)||(TIME_auto_close));
+               else  if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=1;    //2015.3.23修改
+	       else Receiver_LED_OUT=0;
+               if(FG_auto_open_time==1){FG_First_auto=0;FG_auto_out=1;FG_auto_open_time=0;}
                if(DATA_Packet_Control==0x10){
                    if((TIMER250ms_STOP<1000)&&(TIMER250ms_STOP>0)){Receiver_OUT_STOP=1;Receiver_LED_OUT=1;}
                    else if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
                }
-               else if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
-           }
+               else if((TIMER250ms_STOP==0)&&(TIME_auto_close==0)){Receiver_OUT_STOP=0;FG_OUT_OPEN_CLOSE=0;}    //2015.3.23修改
 
            FLAG__Semi_open_T=0;
 //           if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}

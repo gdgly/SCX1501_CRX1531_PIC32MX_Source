@@ -282,6 +282,15 @@ extern UINT8 FLAG_DIP_switch;
 extern UINT8 TIME_DIP_switch;
 extern UINT8 FLAG_POER_on;
 
+extern UINT8 FG_OUT_OPEN_CLOSE;    //2015.3.23ÐÞ¸Ä
+extern UINT8 TIME_OUT_OPEN_CLOSE;
+extern UINT16 TIME_Login_EXIT_Button;
+extern UINT16 TIME_Receiver_LED_OUT;
+extern UINT16 time_Login_exit_256;
+extern UINT16 Manual_override_TIMER;
+extern UINT8 FG_auto_manual_mode;
+extern UINT8 FG_First_auto;
+extern UINT8 FG_auto_open_time;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)

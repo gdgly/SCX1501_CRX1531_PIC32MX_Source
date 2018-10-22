@@ -127,6 +127,15 @@ UINT8 FLAG_DIP_switch=0;
 UINT8 TIME_DIP_switch=0;
 UINT8 FLAG_POER_on=0;
 
+UINT8 FG_OUT_OPEN_CLOSE=0;    //2015.3.23ÐÞ¸Ä
+UINT8 TIME_OUT_OPEN_CLOSE=0;
+UINT16 TIME_Login_EXIT_Button=0;
+UINT16 TIME_Receiver_LED_OUT=0;
+UINT16 time_Login_exit_256=0;
+UINT16 Manual_override_TIMER=0;
+UINT8 FG_auto_manual_mode=0;
+UINT8 FG_First_auto=0;
+UINT8 FG_auto_open_time=0;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)

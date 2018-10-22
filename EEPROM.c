@@ -91,6 +91,11 @@ void ID_learn(void)
      if(TIMER_Sensor_open_1s)--TIMER_Sensor_open_1s;
      if(TIMER_Sensor_close_1s)--TIMER_Sensor_close_1s;
      if(TIME_DIP_switch)--TIME_DIP_switch;
+     if(TIME_OUT_OPEN_CLOSE)--TIME_OUT_OPEN_CLOSE;          //2015.3.23修改
+     if(TIME_Login_EXIT_Button)--TIME_Login_EXIT_Button;   //2015.3.23修改
+     if(TIME_Receiver_LED_OUT)--TIME_Receiver_LED_OUT;   //2015.3.23修改
+     if(time_Login_exit_256)--time_Login_exit_256;    //2015.3.23修改
+     if(Manual_override_TIMER)--Manual_override_TIMER;  //2015.3.23修改
      if(TIME_Fine_Calibration)--TIME_Fine_Calibration;
      if(TIME_Receiver_Login_restrict)--TIME_Receiver_Login_restrict;
        else if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
@@ -99,26 +104,31 @@ void ID_learn(void)
          if(Receiver_Login==0){
              TIME_Receiver_Login++;
              TIME_Receiver_Login_restrict=350;
-             if(COUNT_Receiver_Login>=2){FLAG_ID_Login=1;TIME_Login_EXIT_rest=6000;}
+             if((COUNT_Receiver_Login>=2)&&(FLAG_ID_Erase_Login==0)&&(FLAG_ID_Login==0)&&(ID_DATA_PCS<256)){FLAG_ID_Login=1;TIME_Login_EXIT_rest=5380;TIME_Login_EXIT_Button=500;}   //2015.3.23修改
              if(((FLAG_ID_Erase_Login==1)&&(COUNT_Receiver_Login>=1))||
-                ((FLAG_ID_Login==1)&&(COUNT_Receiver_Login>=3)))ID_Login_EXIT_Initial();
+                ((FLAG_ID_Login==1)&&(COUNT_Receiver_Login>=3))){
+		     if(TIME_Login_EXIT_Button==0)
+                         ID_Login_EXIT_Initial();   //2015.3.23修改
+		    }
          }
          if(Receiver_Login==1){
-             if(TIME_Receiver_Login>3)COUNT_Receiver_Login++;
+             if(TIME_Receiver_Login>3){if(COUNT_Receiver_Login<10)COUNT_Receiver_Login++;}   //2015.3.23修改
              if(FLAG_ID_Login_EXIT==1){FLAG_ID_Login_EXIT=0;COUNT_Receiver_Login=0;}
              TIME_Receiver_Login=0;
          }
-         if(TIME_Receiver_Login>=300){
+         if(TIME_Receiver_Login>=260){
              TIME_Receiver_Login=0;
              FLAG_ID_Erase_Login=1;
              FLAG_ID_Erase_Login_PCS=1;    //追加多次ID登录
-             TIME_Login_EXIT_rest=6000;
+             TIME_Login_EXIT_rest=5380;    //2015.3.23修改
+             TIME_Login_EXIT_Button=500;   //2015.3.23修改
          }
          if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
              TIME_Receiver_Login_led++;
-             if(TIME_Receiver_Login_led>=30){
+             if(TIME_Receiver_Login_led>=45){              //2015.3.23修改
                  TIME_Receiver_Login_led=0;
-                 Receiver_LED_OUT=!Receiver_LED_OUT;
+		 if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=1;   //2015.3.23修改
+                 else Receiver_LED_OUT=!Receiver_LED_OUT;
              }
              if((FLAG_ID_Login_OK==1)&&(FLAG_ID_Login_OK_bank==0)){
                  //FLAG_ID_Login_OK_bank=1;             //追加多次ID登录
@@ -126,7 +136,7 @@ void ID_learn(void)
                  if(FLAG_IDCheck_OK==1)FLAG_IDCheck_OK=0;
                  else{
                      BEEP_and_LED();
-                     TIME_Login_EXIT_rest=6000;       //追加多次ID登录
+                     TIME_Login_EXIT_rest=5380;       //追加多次ID登录  //2015.3.23修改
                      if((FLAG_ID_Login==1)&&(ID_Receiver_Login!=0xFFFFFE))ID_EEPROM_write();
                      else if(FLAG_ID_Erase_Login==1){
                          if(FLAG_ID_Erase_Login_PCS==1){FLAG_ID_Erase_Login_PCS=0;ID_EEPROM_write_pcs();}      //追加多次ID登录
@@ -233,6 +243,7 @@ void ID_Login_EXIT_Initial(void)
      FLAG_ID_Login=0;
      FLAG_ID_Erase_Login=0;
      Receiver_LED_OUT=0;
+     COUNT_Receiver_Login=0;     //2015.3.23修改
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
      FLAG_ID_Login_EXIT=1;
@@ -331,6 +342,7 @@ void ID_EEPROM_Initial(void)
         xn.IDB[3]=0;
         ID_Receiver_DATA[i]=xn.IDL;
 #if defined(__Product_PIC32MX2_Receiver__)
+        ClearWDT();
         if((FLAG_POER_on==0)&&(ID_Receiver_DATA[i]!=0)){FLAG_POER_on=1;DATA_Packet_ID=ID_Receiver_DATA[i];}
 #endif
     }
@@ -837,7 +849,9 @@ void ID_EEPROM_write(void)
      m3=m1%10;
      Write(&xm[0],32*m2+m3*3,3);//写入数据到24LC16
      Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-
+#if defined(__Product_PIC32MX2_Receiver__)
+     if(ID_DATA_PCS>=256){ID_Login_EXIT_Initial();DATA_Packet_Control=0;time_Login_exit_256=110;}
+#endif
 }
 void ID_EEPROM_write_0x00(void)
 {
