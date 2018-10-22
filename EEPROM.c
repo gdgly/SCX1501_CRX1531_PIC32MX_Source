@@ -58,6 +58,7 @@ void Read(UINT8 *s,UINT16 suba,UINT8 n);
 void eeprom_IDcheck(void);
 void eeprom_IDcheck_UART(void);
 void ID_EEPROM_write(void);
+void ID_EEPROM_write_pcs(void);
 void ID_Login_EXIT_Initial(void);
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -128,7 +129,7 @@ void ID_learn(void)
                      TIME_Login_EXIT_rest=6000;       //追加多次ID登录
                      if((FLAG_ID_Login==1)&&(ID_Receiver_Login!=0xFFFFFE))ID_EEPROM_write();
                      else if(FLAG_ID_Erase_Login==1){
-                         if(FLAG_ID_Erase_Login_PCS==1){FLAG_ID_Erase_Login_PCS=0;ID_DATA_PCS=0;}      //追加多次ID登录
+                         if(FLAG_ID_Erase_Login_PCS==1){FLAG_ID_Erase_Login_PCS=0;ID_EEPROM_write_pcs();}      //追加多次ID登录
                          if(ID_Receiver_Login!=0xFFFFFE)ID_EEPROM_write();
                      }
                  }//end else
@@ -210,7 +211,7 @@ void ID_learn(void)
                              }
                              else if((FLAG_ID_Login==1)&&(DATA_Packet_ID!=0xFFFFFE))ID_EEPROM_write();
                              else if(FLAG_ID_Erase_Login==1){
-                                 if(FLAG_ID_Erase_Login_PCS==1){FLAG_ID_Erase_Login_PCS=0;ID_DATA_PCS=0;}      //追加多次ID登录
+                                 if(FLAG_ID_Erase_Login_PCS==1){FLAG_ID_Erase_Login_PCS=0;ID_EEPROM_write_pcs();}      //追加多次ID登录
                                  if(DATA_Packet_ID!=0xFFFFFE)ID_EEPROM_write();
                              }
                          }//end else
@@ -801,7 +802,20 @@ void HA_Change_EEPROM_write(void)
 
 
 
+void ID_EEPROM_write_pcs(void)
+{
+    UINT8 xm[3]={0};
+    UINT16 i,m1,m2,m3;
+    uni_rom_id xn;
 
+     ID_DATA_PCS=0;
+     xm[0]=ID_DATA_PCS%256;
+     xm[1]=ID_DATA_PCS/256;
+     Write(&xm[0],0x7FE,2);
+     Delay100us(100);
+
+     for(i=0;i<256;i++)ID_Receiver_DATA[i]=0;
+}
 void ID_EEPROM_write(void)
 {
     UINT8 xm[3]={0};
