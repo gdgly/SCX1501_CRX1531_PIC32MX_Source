@@ -12,11 +12,6 @@
 #if defined(__Product_PIC32MX2_WIFI__)
 extern unsigned char number_time[7];
 void PCF8563_Init(void);
+void Set_Time(unsigned char *);
+void Read_Time(unsigned char *);
 #endif
-
-extern unsigned char number_time[7];
-extern void Read_Time(unsigned char *time_arr);
-extern void Set_Time(unsigned char *time_arr);
-extern void alarm_pcf8563(unsigned char *time_alarm);
-extern void NEW_set_alarm_pcf8563(UINT16 value0);
-extern void alarm_OUT_bak(UINT16 value10);

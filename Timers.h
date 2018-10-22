@@ -10,4 +10,3 @@
 
 
 extern void timer2_Init(void);
-//extern void timer4_Init(void);

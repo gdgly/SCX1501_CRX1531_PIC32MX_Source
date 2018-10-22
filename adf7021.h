@@ -12,6 +12,7 @@
 
 
 extern void dd_set_TX_mode(void);
+extern void dd_set_TX_mode1(void);
 void dd_write_7021_reg(unsigned char* reg_bytes);
 extern void dd_set_ADF7021_Power_on(void);
 extern void dd_set_RX_mode(void);

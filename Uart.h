@@ -10,6 +10,4 @@
 
 extern void Uart1_Init(void);
 extern void UART_Decode(void);
-extern void HA_uart_email(UINT8 EMIAL_id_PCS_x);
-extern void HA_uart_send_APP(void);
-extern void HA_uart_email_Repeat(void);
+extern unsigned char hex_asc(unsigned char hex);

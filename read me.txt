@@ -1,0 +1,610 @@
+Application ES1                   基于PIC32MX230F064D，APP控制,初次作成
+。。。
+Application Ver2.0                基于PIC32MX230F064D，APP控制
+。。。
+Application Ver2.6.2              基于PIC32MX230F064D，APP控制
+
+Application Ver3.0 PIC32MX250F128D         PIC32MX250F128D，ECHONET开发
+
+Application Ver3.4 PIC32MX250F128D         PIC32MX250F128D，很稳定的版本（没有DIP Switch、T秒读取功能）
+
+Application Ver3.4.1 PIC32MX250F128D       PIC32MX250F128D，将ADF7021的配置方式变更成数组，方便以后直接修改数值就可以了。
+
+Application Ver3.5 PIC32MX250F128D         2014年11月19日  日本东京修改，将窄带变为宽带
+
+Application Ver3.5.1 PIC32MX250F128D         2014年12月1日  在Ver3.4.1基础上将窄带变为宽带，就是变更数组值就可以了
+
+Application Ver3.5.2 PIC32MX250F128D         2014年12月2日  在Ver3.5.1基础上将受信器MCU变更为PIC32MX220F032D，继电器输出口反相
+
+Application Ver4.0 PIC32MX250F128D         2014年11月13日，追加T秒读取、DIP开关读取  ,将受信器MCU变更为PIC32MX220F032D
+
+Application Ver4.0.0.1 PIC32MX250F128D     2014年12月12日，在Ver4.0基础上将ADF7021的配置方式变更成数组，方便以后直接修改数值就可以了。
+
+Application Ver4.0.0.2 PIC32MX250F128D     2014年12月17日，在Ver4.0.0.1基础上追加
+                                                           1：将DIP状态变化，POWER ON时进行HA状态通知。
+                                                           2：DIP追加0xff(0B11111111),表示失效，读取失败。
+                                                           
+BX_SOFT Download Ver4.0                    2014年12月25日，在Application Ver4.0.0.2 PIC32MX250F128D基础上发行给文化公司  
+
+Application Ver4.0.0.3 PIC32MX250F128D     2014年12月26日，在Ver4.0.0.2基础上追加
+                                                           ECHONET端只能返回一次指令类别(0x02 0x01)，希望之后用指令类别(0x01 0x01)来通知。                                                         
+
+BX_SOFT Download Ver4.1                    2014年12月26日，在Application Ver4.0.0.3 PIC32MX250F128D基础上发行给文化公司 
+
+Application Ver4.0.1 PIC32MX250F128D       2014年11月13日，代码调试中，RSSI读取和429MHz信道选择。
+
+
+Application Ver4.1 PIC32MX250F128D         2015年1月20日，在Ver4.0.0.3基础上追加，修改文化反应的若干问题，稍后写明问题点。
+                                                 （1）通信机：电源ON后，登录键、WPS键不正常工作
+                                                              原因就是测试脚没有内部上拉，导致进入了测试模式
+                                                 （2）通信机：登录ID全部消去后，如果不做一次电源OFF的话，送信机就不能登录
+                                                 （3）受信机：半开动作跟要求式样书不一样
+                                                               要求式样  只在【卷帘门闭状态】时动作（现在是  只在【卷帘门开状态】时动作）
+                                                 （4）受信机：电源ON后，HA和接近信号未知。
+                                                              在电源上电初始化里面，追加查询HA和接近信号---> 对应卷帘门状态
+                                                              但有个问题，卷帘门HA信号在关闭状态下（输出高），掉电后重新上电不能保持（输出变为低了）
+                                                              
+Application Ver4.1.1 PIC32MX250F128D       2015年1月21日，在Ver4.1基础上追加，解决接受不稳定
+                                                  
+Application Ver4.1.2 PIC32MX250F128D       2015年1月22日，在Ver4.1.1基础上追加，修改文化反应的若干问题，稍后写明问题点。
+
+Application Ver4.2 PIC32MX250F128D         2015年1月24日，在Ver4.0基础上追加
+                                                 （1）通信机、受信机：追加了测试程序
+                                                 （2）通信机：电源ON后，登录键、WPS键不正常工作
+                                                              原因就是测试脚没有内部上拉，导致进入了测试模式   
+
+Application Ver4.2.1 PIC32MX250F128D       2015年1月24日，在Ver4.2基础上追加
+                                                 （1）受信机：半开动作跟要求式样书不一样
+                                                               要求式样  只在【卷帘门闭状态】时动作（现在是  只在【卷帘门开状态】时动作）
+                                                 （2）受信机：电源ON后，HA和接近信号未知。
+                                                              在电源上电初始化里面，追加查询HA和接近信号---> 对应卷帘门状态
+                                                              但有个问题，卷帘门HA信号在关闭状态下（输出高），掉电后重新上电不能保持（输出变为低了）   
+                                                 （3）通信机：ECHONET端只能返回一次指令类别(0x02 0x01)，希望之后用指令类别(0x01 0x01)来通知。
+                                                 （4）受信机、通信机：将DIP状态变化，POWER ON时进行HA状态通知。
+                                                      通信机：DIP追加0xff(0B11111111),表示失效，读取失败。  
+                                                      
+Application Ver4.2.2 PIC32MX250F128D       2015年1月26日，在Ver4.2.1基础上追加   
+                                                 （1）通信机：登录ID全部消去后，如果不做一次电源OFF的话，送信机就不能登录  
+                                                 （2）通信机 <--> 受信机（429MHz）通信很稳定，（窄带）  
+                                                      送信机 ---> 受信机（426.075MHz窄带）通信有点不稳定，有1%的几率收不到。
+                                                      以上修改的部分主要就是扫描函数，还有就是RX模式下ADF7021寄存器1的延时。
+                                                 （3）特殊ID（0Xfffffffe）在学习模式下，学习动作是有的，但不保留在EEPROM，因为主要是方便工厂生产时的登录测试      
+
+BX_SOFT Download Ver4.2                    2015年1月26日，在Application Ver4.2.2 PIC32MX250F128D基础上发行给文化公司      
+
+Application Ver4.2.3 PIC32MX250F128D       2015年1月27日，在Ver4.2.2基础上追加       
+                                                 （1）解决Ver4.2.2的第（2）项   送信机 ---> 受信机（426.075MHz窄带）通信有点不稳定，有1%的几率收不到 
+                                                      解决方法：受信机Soft的C编译器优化等级改回0  
+                                                 （2）通信机：软件版本的读取需要更新 Ver4.2     
+
+Application Ver4.2.3.1 PIC32MX250F128D     2015年1月27日，在Ver4.2.3基础上追加       
+                                                 （1）修改2015.1.27 NSW提出的半开指令相关的问题
+                                                       1. 半開動作指定後、HA=応答なしが通知される
+                                                       2. (1.)後、HA=0x7(未定義)が通知される
+                                                       3. (1.)後、HA=0x3(シャッター異常1)が通知される
+                                                       4. 半開秒数指定時、HA=0x05が発生する値がある
+                                                       5. 半開秒数指定後、値を取得しても取得できる秒数は常に固定値
+                                                       6. 半開秒数取得時0xffが返ることがある
+
+                                                 （2）通信机：真正解决---》登录ID全部消去后，如果不做一次电源OFF的话，送信机就不能登录
+                                                               在EEPROM.C函数void ID_learn(void)    追加if(TIME_EMC)--TIME_EMC;
+                                                 （3）通信机：软件版本的读取需要更新 Ver4.3             
+                                                               
+BX_SOFT Download Ver4.3                    2015年1月30日，在Application Ver4.2.3.1 PIC32MX250F128D基础上发行给文化公司    
+
+Application Ver4.3 PIC32MX250F128D     2015年1月27日，在Application Ver4.2.3.1 PIC32MX250F128D基础上追加   
+                                                  （1）通信机：通信机自动送信，如果某ID发送失败，再发送一次
+                                                  （2）通信机：每一个小时查询一次HA状态   
+                                                  （3）受信机：做2个Soft版本，Initial.h进行预定义选择
+                                                           1；带收发429MHz  ----》#define  PIC32MX2_Receiver_mode   1      //模式选择  0=RX    1=TX and RX
+                                                           2：没有收发429MHz----》#define  PIC32MX2_Receiver_mode   0      //模式选择  0=RX    1=TX and RX     
+                                                  （4）通信机、受信机的ADF7021接收配置分开     
+                                                  
+Application Ver4.3.1 PIC32MX250F128D    2015年2月3日，在Application Ver4.3 PIC32MX250F128D基础上追加，解决有时50次中有一次收不到。
+                                                  （1）通信机、受信机的扫描频率变成426.075，429.175，429.200
+                                                  （2）通信机、受信机的解码程序在setp1中分开
+                                                  （3）通信机：429MHz发射功率变更（内部天线/外部天线）
+                                                  （4）通信机：软件版本的读取需要更新 Ver4.4
+
+BX_SOFT Download Ver4.4                    2015年1月30日，在Application Ver4.3.1 PIC32MX250F128D基础上发行给文化公司 
+
+Application Ver4.4 PIC32MX250F128D         2015年2月7日，在Application Ver4.3.1 PIC32MX250F128D基础上追加
+                                                  （1）受信器：修正登录模式，在429MHz不允许登录                          
+                                                  （2）通信机：Power ON 取消HA状态查询。每一小时查询一次HA状态      
+                                                  （3）通信机：软件版本的读取需要更新 Ver4.5 
+
+BX_SOFT Download Ver4.5                    2015年2月7日，在Application Ver4.4 PIC32MX250F128D基础上发行给文化公司   
+
+Application Ver4.5 PIC32MX250F128D         2015年2月7日，在Application Ver4.4 PIC32MX250F128D基础上追加                        
+                                                  （1）通信机：HA状态收到后，有时到了3分钟并没有去查询HA状态      
+                                                  （2）通信机：有时时间到了就发送邮件了，后面也没有去查询HA。
+                                                  
+BX_SOFT Download Ver4.6                    2015年2月7日，在Application Ver4.5 PIC32MX250F128D基础上发行给文化公司 
+
+Application Ver4.5_Beat0 PIC32MX250F128D         2015年2月12日，在Application Ver4.5 PIC32MX250F128D基础上追加                        
+                                                    受信机：閉状態　HAモニター信号が　Hi状態が0.25秒継続している場合
+                                                    
+BX_SOFT Download Ver4.6.1                    2015年2月12日，在Application Ver4.5_Beat0 PIC32MX250F128D基础上发行给文化公司 
+
+Application Ver4.5_Beat1 PIC32MX250F128D         2015年2月12日，在Application Ver4.5_Beat0 PIC32MX250F128D基础上追加                        
+                                                    通信机：現仕様---1時間に1回定期的に状態確認を行う。
+                                                            変更仕様---20秒に1回定期的に状態確認を行う。 
+                                                                                                               
+BX_SOFT Download Ver4.6.2                        2015年2月12日，在Application Ver4.5_Beat1 PIC32MX250F128D基础上发行给文化公司      
+
+Application Ver4.5_3 PIC32MX250F128D         2015年2月11日，在Application Ver4.5 PIC32MX250F128D基础上追加                        
+                                                    （1）受信机：追加中频（100K）精校，每隔1.5分钟校正一次
+                                                                 扫描时只变更频率和AFC开关，其它不变
+                                                    （2）受信机：带宽为窄带12.5K，鉴频器为2.5K,426M频点AFC范围1K，429M频点AFC OFF 
+
+Application Ver4.6 PIC32MX250F128D          2015年2月27日，在Application Ver4.5_3 PIC32MX250F128D基础上追加 
+                                                    （1）受信机：閉状態　HAモニター信号が　Hi状態が0.25秒継続している場合                      
+                                                    （2）通信机：追加中频（100K）精校，每隔1.5分钟校正一次
+                                                                 扫描时只变更频率和AFC开关，其它不变
+                                                    （3）通信机：带宽为窄带12.5K，鉴频器为2.5K,426M频点AFC范围1K，429M频点AFC OFF   
+                                                    
+BX_SOFT Download Ver4.7                        2015年2月12日，在Application Ver4.6 PIC32MX250F128D基础上发行给文化公司     
+
+Application Ver4.6.1 PIC32MX250F128D          2015年3月4日，在Application Ver4.6 PIC32MX250F128D基础上追加 
+                                                    （1）通信机、受信机：追加在登录键长按3秒（磨削登录）的 按一下通用ID（0xFFFFFE）的遥控板，全部EEPROM ID磨削。 
+ 
+BX_SOFT Download Ver4.7 Fixed                 2015年3月4日，在Application Ver4.6.1 PIC32MX250F128D基础上发行给文化公司         
+
+Application Ver4.7 PIC32MX250F128D            2015年3月5日，在Application Ver4.6.1 PIC32MX250F128D基础上追加 
+                                               通信机  （1） ①1回目の操作信号送信後、受信機から応答が無かった時も通信機MCU→LANMCUに応答無し（HA=05）を返してしまっている
+                                                              →1回目に応答が無かった時は、応答無しを返さずに2回目の操作信号を送信するように修正してください。
+                                                            ②1台の受信機に操作信号を送った時、複数回（3～7回）通信機MCU→LANMCUに通知を行っている
+                                                              →通知は必ず1回だけに修正してください
+                                                       （2）通信机：软件版本的读取需要更新 Ver4.8 
+
+BX_SOFT Download Ver4.8                      2015年3月5日，在Application Ver4.7 PIC32MX250F128D基础上发行给文化公司       
+
+Application Ver4.8 PIC32MX250F128D            2015年3月5日，在Application Ver4.7 PIC32MX250F128D基础上追加 
+                                               通信机  （1） ①1回目の操作信号送信後、受信機から応答が無かった時も通信機MCU→LANMCUに応答無し（HA=05）を返してしまっている
+                                                              →1回目に応答が無かった時は、応答無しを返さずに2回目の操作信号を送信するように修正してください。 
+                                                              只要接到一次控制指令，如果受信器没有反应，一次控制指令必须回复而且只有一次无反应回复（HA=5）
+                                                       （2）通信机：软件版本的读取需要更新 Ver4.9     
+
+BX_SOFT Download Ver4.9                      2015年3月5日，在Application Ver4.8 PIC32MX250F128D基础上发行给文化公司     
+
+Application Ver4.8.1 PIC32MX250F128D         2015年3月11日，在Application Ver4.8 PIC32MX250F128D基础上追加 
+                                                      （1）通信机、受信器： 在测试模式的RX，ADF7021配置与工作模式一样（中频精确校正，带宽为窄带12.5K，鉴频器为2.5K,）  
+                                                                    但426M频点AFC关闭
+
+Application Ver4.9 PIC32MX250F128D         2015年3月13日，在Application Ver4.8.1 PIC32MX250F128D基础上追加 
+                                                      （1）通信机： APP或HEMS进行HA状态查询，如果受信机通信失败，每次询问都有失败状态回应。
+                                                               old soft  ：if((HA_uart_app[14]==5)&&(FG_Second==0));
+                                                               new soft  ：if((FLAG_AUTO_SEND_START==1)&&(HA_uart_app[14]==5)&&(FG_Second==0)); 
+                                                      （2）通信机： 卷帘门的电源OFF 状态下，进行Ver4.10确认，结果如下
+                                                                1. 启动时返回了2次05应答 
+                                                                2. 上面的 b项的信息中，信息ID有时候是00 00 00
+                                                                3. 启动后把卷帘门的电源OFF操作卷帘门的情况下，有时候发出 01(開)通知
+                                                               old soft  ：if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==0))
+                                                                           else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1))
+                                                                           if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1)) 
+                                                               new soft  ：if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==0)&&(Control_code!=0))
+                                                                           else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1)&&(Control_code!=0))
+                                                                           if(((b0.IDL!=0)&&(APP_check_ID!=b0.IDL))||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))
+                                                      （3）受信机：特殊ID=0xFFFFFE在接收时还有BUG，如果之前没有接受到有效ID的控制，特殊ID=0xFFFFFE就不能控制  
+                                                                   追加if(DATA_Packet_ID_buf==0xFFFFFE)DATA_Packet_Control=DATA_Packet_Control_buf;                   
+                                                               
+BX_SOFT Download Ver4.10                      2015年3月5日，在Application Ver4.9 PIC32MX250F128D  （1）基础上发行给文化公司    
+   
+BX_SOFT Download Ver4.10 Fixed                2015年3月16日，在Application Ver4.9 PIC32MX250F128D  （1）基础上发行给文化公司  
+
+BX_SOFT Download Ver4.11                      2015年3月17日，在Application Ver4.9 PIC32MX250F128D  （2）基础上发行给文化公司      
+
+                                                                                                            
+Application Ver4.10 PIC32MX250F128D         2015年3月19日，在Application Ver4.9 PIC32MX250F128D基础上追加
+                                                     （1）通信机
+                                                          删除Application Ver4.9 PIC32MX250F128D的第（1）、（2）项
+                                                     （2）通信机
+                                                          卷帘门一起操作进行时，通信机向受信机发送的信号顺序如下 全部卷帘门（4台）open   卷帘门1、4、3、2的顺序OPEN
+                                                          请改成卷帘门1、2、3、4的顺序OPEN        
+                                                          old soft  ：  for(i=0;i<UART1_DATA[12];i++) APP_UART_OUT(i);
+                                                          new soft  ：  for(i=UART1_DATA[12];i>0;i--) APP_UART_OUT(i-1);    
+                                                     （3）通信机
+                                                          現在  http://www.bunka-s.co.jp/shutterinfo????  
+                                                          変更  seleconnect://www.bunka-s.co.jp/shutterinfo????    
+                                                     （4）通信机：软件版本的读取需要更新 Ver5.0
+                                                          
+BX_SOFT Download Ver5.0                      2015年3月19日，在Application Ver4.10 PIC32MX250F128D 基础上发行给文化公司
+
+Application Ver5.0 PIC32MX250F128D           2015年3月27日，在Application Ver4.10 PIC32MX250F128D基础上追加
+                                                     受信器：
+                                                     1> 修改文化反应的若干问题，稍后写明问题点。
+                                                    （1）OPEN+STOP  CLOSE+STOP  STOP继电器先输出，OPEN、CLOSE继电器后输出0.2秒
+                                                    （2）登录键按下后，进入登录模式，LED闪烁的频率与现行不一致。
+                                                    （3）进入登录模式后，要等待5秒才能退出登录模式
+                                                    （4）在登录模式里，学习ID成功后LED显示灯需要连续亮3秒
+                                                    （5）自动退出登录模式时间与现行不一致
+                                                    （6）自动送信  继电器输出时间与现行不一致，时间偏慢 
+                                                    （7）自动送信  手动优先，以最后一次手动时间为准，2分30秒内自动无效。                                                    
+                                                     2> 修改文化反应的若干问题，稍后写明问题点。
+                                                    （1）ID最大只能学习256个，学习完256个ID后自动退出追加登录模式，
+                                                         以后也不能进入追加登录模式，但可以进入抹消登录模式。
+                                                    （2）自动受信前和受信后，手动优先无效，也就是说先手动键后，再自动送信，受信器进入自动模式。
+                                                         自动受信中，手动优先有效  
+                                                    （3）修正：
+　　                                              【現状】送信机发出的自動送信信号受信后、在开继电器（１秒）动作中，送信机的开，停，闭的任一信号受信时、第④是应该没有的，因为在自动中，手动优先。
+　　                                              （詳細動作）
+　　　                                               ①受信机接收到送信机发出的自動送信信号。
+　　　                                               ②受信机的停止继电器（１秒）→未输出（１秒）→开继电器（１秒）动作。
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　                            ↓
+　　　                                               ③开继电器（１秒）输出中操作送信机的按键‥
+　　　                                               ④大约１０秒后停止继电器（１秒）→未输出（１秒）→闭继电器（１秒）这样的顺序动作。（卷帘门开始随便的下降）
+
+BX_SOFT Download Ver5.1 Fixed                2015年3月27日，在Application Ver5.0 PIC32MX250F128D基础上发行给文化公司 
+
+BX_SOFT Download Ver5.1                      2015年3月30日，在Application Ver5.0 PIC32MX250F128D基础上发行给文化公司
+
+Application Ver5.1 PIC32MX250F128D           2015年4月1日，在Application Ver5.0 PIC32MX250F128D基础上追加
+                                              （1）受信机：//2015.4.1修正1 在登录模式下 不允许自动送信登录，只允许手动送信登录
+                                                  修正1问题。
+                                                      1， 接收机长按3秒进入登录模式
+                                                      2， 用送信机A，B进行登录  -----OK
+                                                      3， 车载送信机Power ON，进入自动发送模式，这时该送信机登录到接收机上了 ---NG
+                                                      4， 再用送信机C，D进行登录，不能登陆到接收机---NG
+                                              通信机：
+                                              （2）2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知，电源ON--》OFF才能取消
+                                              （3） //2015.4.2追加修改自动某ID发送一次失败，追加再发送两次
+                                              （4）//2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+
+BX_SOFT Download Ver5.2 Fixed                2015年4月1日，在Application Ver5.1 PIC32MX250F128D 修正1基础上发行给文化公司 
+
+BX_SOFT Download Ver5.2                      2015年4月1日，在Application Ver5.1 PIC32MX250F128D 修正1基础上发行给文化公司
+
+BX_SOFT Download Ver5.3                      2015年4月3日，在Application Ver5.1 PIC32MX250F128D （2）、（3）、（4）基础上发行给文化公司
+
+Application Ver5.2 PIC32MX250F128D           2015年4月7日，在Application Ver5.1 PIC32MX250F128D基础上追加
+                                               通信机：
+                                               (1)HA的01查询时（查询通信机HA缓存值），不管受信机的HA状态是什么样子，都不能返回正确的值，返回的都是没有定义的06、07、of等
+                                              （2）SIG绿色LED 1Hz灭灯条件追加以下：
+                                                   卷帘门状态从HA=05发生变化的情况下（变成开状态、闭状态的时候），在已经登录的受信机当中，如果全部都没有HA=05状态，SIG绿色LED 1Hz灭灯，但哪怕只有1台HA=05的时候还是继续闪烁。
+                                                   
+BX_SOFT Download Ver5.4                      2015年4月7日，在Application Ver5.2 PIC32MX250F128D 基础上发行给文化公司     
+
+Application Ver5.3 PIC32MX250F128D           2015年4月11日，在Application Ver5.2 PIC32MX250F128D基础上追加      
+                                             通信机  修正『20150411課題、不具合一覧.xls』No.24、34、35
+                                               （1）No.34  
+                                                  条件
+                                                    受信机的电源OFF
+                                                    通信机里只登陆1台
+                                                    从通信机发出开信号
+                                                   正　发送3次后，只返回1次HA=05（応答なし）
+                                                   今　第1次或者第2次返回HA=01（シャッター開状態），第3次返回HA=05
+                                                       没有登录的受信机（电源on）就放在旁边很近的地方。（不知道有没有关系）   
+                                               （2）No.35
+                                               条件
+                                                 通信机里登录 4台ID（送信机ABCD）
+                                                 timer设定了4台（不论是日常timer 还是自定义timer都OK）
+                                                 通信机里的ID登录全部消去→用timer控制，动作了
+                                                 通信机的ID登录只消去送信机D的情况下，到了设定的时刻，ABCD全部都动作了（连没有登录的D 也动作了）
+                                                 录全部消去的情况下也是一样吧
+                                                 希望ID登录已经消去的情况下，请在timer的设定内容里面也反映出来。   
+                                               （3）No.24
+                                               2015/3/31
+                                                 アプリでの一斉操作時は順番通りになりましたが、タイマーの動作時の順番が逆になっています。また、ECHONETでの操作時の順番もおかしいです
+                                                一斉操作時：シャッター1、シャッター2、シャッター3、???シャッター31、シャッター32
+                                                タイマー時　：シャッター32、シャッター31、???シャッター3、シャッター2、シャッター1
+                                                 ECHONET時：シャッター1、シャッター**、シャッター**、シャッター32、シャッター31???シャッター3、シャッター2
+                                                 **はバラバラです。（その時によって違います）
+                                               
+                                               
+BX_SOFT Download Ver5.5                      2015年4月11日，在Application Ver5.3 PIC32MX250F128D 基础上发行给文化公司                                                                               
+
+Application Ver5.4 PIC32MX250F128D           2015年4月14日，在Application Ver5.3 PIC32MX250F128D基础上追加 
+                                             受信器
+                                             （1）开机动作指示灯亮0.5秒
+                                             （2）换气修改为TCXO降价版一样的
+                                             
+以后输出到文化的软件，通信机版本和受信器版本分开 
+BX_SOFT Download 20150416                    2015年4月14日，在Application Ver5.4 PIC32MX250F128D 基础上发行给文化公司   
+       --concentrated devices Ver5.5
+       --Receiver Ver5.3     
+       --Receiver Ver5.3 Fixed              设置预定义PIC32MX2_Receiver_mode就OK了
+       
+Application Ver5.5 PIC32MX250F128D           2015年4月24日，在Application Ver5.4 PIC32MX250F128D基础上追加   
+                                              受信器
+                                              （1）换气时，429MHz OPEN+CLOSE继电器输出
+                                                      426MHz 换气继电器输出
+                                              （2）换气时，HA状态需要返回（闭状态）   //20150425追加
+                                                      
+BX_SOFT Download 20150424                    2015年4月24日，在Application Ver5.5 PIC32MX250F128D （1）基础上发行给文化公司  
+      --Receiver Ver5.4                                                                                    
+                                             
+BX_SOFT Download 20150425                    2015年4月25日，在Application Ver5.5 PIC32MX250F128D （2）基础上发行给文化公司  
+      --Receiver Ver5.5              
+
+Application Ver5.6 PIC32MX250F128D           2015年4月27日，在Application Ver5.5 PIC32MX250F128D基础上追加
+                                                 通信機：修正『課題、不具合一覧.xls』No.24、33、36、37、39
+      
+BX_SOFT Download 20150427                    2015年4月27日，在Application Ver5.6 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver5.6                                
+
+Application Ver5.7 PIC32MX250F128D           2015年4月28日，在Application Ver5.6 PIC32MX250F128D基础上追加
+                                                 通信機：修正『課題、不具合一覧.xls』No.32、34、35
+      
+BX_SOFT Download 20150427                    2015年4月28日，在Application Ver5.7 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver5.7   
+      
+Application Ver5.8.7 PIC32MX250F128D           2015年5月2日，在Application Ver5.7 PIC32MX250F128D基础上追加
+                                                 通信機：修正『課題、不具合一覧.xls』No.18、32、33、34、35、38      
+                                                 其它:（1）No.15在日本确认没有问题，需要修改受信器进行半开的允许条件，也就是取消在卷帘门关闭状态下才能允许半开动作。             
+                                                      （2）No.24 有NSW解决的                                                           
+                                                      （3）No.35  追加 全部ID消除时，timer相关的设置也全部消除            
+                                                      （4）No.36、No.39修改LAN MCU的Soft完成。（DHCP IP=0.0.0.0）
+      
+BX_SOFT Download 20150502                    2015年5月2日，在Application Ver5.8.7 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver5.8        
+      
+Application Ver5.9 PIC32MX250F128D           2015年5月12日，在Application Ver5.8.7 PIC32MX250F128D基础上追加
+                                                 通信機：修正2015-05-07 17：51邮件（日文）    2015-05-08 09：22邮件（中文）                                          
+                                                 通信机电源ON时，卷帘门状态确认的应答有点奇怪
+      
+BX_SOFT Download 20150512                    2015年5月2日，在Application Ver5.8.7 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver5.9   
+      
+Application Ver6.0 PIC32MX250F128D           2015年5月26日，在Application Ver5.9 PIC32MX250F128D基础上追加
+                                                 通信機：2015-05-25 15：32邮件（日文）  
+                                                 Ver5.9缩短了送.受信的间隔时间，导致APP查询状态时，第一次有可能查询不到，需要第二次‘第三次才行  
+      
+BX_SOFT Download 20150526                    2015年5月26日，在Application Ver6.0 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver6.0   
+
+Application Ver6.1 PIC32MX250F128D           通信机：2015年8月19日，在Application Ver5.8.7 PIC32MX250F128D基础上追加
+
+                                             受信机：2015年8月19日，在Application Ver5.8.7 PIC32MX250F128D基础上追加
+                                             受信机Application Ver5.8.7 PIC32MX250F128D与Application Ver5.5 PIC32MX250F128D的区别
+                                                 变更前：Ver5.8.7：   if(((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))&&(TIME_ID_Login_delay==0)){   //20150430 japan修改1
+                                                         Ver5.5：     if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
+                                                 变更后：Ver6.1：     #if defined(__Product_PIC32MX2_Receiver__)
+                                                                        if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){  
+                                                                      #endif     
+                                                                      #if defined(__Product_PIC32MX2_WIFI__)
+                                                                        if(((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))&&(TIME_ID_Login_delay==0)){   //20150430 japan修改1
+                                                                      #endif
+
+×××××××××××××××××××××××××××××××××××特别注意 START××××××××××××××××××××××××××××××××××××××××
+Application Ver6.1.1 PIC32MX250F128D           2015年9月14日，在Application Ver6.1 PIC32MX250F128D基础上追加
+                                             通信機：
+                                             （1）邮件内容变更
+                                                 Android
+                                                 http://bx-mail/shutterinfo?status=　???
+
+                                                 iOS
+                                                 seleconnect://bx-mail/shutterinfo?status=
+                                                 
+                                                 
+                                                 Android
+                                                 http://bx-mail.jp/shutterinfo?status=　???
+
+                                                 iOS
+                                                 seleconnect://bx-mail.jp/shutterinfo?status=
+                                             （2）邮件内容中换行后面（13）追加换行（10）
+                                             
+BX_SOFT Download 20150914                    2015年9月14日，在Application Ver6.1.1 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver5.81   
+      
+Application Ver6.1.2 PIC32MX250F128D           2015年9月25日，在Application Ver6.1.1 PIC32MX250F128D基础上追加
+                                             通信機：
+                                             将通信机获取版本变更为Ver5.9
+                                             
+BX_SOFT Download 20150925                    2015年9月25日，在Application Ver6.1.2 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver5.9                                                                                              
+
+Application Ver6.1.3 PIC32MX250F128D        2015年12月9日，在Application Ver6.1.2 PIC32MX250F128D基础上追加
+                                             通信機：
+                                             （1）邮件定时发送BUG修正
+                                             （2）将通信机获取版本变更为Ver5.A
+
+ BX_SOFT Download 20151208                   2015年12月08日，在Application Ver6.1.3 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver5.A 
+      
+ BX_SOFT Download 20151209                   2015年12月09日，在Application Ver6.1.3 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver5.B          文化要求将通信机获取版本变更为原来的Ver5.9，因为以前的APP只认Ver5.9这个标识
+×××××××××××××××××××××××××××××××**特别注意 END  ×××××××××××××××××××××××××××××××××××××××××××
+
+
+
+
+Application Ver6.2 PIC32MX250F128D           2015年8月19日，在Application Ver6.1 PIC32MX250F128D基础上追加  
+                                                通信機：2015-08-04 15：30邮件（日文）
+                                                        『集中通信機APPプロトコル規約 第21版(20150821)』日文
+                                                        『文化BX集中通信機429MHz通信プロトコル（20150820确定版）』
+                                                以上大致内容是追加半开、半闭、受信器SOFT版本（在DIP Switch的上位4bit）     
+                                                
+BX_SOFT Download 20150831                    2015年8月31日，在Application Ver6.2 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver6.1
+      --Receiver Ver6.0
+      
+Application Ver6.3 PIC32MX250F128D           2015年9月2日，在Application Ver6.2 PIC32MX250F128D基础上追加   
+                                              通信機：　　                                                                               
+                                                    修正以下内容                                                                           
+                                                    集中通信機APPプロトコル規約 第21版(20150821)   No1.16 シャッター半開To、半閉Tc秒設定/取得
+                                                    は以下のように規定されています
+                                                        01　To秒設定
+                                                        02　To秒読取
+                                                    下面的soft与APP的协议规则反了
+　                                                  concentrated devices Ver6.1   を動作させると
+                                                        02　To秒設定
+                                                        01　To秒読取   
+
+BX_SOFT Download 20150902                    2015年9月2日，在Application Ver6.3 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver6.2
+      
+Application Ver6.4 PIC32MX250F128D           2015年9月6日，在Application Ver6.3 PIC32MX250F128D基础上追加     
+                                               通信機：
+                                               （1）串口变更软件版本，Ver6.1变更为ver6.3
+                                               （2）邮件内容变更
+                                                 Android
+                                                 http://bx-mail/shutterinfo?status=　???
+
+                                                 iOS
+                                                 seleconnect://bx-mail/shutterinfo?status=
+                                                 
+                                                 
+                                                 Android
+                                                 http://bx-mail.jp/shutterinfo?status=　???
+
+                                                 iOS
+                                                 seleconnect://bx-mail.jp/shutterinfo?status=
+                                                 
+                                                 
+ BX_SOFT Download 20150906                    2015年9月2日，在Application Ver6.4 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver6.3         
+      
+Application Ver6.5 PIC32MX250F128D           2015年9月7日，在Application Ver6.4 PIC32MX250F128D基础上追加   
+                                                通信機：
+                                                   邮件内容中换行后面（13）追加换行（10）
+                                                   
+ BX_SOFT Download 20150907                    2015年9月7日，在Application Ver6.5 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver6.4                                                   
+
+
+Application Ver6.6 PIC32MX250F128D           2015年9月24日，在Application Ver6.5 PIC32MX250F128D基础上追加   
+                                                受信機：
+                                                   To/Tc动作时间好像不准，文化测试出20秒有21～22秒
+                                                   
+ BX_SOFT Download 20150924                    2015年9月24日，在Application Ver6.6 PIC32MX250F128D基础上发行给文化公司
+      --Receiver Ver6.1          
+      
+Application Ver6.7 PIC32MX250F128D           2015年9月25日下午，在Application Ver6.6 PIC32MX250F128D基础上追加   
+                                                通信機：
+                                                   修正『20151006半開対応?修正項目管理表.xls』NO.8
+                                                   也就是查询集中通信机缓存的HA状态时，HA状态的DIP上半4位没有变化
+                                                   
+ BX_SOFT Download 20150925 PM                2015年9月25日下午，在Application Ver6.7 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver6.5       
+
+Application Ver6.8 PIC32MX250F128D           2015年10月08日，在Application Ver6.7 PIC32MX250F128D基础上追加   
+                                                通信機、受信机：
+                                                   修正『20151006半開対応?修正項目管理表.xls』NO.9
+                                                   也就是取消DIP上半4位作为受信机软件版本，使用DIP中间的拨码开关来区分
+                                                   
+ BX_SOFT Download 20151008                   2015年10月08日，在Application Ver6.8 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver6.6
+      --Receiver Ver6.2    
+      
+Application Ver6.9 PIC32MX250F128D           2015年10月15日，在Application Ver6.8 PIC32MX250F128D基础上追加   
+                                                受信机：
+                                                   修正『20151013半開対応?修正項目管理表.xls』NO.10
+                                                   也就是除了查询以外的卷帘门控制指令，以最后的指令为准，例如：先发送半开指令，open继电器动作一段时间,
+                                                   还没有到To秒,此时发送了一个关门指令,close继电器动作,以后To秒的半开STOP输出就不输出了
+                                                   
+ BX_SOFT Download 20151015                   2015年10月15日，在Application Ver6.9 PIC32MX250F128D基础上发行给文化公司
+      --Receiver Ver6.3  
+      
+Application Ver6.A PIC32MX250F128D        2015年12月9日，在Application Ver6.9 PIC32MX250F128D基础上追加
+                                             通信機：
+                                             （1）邮件定时发送BUG修正  
+                                             （2）将通信机获取版本变更为Ver6.7    
+                                             
+ BX_SOFT Download 20151208                   2015年12月08日，在Application Ver6.A PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver6.7         
+      
+Application Ver6.B PIC32MX250F128D        2015年12月29日，在Application Ver6.A PIC32MX250F128D基础上追加
+                                             受信机：
+                                             修正『20151228（補足追記）半開対応?修正項目管理表.xls』NO.12,NO.13,NO.14    
+                                             
+ BX_SOFT Download 20151230                   2015年12月30日，在Application Ver6.B PIC32MX250F128D基础上发行给文化公司
+      --Receiver Ver6.4  
+      
+
+Application Ver6.C PIC32MX250F128D        2016年5月10日，在Application Ver6.B PIC32MX250F128D基础上追加
+                                             通信机：
+                                             状态通知指令0102返回时，再返回一次0101
+                                             追加该功能后，WIFI（EMW3162）soft有bug，需要修正，已经找到原因并修改后发到NSW。 
+                                             
+Application Ver6.D PIC32MX250F128D        2017年11月3日，在Application Ver6.D PIC32MX250F128D基础上追加  
+                                              射频是重复发相同的数据包3包，第3包发送完后马上关断射频电源，这样出现以下问题：
+                                                   第3包的最后2个bit实际没有发送出去
+                                                   解决方法：每个数据包尾部再发射几个bit的高，相当于延时0.833ms×8=4ms的时间，然后再关闭电源
+                                               也就是SetTxData
+                                               注意：这个没有发行到工厂，等文化有其它修改时，一起发行。
+                                             
+                                                   
+Application Ver7.1 PIC32MX250F128D        2016年6月15日，在Application Ver6.C PIC32MX250F128D基础上追加
+                                             通信机： 
+                                                在Application Ver6.C PIC32MX250F128D基础上追加                                                                                           
+                                                『セレコネクトシステム  ブラインドシャッター動作機能追加要求仕様書』soft百叶窗对应                                                                                
+                                             受信機：　
+                                                 百叶窗专门的受信器软件　                                                                                         
+                                                『セレコネクトシステム  ブラインドシャッター動作機能追加要求仕様書』soft百叶窗对应    
+                                                
+ BX_SOFT Download 20160615                   2016年06月15日，在Application Ver7.1 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver7.1
+      --Receiver Ver7.1                                                                                                                                                   
+      
+Application Ver7.2 PIC32MX250F128D        2016年6月29日，在Application Ver7.1 PIC32MX250F128D基础上追加
+                                             通信机：      
+                                                发现日出、日落的角度1～6没有响应，原因为控制信号为0x00，而不是角度信号，在串口指令收到后，有一个转换。
+      
+ BX_SOFT Download 20160630                   2016年06月30日，在Application Ver7.2 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver7.2      
+      
+      
+Application Ver7.3 PIC32MX250F128D        2016年7月7日，在Application Ver7.2 PIC32MX250F128D基础上追加
+                                             通信机：      
+                                                百叶窗邮件追加error3   
+      
+ BX_SOFT Download 20160707                 2016年07月7日，在Application Ver7.3 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver7.3       
+      
+Application Ver7.4 PIC32MX250F128D        2016年7月16日，在Application Ver7.3 PIC32MX250F128D基础上追加
+                                             通信机：    
+                                                  对应『20160711指摘事項一覧_ブラインドシャッター対応』No.6～9                                                                             
+                                             受信機：                                                                          　　　　　　　　
+                                                  对应『20160711指摘事項一覧_ブラインドシャッター対応』No.2～4    
+      
+ BX_SOFT Download 20160716                 2016年07月16日，在Application Ver7.4 PIC32MX250F128D基础上发行给文化公司
+      --concentrated devices Ver7.4 
+      --Receiver Ver7.2     
+ 
+Application Ver7.5 PIC32MX250F128D        2016年7月29日，在Application Ver7.4 PIC32MX250F128D基础上追加                                                                           
+                                             受信機： 
+                                                 对应『20160711指摘事項一覧_ブラインドシャッター対応』No.1，追加百叶窗半开/半闭                                                          
+      
+ BX_SOFT Download 20160729                 2016年07月29日，在Application Ver7.5 PIC32MX250F128D基础上发行给文化公司
+      --Receiver Ver7.3       
+      
+Application Ver7.6 PIC32MX250F128D        2016年9月26日，在Application Ver7.5 PIC32MX250F128D基础上追加        
+                                            通信机：         
+                                                  对应气象联动
+                                                  
+Application Ver7.7 PIC32MX250F128D        2016年9月30日，与Application Ver7.6 PIC32MX250F128D完全一样的，主要是为了重新生成一个日期为9.30号的hex                                                   
+      
+ BX_SOFT Download 20160930                 2016年09月30日，在Application Ver7.7 PIC32MX250F128D 基础上发行给文化公司
+      --concentrated devices Ver7.5 
+                                               
+Application Ver7.8 PIC32MX250F128D        2016年10月17日，于日本文化在Application Ver7.7 PIC32MX250F128D基础上追加        
+                                            受信機：         
+                                                  将百叶窗受角度1～6控制时，继电器输出时间从0.5s修改为0.3s      
+      
+ BX_SOFT Download 20161017                 2016年10月17日，在Application Ver7.8 PIC32MX250F128D基础上发行给文化公司
+      --Receiver Ver7.4       
+      
+ Application Ver7.9 PIC32MX250F128D        2016年11月8日，在Application Ver7.8 PIC32MX250F128D基础上追加        
+                                            通信机：   
+                                                   修正『20161031気象連携ソフト修正項目管理表』 No.1 
+                                                   
+ BX_SOFT Download 20161117                 2016年11月17日，在Application Ver7.9 PIC32MX250F128D 基础上发行给文化公司
+      --concentrated devices Ver7.6 
+      
+ Application Ver7.6 to bx PIC32MX250F128D        2017年2月27日，把Application Ver7.9 PIC32MX250F128D源代码发给文化                                                         
+      
+ Application Ver7.A PIC32MX250F128D        2017年11月3日，在Application Ver7.9 PIC32MX250F128D基础上追加  
+                                              射频是重复发相同的数据包3包，第3包发送完后马上关断射频电源，这样出现以下问题：
+                                                   第3包的最后2个bit实际没有发送出去
+                                                   解决方法：每个数据包尾部再发射几个bit的高，相当于延时0.833ms×8=4ms的时间，然后再关闭电源
+                                               也就是SetTxData
+                                               注意：这个没有发行到工厂，等文化有其它修改时，一起发行。      
+      
+      
+      
+      
+      
+Application Ver5.4 PIC32MX250F128D to hu_yongping test        工厂wifi dc收信机测试夹具，软件灵敏度降低30dBm（最小）
+                                                              作为工厂测试文化降价板送信机
+      
+                                   

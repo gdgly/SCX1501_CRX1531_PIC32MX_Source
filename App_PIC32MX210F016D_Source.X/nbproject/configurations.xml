@@ -27,7 +27,6 @@
       <itemPath>../adf7021.c</itemPath>
       <itemPath>../Uart.c</itemPath>
       <itemPath>../EEPROM.c</itemPath>
-      <itemPath>../pcf8563.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -160,9 +159,10 @@
       </C32CPP>
       <C32Global>
         <property key="legacy-libc" value="false"/>
+        <property key="save-temps" value="false"/>
+        <property key="wpo-lto" value="false"/>
       </C32Global>
       <ICD3PlatformTool>
-        <property key="firmware.download.all" value="false"/>
       </ICD3PlatformTool>
     </conf>
   </confs>

@@ -12,7 +12,7 @@
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <itemPath>../linker_scripts/app_32MX230F064D.ld</itemPath>
+      <itemPath>../linker_scripts/btl_32MX230F064D_generic.ld</itemPath>
     </logicalFolder>
     <logicalFolder name="ObjectFiles"
                    displayName="Object Files"
@@ -40,8 +40,6 @@
     <Elem>../</Elem>
     <Elem>D:/Program Files/Microchip/xc32/v1.20/pic32mx/include/proc</Elem>
     <Elem>../../Bootloader/linker_scripts/others</Elem>
-    <Elem>../../Application test/linker_scripts</Elem>
-    <Elem>D:/Program Files/Microchip/xc32/v1.21/pic32mx/include</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
