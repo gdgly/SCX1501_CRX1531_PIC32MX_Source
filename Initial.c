@@ -100,10 +100,10 @@ UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x0
 #if defined(__Product_PIC32MX2_WIFI__)
                             /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
 //UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000010F};     //天线是内部天线
-UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00502882,0x00289A14,0x0000010F};       //天线是外置天线
+UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00571882,0x00289A14,0x0000010F};       //天线是外置天线
                             /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
 //UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000040F};    //天线是内部天线
-UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00502882,0x00289A14,0x0000040F};      //天线是外置天线
+UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00571882,0x00289A14,0x0000040F};      //天线是外置天线
 #endif
                     /****说明 REG1      REG2        REG3        REG0    REG4    REGA******/
 UINT32 RF_SET_RX_test[6]={0x031B5011,0x00D00882,0x29920893,0x0954C7B0,0x8024E294,0x049668EA};
@@ -274,16 +274,20 @@ UINT8 FG_auto_open_time=0;
     UINT8 FG_mial_com_fail=0;   //在邮件中表示429MHz通讯失败，
     UINT8 FG_send_Faile_notice=0;  //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
     UINT16 TIME_send_Faile_notice=0;  //2015.3.31追加修改   1Hz LED通知
-    UINT8 Emial_Cache_HA=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 Emial_Cache_SWITCH=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_SWITCH_DIP[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_ha[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT32 HA_Cache_IDdata[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_SWITCH_DIP_bak=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_ha_bak=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_ha_1Hz[35];   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
-    UINT8 HA_Cache_ha_1Hz_bak=0;   //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+
+    UINT8 Emial_Cache_HA=0;   //Start        //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+    UINT8 Emial_Cache_SWITCH=0;   
+    UINT8 HA_Cache_SWITCH_DIP[35];  
+    UINT8 HA_Cache_ha[35];  
+    UINT32 HA_Cache_IDdata[35];   
+    UINT8 HA_Cache_SWITCH_DIP_bak=0;  
+    UINT8 HA_Cache_ha_bak=0;  
+    UINT8 HA_Cache_ha_1Hz[35];  
+    UINT8 HA_Cache_ha_1Hz_bak=0;   //end
     UINT8 FG_HA_Inquiry_NO_again_send=0;
+
+    UINT16 time_APP_Start_up=0;   //2015.04.27修正
+
 #endif
 
 

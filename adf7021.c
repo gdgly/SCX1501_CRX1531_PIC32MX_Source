@@ -306,7 +306,7 @@ void dd_set_TX_mode(void)
 	//write R2, turn on PA
 #if defined(__Product_PIC32MX2_WIFI__)
         //register_value.whole_reg = 0x00566882;//天线是内部天线
-	register_value.whole_reg = 0x00502882;//天线是外置天线
+	register_value.whole_reg = 0x00571882;//天线是外置天线
 #endif
 #if defined(__Product_PIC32MX2_Receiver__)
 	register_value.whole_reg = 0x00566882;//天线是内部天线//0x00536882;//0x006B6882;	//2013年11月22日修改	TX频偏 1.6K 2FSK  功率:51（10dBM） （0x00566882）
@@ -320,11 +320,6 @@ void dd_set_TX_mode(void)
 	dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 
-        	//write R9
-        register_value.whole_reg = 0x000231E9;
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-        
 //	register_value.whole_reg = 0x00001915;
 //	dd_write_7021_reg(&register_value.byte[0]);
 //        Delayus(40);		//delay 40us
@@ -429,11 +424,6 @@ void dd_set_RX_mode(void)
         register_value.whole_reg = 0x00280294;
 	dd_write_7021_reg(&register_value.byte[0]);
 
-        	//write R9
-        register_value.whole_reg = 0x020631E9;
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-        
 	//write R10, turn on PLL
 	register_value.whole_reg = 0x029668FA;
 	dd_write_7021_reg(&register_value.byte[0]);
@@ -471,11 +461,6 @@ void dd_set_RX_mode(void)
         register_value.whole_reg = 0x00280294;
 	dd_write_7021_reg(&register_value.byte[0]);
 
-        	//write R9
-        register_value.whole_reg = 0x000231E9;
-	dd_write_7021_reg(&register_value.byte[0]);
-        Delayus(40);		//delay 40us
-        
 	//write R10, turn on PLL
 	register_value.whole_reg = 0x029668FA;
 	dd_write_7021_reg(&register_value.byte[0]);
@@ -991,7 +976,7 @@ void ADF7021_change_TXorRX(void)
        TIME_email_Repeat=9000;
        UART_send_count++;
        if(UART_send_count>10)FLAG_email_Repeat=0;
-       HA_uart_email_Repeat();
+       if(ID_DATA_PCS!=0)HA_uart_email_Repeat();
    }
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
@@ -1123,7 +1108,8 @@ AUTO_SEND_exit:
         #endif
  #endif
 #if defined(__Product_PIC32MX2_WIFI__)
-   if(((FLAG_UART_ok==1)&&(TIME_APP_Inquiry_HA==0))||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
+   //if(((FLAG_UART_ok==1)&&(TIME_APP_Inquiry_HA==0))||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1)){
+ if((((FLAG_UART_ok==1)&&(TIME_APP_Inquiry_HA==0))||(FLAG_HA_START==1)||(FLAG_AUTO_SEND_ok==1))&&(time_APP_Start_up==0)){           //2015.04.27修正
  #endif
        if(FLAG_rssi_Freq==0){
            rssi_TIME=1;    //发射时10ms间隔搜索空信道
