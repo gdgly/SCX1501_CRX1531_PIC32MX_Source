@@ -928,6 +928,75 @@ void ADF7021_change_TXorRX(void)
                     }
     #else
 
+                   if(HA_L_signal==0){     //输出1H      //百叶窗闭状态   case3_or4
+                       TIMER60s=75;
+                       FLAG_close=0;
+                   }
+                   else if(TIMER60s==0){   //输出1L
+                           FLAG_close=1;
+                           FLAG_open=0;
+                   }
+                    if(HA_ERR_signal==0){   //输出2H  //百叶窗开状态   case1_or2
+                       TIMER_Sensor_open_1s=75;  
+                       if(TIMER_Sensor_close_1s==0)
+                          FLAG_open=0;
+                       if(TIMER_err_1s==0)FLAG_HA_ERR=1;    //表示百叶窗完全关闭
+                   }
+                   else {       //输出2L
+                       TIMER_Sensor_close_1s=35;  //75    修改为350ms，如果异常时需要连续观察>750ms，如果是一直异常，则表示异常
+                       TIMER_err_1s=150;   //判断百叶窗是否完全关闭 计时
+                       FLAG_HA_ERR=0; // 判断百叶窗是否完全关闭标志                   
+                       if(TIMER_Sensor_open_1s==0){
+                           FLAG_open=1;
+                           FLAG_close=0;
+                       } 
+                   }
+    
+    
+                   if((FLAG_open==1)&&(FLAG_close==0)&&(HA_Status!=0x83)&&(HA_Status!=0x81)){
+                       HA_Status=0x81;
+                       if(((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46)&&(FLAG_angle_closeing==1))||((DATA_Packet_Control==0x02)&&(FLAG_HA_ERR==0))){
+                           HA_Status=0x83;
+                       }
+                       if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+                       else FLAG_APP_Reply=1;     
+                   }
+                   if((FLAG_open==0)&&(FLAG_close==1)){
+                       if((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46)){
+                           if(HA_Status==0x83);
+                           else if(HA_Status!=0x81){
+                               HA_Status=0x81;
+                               FLAG_APP_Reply=1;
+                           }
+                       }
+                       else if(HA_Status!=0x82){
+                           HA_Status=0x82;
+                           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+                           else FLAG_APP_Reply=1; 
+                       }
+                   }
+                  if((FLAG_open==0)&&(FLAG_close==0)&&(FLAG_HA_ERR==0)){
+                      FG_TIME_deviant=1;
+                      if(TIME_deviant>=100){
+                              TIME_deviant=100;
+                              if(((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46)&&(FLAG_angle_closeing==1))||((DATA_Packet_Control==0x02)&&(HA_Status!=0x82))){
+                                  if(HA_Status!=0x83){
+                                      HA_Status=0x83;
+                                      if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+                                      else FLAG_APP_Reply=1;
+                                  }
+                              }
+                              else if((HA_Status!=0x84)&&(HA_Status!=0x83)){
+                                   HA_Status=0x84;
+                                   if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+                                   else FLAG_APP_Reply=1; 
+                               }
+                      }
+                  }
+                  else {TIME_deviant=0;FG_TIME_deviant=0;}
+    
+    
+    
     #endif
 
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
@@ -1102,7 +1171,7 @@ AUTO_SEND_exit:
                     else Control_code=0;
                 }
 
-                TIME_alarm_AUTO=380;//350;                  //2014.10.11修改  250
+                TIME_alarm_AUTO=Ref_TIME_alarm_AUTO;//380;                  //2014.10.11修改  250
                 FLAG_HA_Inquiry=1;
                 DATA_Packet_Control_0=0x00;    //表示APP查询
                 DATA_Packet_soft_ver=0;
@@ -1152,7 +1221,7 @@ AUTO_SEND_exit:
                 SendTxData();
                 TX_Freq_CH=0;
 #if defined(__Product_PIC32MX2_WIFI__)
-                TIME_No_response=300;FLAG_TIME_No_response=1;      //2014.10.11修改   150
+                TIME_No_response=Ref_TIME_No_response;FLAG_TIME_No_response=1;      //2014.10.11修改   150
 #endif
            }
        }

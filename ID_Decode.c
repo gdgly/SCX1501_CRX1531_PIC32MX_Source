@@ -293,20 +293,59 @@ void ID_Decode_IDCheck(void)
                             if(Freq_Scanning_CH_bak==0){
                                 if(TIMER_Relay_OUT==0)
                                 {
-                                    TIMER_Relay_OUT=36;   //360ms
-                                    if((DATA_Packet_Control==0x0C)||(DATA_Packet_Control==0x06))TIMER1s=300;//1200;//300;500
-                                    else if(DATA_Packet_Control==0x0A)TIMER1s=5200;
-                                    else TIMER1s=1200;//300;//1200;    
+                                    TIMER_Relay_OUT=36;   //360ms                                    
+                                    if(DATA_Packet_Control==0x08)TIMER1s=1700;    //500ms(stop)+100ms(NOP)+1100ms(open)
+                                    else if(DATA_Packet_Control==0x02)TIMER1s=2450;    //500ms(stop)+100ms(NOP)+1100ms(close)+750ms(状态返回需要的反应时间)
+                                    else if((DATA_Packet_Control==0x0C)||(DATA_Packet_Control==0x06)){
+                                        if((DATA_Packet_Control_OUT==0x08)||(DATA_Packet_Control_OUT==0x02))TIMER1s=700;
+                                        else TIMER1s=600;
+                                    }
+                                    else TIMER1s=1200;
+                                    DATA_Packet_Control_OUT=DATA_Packet_Control;
                                 }
                                                               
                             }
                             else {
                                   if(TIMER_Relay_OUT==0)
                                     {
-                                        TIMER_Relay_OUT=36;   //360ms
-                                        if((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46))TIMER1s=300;//1200;//300;500
-                                        else if(DATA_Packet_Control==0x01)TIMER1s=5200;
-                                        else TIMER1s=1200;//300;//1200;    
+                                        TIMER_Relay_OUT=70;   //360ms   在429MHz时需要为700ms，这样才能保证控制一次输出合格的时间
+                                        if(DATA_Packet_Control==0x08)TIMER1s=1700;    //500ms(stop)+100ms(NOP)+1100ms(open)
+                                        else if(DATA_Packet_Control==0x02)TIMER1s=2450;    //500ms(stop)+100ms(NOP)+1100ms(close)+750ms(状态返回需要的反应时间)
+                                        else if((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46)) {
+                                            if(FLAG_HA_ERR==1)//表示百叶窗完全关闭
+                                            {
+                                                FLAG_angle_closeing=0; 
+                                                TIMER1s=1700;
+                                                switch(DATA_Packet_Control){
+                                                    case 0x41:
+                                                             TIME_angle_n=150;
+                                                             break;
+                                                    case 0x42:
+                                                             TIME_angle_n=350;
+                                                             break; 
+                                                    case 0x43:
+                                                             TIME_angle_n=450;
+                                                             break; 
+                                                    case 0x44:
+                                                             TIME_angle_n=550;
+                                                             break;  
+                                                    case 0x45:
+                                                             TIME_angle_n=750;
+                                                             break;   
+                                                    case 0x46:
+                                                             TIME_angle_n=950;
+                                                             break;          
+                                                }
+                                                
+                                            }
+                                            else {   //表示百叶窗没有完全关闭，需要先关闭然后再调角度
+                                                FLAG_angle_closeing=1;
+                                                TIMER1s=2450;    //500ms(stop)+100ms(NOP)+1100ms(close)+750ms(状态返回需要的反应时间)
+                                                TIME_angle_n=0;
+                                            }
+                                        }
+                                        else  TIMER1s=1200;
+                                        DATA_Packet_Control_OUT=DATA_Packet_Control;
                                     }
                             }
                     #endif
@@ -417,7 +456,25 @@ void Receiver_BEEP(void)
    }
 #endif
 }
-
+#if defined(__Product_PIC32MX2_Receiver__)
+  #ifdef Blind_Shutter
+void Angle_OUT(void)
+{
+    
+        if((TIME_angle_n>900)||((TIME_angle_n<=850)&&(TIME_angle_n>800))||((TIME_angle_n<=750)&&(TIME_angle_n>700))||((TIME_angle_n<=650)&&(TIME_angle_n>600))
+                             ||((TIME_angle_n<=550)&&(TIME_angle_n>500))||((TIME_angle_n<=450)&&(TIME_angle_n>400))||((TIME_angle_n<=350)&&(TIME_angle_n>300))     
+                             ||((TIME_angle_n<=250)&&(TIME_angle_n>200))||((TIME_angle_n<=150)&&(TIME_angle_n>100))||((TIME_angle_n<=50)&&(TIME_angle_n>0)))
+        {
+            //Receiver_OUT_OPEN=1;
+            LATASET=0x0002;
+        }
+        else {
+            //Receiver_OUT_OPEN=0;
+            LATACLR=0x0002;
+        }
+}
+  #endif
+#endif
 
 void ID_Decode_OUT(void)
 {
@@ -667,8 +724,10 @@ void ID_Decode_OUT(void)
                                                     //Receiver_OUT_OPEN=0;
                                                     LATACLR=0x0002;
                                                     Receiver_OUT_VENT=0;
-                                                    Receiver_OUT_STOP=0;
-                                                    Receiver_OUT_CLOSE=1; 
+                                                    if(TIMER1s>1200+750){Receiver_OUT_STOP=1;Receiver_OUT_CLOSE=0;}
+                                                    else if(TIMER1s>1100+750){Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=0;}
+                                                    else if(TIMER1s>750)Receiver_OUT_CLOSE=1; 
+                                                    else Receiver_OUT_CLOSE=0;
                                                     break;                                             
                                          case 0x06:                  //close+stop    
                                                      if(Freq_Scanning_CH_bak==0)  //426M
@@ -677,8 +736,9 @@ void ID_Decode_OUT(void)
                                                             //Receiver_OUT_OPEN=0;
                                                             LATACLR=0x0002;
                                                             Receiver_OUT_VENT=0;
-                                                            Receiver_OUT_STOP=0;
-                                                            Receiver_OUT_CLOSE=1;
+                                                            if(TIMER1s>600){Receiver_OUT_STOP=1;Receiver_OUT_CLOSE=0;}
+                                                            else if(TIMER1s>500){Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=0;}
+                                                            else Receiver_OUT_CLOSE=1;
                                                      }
                                                     break;
                                          case 0x04:                      //stop
@@ -687,36 +747,45 @@ void ID_Decode_OUT(void)
                                                     LATACLR=0x0002;
                                                     Receiver_OUT_VENT=0;
                                                     Receiver_OUT_CLOSE=0;
-                                                    Receiver_OUT_STOP=1;
+                                                    if(TIMER1s>1100)Receiver_OUT_STOP=0;
+                                                    else Receiver_OUT_STOP=1;
                                                     break;
                                          case 0x0A:                       //close+OPEN    
-                                                  if(Freq_Scanning_CH_bak==0)  //426M
-                                                  {
-                                                        Receiver_LED_OUT=1;
-                                                        //Receiver_OUT_OPEN=0;
-                                                        LATACLR=0x0002;
-                                                        Receiver_OUT_VENT=0;
-                                                        Receiver_OUT_CLOSE=0;
-                                                        Receiver_OUT_STOP=1;
-                                                  }
                                                     break;
                                          case 0x08:                      //open
                                                     Receiver_LED_OUT=1;
-                                                    Receiver_OUT_STOP=0;
                                                     Receiver_OUT_CLOSE=0;
                                                     Receiver_OUT_VENT=0;
-                                                    //Receiver_OUT_OPEN=1;
-                                                    LATASET=0x0002;
+                                                    if(TIMER1s>1200){Receiver_OUT_STOP=1;
+                                                                      //Receiver_OUT_OPEN=0;
+                                                                      LATACLR=0x0002;
+                                                                     }
+                                                    else if(TIMER1s>1100){Receiver_OUT_STOP=0;
+                                                                      //Receiver_OUT_OPEN=0;
+                                                                      LATACLR=0x0002;
+                                                                     }
+                                                    else  //Receiver_OUT_OPEN=1;
+                                                          LATASET=0x0002;                                                     
                                                     break;
                                          case 0x0C:                    //open+stop 
                                                    if(Freq_Scanning_CH_bak==0)  //426M
                                                   {
                                                         Receiver_LED_OUT=1;
-                                                        Receiver_OUT_STOP=0;
                                                         Receiver_OUT_CLOSE=0;
                                                         Receiver_OUT_VENT=0;
-                                                        //Receiver_OUT_OPEN=1;
-                                                        LATASET=0x0002;
+                                                        if(TIMER1s>600){
+                                                            Receiver_OUT_STOP=1;
+                                                             //Receiver_OUT_OPEN=0;
+                                                            LATACLR=0x0002; 
+                                                        }
+                                                        else if(TIMER1s>500){
+                                                           Receiver_OUT_STOP=0;
+                                                           //Receiver_OUT_OPEN=0;
+                                                           LATACLR=0x0002;  
+                                                        }
+                                                        else 
+                                                           //Receiver_OUT_OPEN=1;
+                                                           LATASET=0x0002;
                                                    }
                                                     break;
                                          case 0x01:                  //VENT
@@ -731,14 +800,28 @@ void ID_Decode_OUT(void)
                                                   }
                                                     break;
                                          case 0x41:                 //角度1
+                                         case 0x42:                 //角度2    
+                                         case 0x43:                 //角度3
+                                         case 0x44:                 //角度4   
+                                         case 0x45:                 //角度5
+                                         case 0x46:                 //角度6    
                                                   if(Freq_Scanning_CH_bak==1)  //429M
                                                   {
-                                                        Receiver_LED_OUT=1;
-                                                        Receiver_OUT_STOP=0;
-                                                        Receiver_OUT_CLOSE=0;
-                                                        Receiver_OUT_VENT=0;
-                                                        //Receiver_OUT_OPEN=1;
-                                                        LATASET=0x0002;
+                                                      if(FLAG_angle_closeing==1)
+                                                      {     //先close 再调角度
+                                                            Receiver_LED_OUT=1;
+                                                            //Receiver_OUT_OPEN=0;
+                                                            LATACLR=0x0002;
+                                                            Receiver_OUT_VENT=0;
+                                                            if(TIMER1s>1200+750){Receiver_OUT_STOP=1;Receiver_OUT_CLOSE=0;}
+                                                            else if(TIMER1s>1100+750){Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=0;}
+                                                            else if(TIMER1s>750)Receiver_OUT_CLOSE=1; 
+                                                            else Receiver_OUT_CLOSE=0;
+                                                      }
+                                                      else{
+                                                          Angle_OUT();
+                                                      }
+                                                      
                                                   }
                                                     break;
                                          case 0x09:                       //vent+OPEN
@@ -767,7 +850,33 @@ void ID_Decode_OUT(void)
                                    }
                                    else   {FG_auto_manual_mode=0;Receiver_OUT_CLOSE=0;}
                                    FG_First_auto=0;
-                                   LATACLR=0x0002;
+                                   
+                                   //LATACLR=0x0002;
+                                   if((FLAG_HA_ERR==1)&&(FLAG_angle_closeing==1)){
+                                       FLAG_angle_closeing=0;
+                                       switch(DATA_Packet_Control){
+                                                    case 0x41:
+                                                             TIME_angle_n=150;
+                                                             break;
+                                                    case 0x42:
+                                                             TIME_angle_n=350;
+                                                             break; 
+                                                    case 0x43:
+                                                             TIME_angle_n=450;
+                                                             break; 
+                                                    case 0x44:
+                                                             TIME_angle_n=550;
+                                                             break;  
+                                                    case 0x45:
+                                                             TIME_angle_n=750;
+                                                             break;   
+                                                    case 0x46:
+                                                             TIME_angle_n=950;
+                                                             break;          
+                                                }                                       
+                                   }
+                                   Angle_OUT();
+                                   
                                    Receiver_OUT_VENT=0;
                                    if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)||(TIME_auto_close));
                                    else  if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=1;    //2015.3.23修改
@@ -781,16 +890,21 @@ void ID_Decode_OUT(void)
                                    else if((TIMER250ms_STOP==0)&&(TIME_auto_close==0)){Receiver_OUT_STOP=0;FG_OUT_OPEN_CLOSE=0;}    //2015.3.23修改
 
                                if((FLAG_APP_Reply==1)||(FLAG_426MHz_Reply==1)){
-                                   if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status;}
-                                   if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;HA_Status_buf=HA_Status+4;}    //受信器自动发送HA状态码为实际HA码+4
+                                   if(FLAG_APP_Reply==1){
+                                       FLAG_APP_Reply=0;
+                                       if(HA_Status==0x84)HA_Status_buf=0x89;   //百叶窗的异常2  就是APP的异常3
+                                       else HA_Status_buf=HA_Status;
+                                   }
+                                   if(FLAG_426MHz_Reply==1){  //受信器自动发送HA状态码为实际HA码+4
+                                       FLAG_426MHz_Reply=0;
+                                       if(HA_Status==0x84)HA_Status_buf=0x8A;
+                                       else HA_Status_buf=HA_Status+4;
+                                   }    
 
                                    ID_data.IDL=DATA_Packet_ID;
-                                       if(DIP_switch1==1)HA_Status_buf=HA_Status_buf&0xBF;
-                                          else HA_Status_buf=HA_Status_buf|0x40;
-                                       if(DIP_switch2==1)HA_Status_buf=HA_Status_buf&0xDF;
-                                          else HA_Status_buf=HA_Status_buf|0x20;
-                                       if(DIP_switch3==1)HA_Status_buf=HA_Status_buf&0xEF;
-                                          else HA_Status_buf=HA_Status_buf|0x10;
+                                       HA_Status_buf=HA_Status_buf|0x40;
+                                       HA_Status_buf=HA_Status_buf&0xDF;
+                                       HA_Status_buf=HA_Status_buf&0xEF;
                                        Control_code=HA_Status_buf;
                                    FLAG_HA_START=1;
                                }
@@ -821,7 +935,7 @@ void ID_Decode_OUT(void)
  #endif
  /********************以下是遥控板和APP一起邮件送信**********************/
       //if((FLAG_HA_Inquiry==1)||(DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x85)||(DATA_Packet_Control_0==0x86)||(DATA_Packet_Control_0==0x87)){
-         if((FG_mial_com_fail==1)||((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x84))||((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x88))){
+         if((FG_mial_com_fail==1)||((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x8A))){
              FLAG_HA_Inquiry=0;
              FLAG_TIME_No_response=0;
              HA_uart_send_APP_number=3;   //test
@@ -829,7 +943,7 @@ void ID_Decode_OUT(void)
              if(FG_mial_com_fail==1){FG_mial_com_fail=0;EMIAL_id_data_chek=ID_data.IDL;DATA_Packet_Control=0xFF;}
              else EMIAL_id_data_chek=DATA_Packet_ID;
              Email_check_app();             
-             if((DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x87)||(DATA_Packet_Control_0==0x84)||(DATA_Packet_Control_0==0x88))FLAG_HA_Change_ERROR=1;
+             if((DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x84)||((DATA_Packet_Control_0>=0x87)&&(DATA_Packet_Control_0<=0x8A)))FLAG_HA_Change_ERROR=1;
              DATA_Packet_Control_0=0;
              FLAG_email_send=1;
              TIME_email_send=650;

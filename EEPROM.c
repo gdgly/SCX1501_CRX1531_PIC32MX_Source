@@ -84,6 +84,12 @@ void ID_learn(void)
  if(FG_10ms){
      FG_10ms = 0;
 
+     if(TIME_angle_n)--TIME_angle_n;
+     if(FG_TIME_deviant==1){
+         FG_TIME_deviant=0;
+         TIME_deviant++;
+     }
+     
 //     if(time_3sec)--time_3sec;
      if(TIME_EMC)--TIME_EMC;
      if(TIMER_Relay_OUT)--TIMER_Relay_OUT;

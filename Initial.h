@@ -138,6 +138,8 @@ extern FLAG FLAG_APP;
 
         #define		FLAG_Email_check    	FLAG_APP.BIT.Bit29
         #define		FLAG_ID_Erase_Login_PCS   FLAG_APP.BIT.Bit30
+
+        #define		FLAG_angle_closeing     FLAG_APP.BIT.Bit31
 	//************************************************
 
 
@@ -156,6 +158,7 @@ extern UINT8  DATA_Packet_Code_g;
 extern UINT8  DATA_Packet_Code_i;
 extern UINT32 DATA_Packet_ID;
 extern UINT8  DATA_Packet_Control;
+extern UINT8  DATA_Packet_Control_OUT;
 extern UINT32 DATA_Packet_ID_buf;
 extern UINT8  DATA_Packet_Control_buf;
 extern UINT8  DATA_Packet_Control_0;
@@ -295,9 +298,16 @@ extern UINT16 Manual_override_TIMER;
 extern UINT8 FG_auto_manual_mode;
 extern UINT8 FG_First_auto;
 extern UINT8 FG_auto_open_time;
+
+extern UINT16 TIME_angle_n;
+extern UINT8 FG_TIME_deviant;
+extern UINT16 TIME_deviant;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
+    #define Ref_TIME_No_response  370 //300
+    #define Ref_TIME_alarm_AUTO   450 //380
+
     //extern UINT8  UART1_DATA[106];
     //extern UINT8  UART_DATA_buffer[106];
     extern UINT8  UART1_DATA[493];
@@ -508,8 +518,8 @@ extern void RF_test_mode(void );
     #define	SCL                     LATCbits.LATC1     // Output
 
      /* 受信机使用的IO*/
-    #define  HA_L_signal        PORTAbits.RA7     // Input   HA 下限信号   高电平有效
-    #define  HA_ERR_signal      PORTBbits.RB15   // Input   HA 异常信号  高电平有效
+    #define  HA_L_signal        PORTAbits.RA7     // Input   HA 下限信号   高电平有效    //百叶窗闭状态
+    #define  HA_ERR_signal      PORTBbits.RB15   // Input   HA 异常信号  高电平有效      //百叶窗开状态
     #define  HA_Sensor_signal   PORTAbits.RA10   // Input   HA 传感器信号  高电平有效
     #define  Receiver_Login     PORTCbits.RC7   // Input   受信机登录键   低电平有效
     #define  Receiver_Buzzer    LATBbits.LATB13  // Output   受信机蜂鸣器  高电平有效

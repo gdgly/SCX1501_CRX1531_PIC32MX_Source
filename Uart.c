@@ -464,10 +464,10 @@ CMD0102_NG:                         HA_uart_app[8]=UART1_DATA[8];
                                     U1TXREG=0x65;      //e
                                     U1TXREG=0x72;      //r
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-                                    U1TXREG=0x36;      //6              //2014.10.11修改
+                                    U1TXREG=0x37;      //7              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x37;      //7
-                                    U1TXREG=0xD8;     //0x16B+0x33+0x39
+                                    U1TXREG=0x31;      //1
+                                    U1TXREG=0xD3;     //0x16B+0x37+0x31
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -1064,8 +1064,8 @@ void HA_uart_send_APP(void)
         HA_uart_app[12]=b0.IDB[1];
         HA_uart_app[13]=b0.IDB[2];
         HA_uart_app[15]=0xFF;
-        if(FG_send_Faile_again==0) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
-        else if(FG_send_Faile_again==1){FG_send_Faile_again=2;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.4.2追加修改自动某ID发送一次失败，追加再发送两次
+        if(FG_send_Faile_again==0) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=Ref_TIME_alarm_AUTO; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次  3500ms
+        else if(FG_send_Faile_again==1){FG_send_Faile_again=2;FG_Second=0;TIME_alarm_AUTO=Ref_TIME_alarm_AUTO; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.4.2追加修改自动某ID发送一次失败，追加再发送两次 3500ms
         else if(FG_send_Faile_again==2){
            time_APP_Start_up=0; FG_Second=1;APP_check_char=0;FG_send_Faile_notice=1;
         }    //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
@@ -1075,6 +1075,7 @@ void HA_uart_send_APP(void)
     else if((DATA_Packet_Control_0==0x82)||(DATA_Packet_Control_0==0x86)){HA_uart_app[14]=02;HA_uart_app[15]=SWITCH_DIP;}
     else if((DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x87)){HA_uart_app[14]=03;HA_uart_app[15]=SWITCH_DIP;}
     else if((DATA_Packet_Control_0==0x84)||(DATA_Packet_Control_0==0x88)){HA_uart_app[14]=04;HA_uart_app[15]=SWITCH_DIP;}
+    else if((DATA_Packet_Control_0==0x89)||(DATA_Packet_Control_0==0x8A)){HA_uart_app[14]=06;HA_uart_app[15]=SWITCH_DIP;}
 
     //HA_uart_app[15]=0x00;
     HA_Cache_ha_1Hz_bak=HA_uart_app[14];

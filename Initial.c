@@ -27,6 +27,7 @@ UINT8  DATA_Packet_Code_g=0;
 UINT8  DATA_Packet_Code_i=0;
 UINT32 DATA_Packet_ID=0;
 UINT8  DATA_Packet_Control=0;
+UINT8  DATA_Packet_Control_OUT=0;
 UINT32 DATA_Packet_ID_buf=0;
 UINT8  DATA_Packet_Control_buf=0;
 UINT8  DATA_Packet_Control_0=0;
@@ -147,6 +148,10 @@ UINT16 Manual_override_TIMER=0;
 UINT8 FG_auto_manual_mode=0;
 UINT8 FG_First_auto=0;
 UINT8 FG_auto_open_time=0;
+
+UINT16 TIME_angle_n=0;
+UINT8 FG_TIME_deviant=0;
+UINT16 TIME_deviant=0;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -596,16 +601,19 @@ void RF_test_mode(void )
 //    FG_Receiver_LED_RX=0;
     Receiver_LED_OUT=0;
 
+    #ifndef Blind_Shutter
+        DIP_switch_data=0;
+        DIP_switch_Get();
+        DIP_switch_data_bak=DIP_switch_data;
 
-    DIP_switch_data=0;
-    DIP_switch_Get();
-    DIP_switch_data_bak=DIP_switch_data;
+        if(HA_ERR_signal==0)HA_Status=0x83;
+        if((HA_L_signal==1)&&(HA_Sensor_signal==0)) HA_Status=0x81;
+        if((HA_L_signal==0)||(HA_Sensor_signal==1))HA_Status=0x82;
+    #else
 
-    if(HA_ERR_signal==0)HA_Status=0x83;
-    if((HA_L_signal==1)&&(HA_Sensor_signal==0)) HA_Status=0x81;
-    if((HA_L_signal==0)||(HA_Sensor_signal==1))HA_Status=0x82;
+    #endif    
 
-    FLAG_426MHz_Reply=1;
+    FLAG_426MHz_Reply=1; 
     Freq_Scanning_CH=1;
     dd_set_RX_mode();
     TIME_Fine_Calibration=9000;
