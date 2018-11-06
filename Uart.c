@@ -1013,14 +1013,15 @@ void HA_uart_send_APP(void)
     if((FLAG_TIME_No_response==1)&&(TIME_No_response==0)){
         HA_uart_app[14]=05;
         b0.IDL=ID_data.IDL;
+        DATA_Packet_ID=ID_data.IDL;
         HA_uart_app[11]=b0.IDB[0];
         HA_uart_app[12]=b0.IDB[1];
         HA_uart_app[13]=b0.IDB[2];
         HA_uart_app[15]=0xFF;
-        if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==0)) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
-        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==1)){FG_send_Faile_again=2;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.4.2追加修改自动某ID发送一次失败，追加再发送两次
-        else if((FLAG_AUTO_SEND_START==1)&&(FG_send_Faile_again==2)){
-            FG_Second=1;APP_check_char=0;FG_send_Faile_notice=1;
+        if(FG_send_Faile_again==0) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
+        else if(FG_send_Faile_again==1){FG_send_Faile_again=2;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.4.2追加修改自动某ID发送一次失败，追加再发送两次
+        else if(FG_send_Faile_again==2){
+           time_APP_Start_up=0; FG_Second=1;APP_check_char=0;FG_send_Faile_notice=1;
         }    //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
         if(UART_DATA_buffer[8]==0x10){HA_uart_app[14]=0xFF;HA_uart_app[15]=0x00;}
     }
