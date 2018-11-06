@@ -346,6 +346,25 @@ void ID_Decode_IDCheck(void)
                                                 TIME_angle_n=0;
                                             }
                                         }
+                                        else if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00)){
+                                            if((DATA_Packet_Control&0xDF)<0xC0){
+                                                if((HA_Status==0x81)||(HA_Status==0x83)||(HA_Status==0x84)){TIMER1s=1200;FG_Blind_Shutter_Semi=0;}
+                                                else {
+                                                    FG_Blind_Shutter_Semi=1;
+                                                    TIMER_Semi_open=(DATA_Packet_Control&0x1F)+4;
+                                                    TIMER1s=1700;    //500ms(stop)+100ms(NOP)+1100ms(open)
+                                                }
+                                            }
+                                            else {
+                                                if((HA_Status==0x82)||(HA_Status==0x83)||(HA_Status==0x84)){TIMER1s=1200;FG_Blind_Shutter_Semi=0;}
+                                                else {
+                                                    FG_Blind_Shutter_Semi=1;
+                                                    TIMER_Semi_close=(DATA_Packet_Control&0x1F)+4;
+                                                    TIMER1s=2450;    //500ms(stop)+100ms(NOP)+1100ms(close)+750ms(状态返回需要的反应时间)
+                                                }
+                                            }                                                
+                                        }
+                                        
                                         else  TIMER1s=1200;
                                         DATA_Packet_Control_OUT=DATA_Packet_Control;
                                     }
@@ -838,10 +857,53 @@ void ID_Decode_OUT(void)
                                          default:
                                                     break;
                                          }
+                                    if((Freq_Scanning_CH_bak==1)&&(FG_Blind_Shutter_Semi==1)){             //429M   半开信号/半闭
+                                        if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00)){
+                                                    if((DATA_Packet_Control&0xDF)<0xC0){
+                                                        FLAG__Semi_open_T=1;
+                                                        FLAG__Semi_close_T=0;
+                                                        Receiver_LED_OUT=1;
+                                                        Receiver_OUT_CLOSE=0;
+                                                        Receiver_OUT_VENT=0;
+                                                        if(TIMER1s>1200){Receiver_OUT_STOP=1;
+                                                                          //Receiver_OUT_OPEN=0;
+                                                                          LATACLR=0x0002;
+                                                                         }
+                                                        else if(TIMER1s>1100){Receiver_OUT_STOP=0;
+                                                                          //Receiver_OUT_OPEN=0;
+                                                                          LATACLR=0x0002;
+                                                                         }
+                                                        else  //Receiver_OUT_OPEN=1;
+                                                              LATASET=0x0002; 
+                                                        TIMER250ms_STOP=((TIMER_Semi_open+1)*1000/107)*100;
+                                                    }
+                                                    else {
+                                                        FLAG__Semi_open_T=0;
+                                                        FLAG__Semi_close_T=1;
+                                                        Receiver_LED_OUT=1;
+                                                        //Receiver_OUT_OPEN=0;
+                                                        LATACLR=0x0002;
+                                                        Receiver_OUT_VENT=0;
+                                                        if(TIMER1s>1200+750){Receiver_OUT_STOP=1;Receiver_OUT_CLOSE=0;}
+                                                        else if(TIMER1s>1100+750){Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=0;}
+                                                        else if(TIMER1s>750)Receiver_OUT_CLOSE=1; 
+                                                        else Receiver_OUT_CLOSE=0;
+                                                        TIMER250ms_STOP=((TIMER_Semi_close+1)*1000/107)*100;
+                                                    }
+                                          }
+                                    }
                                     
                                     if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
                                          ||((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46))||((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
                                          FLAG_APP_Reply=1;
+                                    if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
+                                        if((DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)||(DATA_Packet_Control==0x0C)||(DATA_Packet_Control==0x06)
+                                         ||((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46))){
+                                            //2015.12.29追加，在半开、半闭动作中，送信机（开+闭）信号，让停止继电器不动作
+                                            FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;TIMER250ms_STOP=0;
+                                        }
+                                    }
+                                    
                                 }
                          else {
                                    if((FG_auto_out==1)&&(TIME_auto_out==0)){FG_auto_out=0;TIME_auto_close=270;Receiver_LED_OUT=1;}   //300

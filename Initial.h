@@ -304,6 +304,7 @@ extern UINT8 FG_auto_open_time;
 extern UINT16 TIME_angle_n;
 extern UINT8 FG_TIME_deviant;
 extern UINT16 TIME_deviant;
+extern UINT8 FG_Blind_Shutter_Semi;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
