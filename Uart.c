@@ -217,7 +217,6 @@ void UART_Decode(void)
                                         U1TXREG=0x01;
                                         U1TXREG=0x01;
                                         U1TXREG=0x00;
-// MIURA
                                         m=2;
                                         U1TXREG=UART1_DATA[11];
                                         m=m+UART1_DATA[11];
@@ -232,7 +231,6 @@ void UART_Decode(void)
                                         m=m+Emial_Cache_SWITCH;
                                         U1TXREG=m%256;
                                         U1TXREG=m/256;
-                                        Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     }
                                     else {
                                         if((Control_code==0xBF)||(Control_code==0x00)||(Control_code==0x02)||(Control_code==0x08)){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
@@ -254,7 +252,6 @@ void UART_Decode(void)
                                     HA_uart_app[16]=n%256;
                                     HA_uart_app[17]=n/256;
 
-                                    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     for(i=0;i<18;i++){
                                         U1TXREG=HA_uart_app[i];
                                         if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
@@ -659,7 +656,6 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
 
     j=HA_uart_Length+2;
     if(ID_DATA_PCS!=0){
-        Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
         for(i=0;i<j;i++){
             U1TXREG=HA_uart[i];
             if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
@@ -672,7 +668,7 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
 
        for(i=0;i<35;i++){
            Email_check_ID[i]=EMIAL_id_data[i];
-           //EMIAL_id_data[i]=0;
+           //EMIAL_id_data[i]=0;    //20150430 japan修改2
            Emial_check_Control[i]=EMIAL_id_HA[i];
            EMIAL_id_HA[i]=0;
        }
@@ -747,12 +743,10 @@ void HA_uart_send_APP(void)
     {
         if((HA_uart_app[14]==5)&&(FG_Second==0));
         else if(time_APP_Start_up==0){     //2015.04.27修正
-            Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
             for(i=0;i<18;i++){
                 U1TXREG=HA_uart_app[i];
                 if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
             }
-            Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
             APP_check_ID=b0.IDL;
             APP_check_Control=HA_uart_app[14];
             APP_check_char=1;
@@ -1015,9 +1009,7 @@ void uart_send_APP_Head(void)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
     UINT8 i;
-    Delay100us(50);//延时2.1mS以上，缓冲区是8级FIFO
    for(i=0;i<6;i++)U1TXREG=HA_uart_app[i];
-    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
  #endif
 }
 void uart_send_APP_Public(UINT8 Public_X,UINT8 Public_Y)     //Public_X ->指令类别低字节  Public_Y ->返回结果  0（OK） 1（NG）
