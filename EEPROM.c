@@ -60,6 +60,7 @@ void eeprom_IDcheck_UART(void);
 void ID_EEPROM_write(void);
 void ID_EEPROM_write_pcs(void);
 void ID_Login_EXIT_Initial(void);
+void ID_EEPROM_Initial(void);
 
 #if defined(__Product_PIC32MX2_WIFI__)
 void alarm_EEPROM_write(void);
@@ -285,22 +286,30 @@ void all_Erase_EEPROM_next(void)
 //                    if(TIMER300ms==0){TIMER300ms=300;WIFI_LED_TX=!WIFI_LED_TX;WIFI_LED_RX=!WIFI_LED_RX;}
 //                }
 
-                 xm[0]=0;
-                 xm[1]=0;
-                 Write(&xm[0],0x7FE,2);
-                 Delay100us(100);
-                 xm[0]=0;
-                 xm[1]=0;
-                 xm[2]=0;
-                 for(i=0;i<32;i++){
-                    m2=i/10;
-                    m3=i%10;
-                    Write(&xm[0],32*m2+m3*3,3);//写入数据到24LC16
-                    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
-                    ClearWDT(); // Service the WDT
-                    if(TIMER300ms==0){TIMER300ms=300;WIFI_LED_TX=!WIFI_LED_TX;WIFI_LED_RX=!WIFI_LED_RX;}
-                 }
+//                 xm[0]=0;
+//                 xm[1]=0;
+//                 Write(&xm[0],0x7FE,2);
+//                 Delay100us(100);
+//                 xm[0]=0;
+//                 xm[1]=0;
+//                 xm[2]=0;
+//                 for(i=0;i<32;i++){
+//                    m2=i/10;
+//                    m3=i%10;
+//                    Write(&xm[0],32*m2+m3*3,3);//写入数据到24LC16
+//                    Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+//                    ClearWDT(); // Service the WDT
+//                    if(TIMER300ms==0){TIMER300ms=300;WIFI_LED_TX=!WIFI_LED_TX;WIFI_LED_RX=!WIFI_LED_RX;}
+//                 }
 
+
+                  for(i=0;i<128;i++){
+                       Erase_page(0x00,i);
+                       Delay100us(100);
+                       ClearWDT(); // Service the WDT
+                       if(TIMER300ms==0){TIMER300ms=300;WIFI_LED_TX=!WIFI_LED_TX;WIFI_LED_RX=!WIFI_LED_RX;}
+                   }
+                ID_EEPROM_Initial();
 
             }
             if(TIMER1s==0);//{FLAG_all_Erase_OK==0;FLAG_all_Erase=0;TIMER300ms=0;TIMER1s=0;SoftReset();}
