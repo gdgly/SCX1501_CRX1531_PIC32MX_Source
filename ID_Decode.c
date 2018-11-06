@@ -167,7 +167,7 @@ void ID_Decode_function(void)
 }
 void ID_Decode_IDCheck(void)
 {
-   UINT8 i;
+   UINT8 i,value_num;
     if(FLAG_Receiver_IDCheck)
     {
         FLAG_Receiver_IDCheck=0;
@@ -213,14 +213,17 @@ void ID_Decode_IDCheck(void)
                 //DATA_Packet_Control_0=DATA_Packet_Control;
                 if(DATA_Packet_Control>=0x80){
                     SWITCH_DIP=(DATA_Packet_Control&0x70)>>4;
-                    DATA_Packet_Control_0=DATA_Packet_Control&0x8F;
+                    //DATA_Packet_Control_0=DATA_Packet_Control&0x8F;      //以下2015.08.21追加
+                    value_num=DATA_Packet_Control&0x8F;
+                    if(value_num==0x80){DATA_Packet_soft_ver=1;DATA_Packet_Control_0=0x88;}
+                    else if(value_num>0x88){DATA_Packet_soft_ver=1;DATA_Packet_Control_0=value_num-8;}
+                    else {DATA_Packet_soft_ver=0;DATA_Packet_Control_0=value_num;}
                     DATA_Packet_Control=DATA_Packet_Control_0;
                 }
-                else if((DATA_Packet_Control<0x3F)&&(DATA_Packet_Control>0))read_TIMER_Semi_open=DATA_Packet_Control;
              #endif
              #if defined(__Product_PIC32MX2_Receiver__)
                 if(DATA_Packet_Control==0x08)DATA_Packet_Control_err=0x08;
-                else if(DATA_Packet_Control==0x10)DATA_Packet_Control_err=0x10;
+                else if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00))DATA_Packet_Control_err=DATA_Packet_Control;
                 if(DATA_Packet_Control==0x02){DATA_Packet_Control_err=0x02;FLAG_HA_ERR_bit=0;}
                 else if(DATA_Packet_Control==0x01){DATA_Packet_Control_err=0x01;FLAG_HA_ERR_bit=0;}   //20150425追加
              #endif
@@ -276,10 +279,11 @@ void ID_Decode_IDCheck(void)
 
                     }
                     else {
-                        if(((DATA_Packet_Control&0x20)==0x20)||((DATA_Packet_Control&0x40)==0x40))TIMER1s=500;
-                        else if((DATA_Packet_Control&0x10)==0x10){
-                            if(HA_Status==0x82)TIMER1s=1000;//(TIMER_Semi_open+1)*1000;
-                            else {DATA_Packet_Control=0;TIMER1s=1000;}
+                        if(((DATA_Packet_Control&0xA0)==0x20)||((DATA_Packet_Control&0xC0)==0x40))TIMER1s=500;
+                        else if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00)){
+                            TIMER1s=1000;//(TIMER_Semi_open+1)*1000;
+                            if((DATA_Packet_Control&0xDF)<0xC0)TIMER_Semi_open=(DATA_Packet_Control&0x1F)+4;
+                            else TIMER_Semi_close=(DATA_Packet_Control&0x1F)+4;
                         }
                         else  TIMER1s=1000;
                     }
@@ -524,23 +528,24 @@ void ID_Decode_OUT(void)
                                     }
                                 }
                                 break;
-                     case 0x10:
+//                     case 0x10:
 //                                if(Freq_Scanning_CH_bak==1){             //429M   半开信号
-//                                    if(TIMER1s>(TIMER_Semi_open*1000)){
-//                                        Receiver_OUT_OPEN=1;
-//                                        LATASET=0x0002;
-//                                        Receiver_LED_OUT=1;
-//                                    }
-//                                    else{
-//                                        Receiver_OUT_OPEN=0;
-//                                        LATACLR=0x0002;
-//                                        Receiver_LED_OUT=0;
-//                                    }
-//                                    if(TIMER1s<1000){
-//                                        Receiver_OUT_STOP=1;Receiver_LED_OUT=1;}
+//                                    Receiver_LED_OUT=1;
+//                                    Receiver_OUT_STOP=0;
+//                                    Receiver_OUT_CLOSE=0;
+//                                    //Receiver_OUT_OPEN=1;
+//                                    LATASET=0x0002;
+//                                    TIMER250ms_STOP=(TIMER_Semi_open+1)*1000;
 //                                }
-
-                                if(Freq_Scanning_CH_bak==1){             //429M   半开信号
+//                                break;
+                     default:
+                                break;
+                     }
+                if(Freq_Scanning_CH_bak==1){             //429M   半开信号/半闭
+                    if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00)){
+                                if((DATA_Packet_Control&0xDF)<0xC0){
+                                    FLAG__Semi_open_T=1;
+                                    FLAG__Semi_close_T=0;
                                     Receiver_LED_OUT=1;
                                     Receiver_OUT_STOP=0;
                                     Receiver_OUT_CLOSE=0;
@@ -548,33 +553,22 @@ void ID_Decode_OUT(void)
                                     LATASET=0x0002;
                                     TIMER250ms_STOP=(TIMER_Semi_open+1)*1000;
                                 }
-                                break;
-                     default:
-                                break;
-                     }
-                if(Freq_Scanning_CH_bak==1){
-                        if((DATA_Packet_Control>=0x81)&&(DATA_Packet_Control<=0xBD)&&(FLAG__Semi_open_T==0)){
-                             data_xm[0]=DATA_Packet_Control;
-                             TIMER_Semi_open=(DATA_Packet_Control-1)&0x7F;
-                             Write(&data_xm[0],0x7E5,1);
-                             Delay100us(100);
-                             FLAG__Semi_open_T=1;
-                        }
+                                else {
+                                    FLAG__Semi_open_T=0;
+                                    FLAG__Semi_close_T=1;
+                                    Receiver_LED_OUT=1;
+                                    Receiver_OUT_STOP=0;
+                                    Receiver_OUT_CLOSE=1;
+                                    //Receiver_OUT_OPEN=0;
+                                    LATACLR=0x0002;
+                                    TIMER250ms_STOP=(TIMER_Semi_close+1)*1000;
+                                }
+                      }
                 }
-                //if((DATA_Packet_Control==0x00)&&(FLAG_APP_Reply==0)) FLAG_APP_Reply=1;
-                //if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x08))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1)) FLAG_APP_Reply=1;
-                if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)||(DATA_Packet_Control==0x10)
-                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0xBF)||(DATA_Packet_Control==0x40)||((DATA_Packet_Control>=0x81)&&(DATA_Packet_Control<=0xBD)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
+                if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
+                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)||((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
                      FLAG_APP_Reply=1;
-//                if((DATA_Packet_Control&0x14)==0x14){
-//                    TIMER250ms_STOP=250;
-//                    if(TIMER1s<3550){Receiver_OUT_OPEN=1;Receiver_OUT_CLOSE=1;Receiver_BEEP();}
-//                }
-//                if((DATA_Packet_Control&0x08)==0x08)Receiver_OUT_OPEN=1;
-//                if((DATA_Packet_Control&0x04)==0x04)Receiver_OUT_STOP=1;
-//                if((DATA_Packet_Control&0x02)==0x02)Receiver_OUT_CLOSE=1;
-//                if((DATA_Packet_Control&0x0C)==0x0C)TIMER250ms_STOP=250;
-//                if((DATA_Packet_Control&0x06)==0x06)TIMER250ms_STOP=250;
+
                }       
      else {
                if((FG_auto_out==1)&&(TIME_auto_out==0)){FG_auto_out=0;TIME_auto_close=270;Receiver_LED_OUT=1;}   //300
@@ -591,21 +585,20 @@ void ID_Decode_OUT(void)
                else  if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=1;    //2015.3.23修改
 	       else Receiver_LED_OUT=0;
                if(FG_auto_open_time==1){FG_First_auto=0;FG_auto_out=1;FG_auto_open_time=0;}
-               if(DATA_Packet_Control==0x10){
+               if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
                    if((TIMER250ms_STOP<1000)&&(TIMER250ms_STOP>0)){Receiver_OUT_STOP=1;Receiver_LED_OUT=1;}
-                   else if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
+                   else if(TIMER250ms_STOP==0){Receiver_OUT_STOP=0;FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;}
                }
                else if((TIMER250ms_STOP==0)&&(TIME_auto_close==0)){Receiver_OUT_STOP=0;FG_OUT_OPEN_CLOSE=0;}    //2015.3.23修改
 
-           FLAG__Semi_open_T=0;
 //           if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
 //           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status+4;FLAG_HA_START=1;}   //受信器自动发送HA状态码为实际HA码+4
            if((FLAG_APP_Reply==1)||(FLAG_426MHz_Reply==1)){
-               if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status;}
-               if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;HA_Status_buf=HA_Status+4;}    //受信器自动发送HA状态码为实际HA码+4
+               if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status+8;}
+               if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;
+                                        if(HA_Status==0x84)HA_Status_buf=0x80;
+                                        else HA_Status_buf=HA_Status+12;}    //受信器自动发送HA状态码为实际HA码+4
                ID_data.IDL=DATA_Packet_ID;
-               if(DATA_Packet_Control==0xBF)Control_code=TIMER_Semi_open+1;
-                 else {
                    if(DIP_switch1==1)HA_Status_buf=HA_Status_buf&0xBF;
                       else HA_Status_buf=HA_Status_buf|0x40;
                    if(DIP_switch2==1)HA_Status_buf=HA_Status_buf&0xDF;
@@ -613,7 +606,6 @@ void ID_Decode_OUT(void)
                    if(DIP_switch3==1)HA_Status_buf=HA_Status_buf&0xEF;
                       else HA_Status_buf=HA_Status_buf|0x10;
                    Control_code=HA_Status_buf;
-                 }
                FLAG_HA_START=1;
            }
            FLAG_Receiver_BEEP=0;
@@ -633,12 +625,14 @@ void ID_Decode_OUT(void)
 
   #if defined(__32MX250F128D__)
      if((FLAG_TIME_No_response==1)&&(TIME_No_response==0)){
+         HA_uart_send_APP_number=1;   //test
          HA_uart_send_APP();
          FLAG_TIME_No_response=0;
          if(FG_HA_Inquiry_NO_again_send==1)FG_mial_com_fail=0;
          else FG_mial_com_fail=1;
      }
-    if(((read_TIMER_Semi_open<0x3F)&&(read_TIMER_Semi_open>0))||(((SWITCH_DIP_bak!=SWITCH_DIP)||(SWITCH_DIP_id_data_bak!=DATA_Packet_ID))&&(Freq_Scanning_CH_save_HA==1))){
+    if((((SWITCH_DIP_bak!=SWITCH_DIP)||(SWITCH_DIP_id_data_bak!=DATA_Packet_ID))&&(Freq_Scanning_CH_save_HA==1))){
+        HA_uart_send_APP_number=2;   //test
         SWITCH_DIP_check_app(); //检测现在的值与缓存中SWITCH_DIP,如果变化FG_WIFI_SWITCH_DIP=1;
         HA_uart_send_APP();
     }
@@ -648,6 +642,7 @@ void ID_Decode_OUT(void)
          if((FG_mial_com_fail==1)||((DATA_Packet_Control_0>=0x81)&&(DATA_Packet_Control_0<=0x84))||((DATA_Packet_Control_0>=0x85)&&(DATA_Packet_Control_0<=0x88))){
              FLAG_HA_Inquiry=0;
              FLAG_TIME_No_response=0;
+             HA_uart_send_APP_number=3;   //test
              HA_uart_send_APP();
              if(FG_mial_com_fail==1){FG_mial_com_fail=0;EMIAL_id_data_chek=ID_data.IDL;DATA_Packet_Control=0xFF;}
              else EMIAL_id_data_chek=DATA_Packet_ID;
@@ -662,9 +657,9 @@ void ID_Decode_OUT(void)
     if((FLAG_email_send==1)&&(TIME_email_send==0)){
         FLAG_email_send=0;
         Email_check_mail();
-        if(FLAG_Emial_time==1){FLAG_Emial_time=0;HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=Emial_time_data[Emial_time_place][5];HA_uart[9]=Emial_time_data[Emial_time_place][6];HA_uart_email(EMIAL_id_PCS);} //邮件定时器到时 邮件送信
+        //if(FLAG_Emial_time==1){FLAG_Emial_time=0;HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=Emial_time_data[Emial_time_place][5];HA_uart[9]=Emial_time_data[Emial_time_place][6];HA_uart_email(EMIAL_id_PCS);} //邮件定时器到时 邮件送信
         //2014.10.11修改
-        else if((FLAG_Email_check==0)&&(HA_Change_email_Step==2))HA_Change_email_Step=0;
+        if((FLAG_Email_check==0)&&(HA_Change_email_Step==2))HA_Change_email_Step=0;
         else if((FLAG_Email_check==1)&&(HA_Change_email_Step==2)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}     //HA状态变化通知  上次邮件发送内容和本次内容不一样
         else if((FLAG_Email_check==1)&&(HA_Change_send_email[0]==1)&&(FLAG_HA_Change_ERROR==1)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}
     }

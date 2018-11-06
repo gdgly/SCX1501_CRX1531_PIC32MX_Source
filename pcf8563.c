@@ -303,7 +303,7 @@ UINT16 Hex_Decimal(UINT8 value_h,UINT8 value_m)
 void NEW_set_alarm_pcf8563(UINT16 value0)
 {
 #if defined(__Product_PIC32MX2_WIFI__)
-    UINT8 i,i_num;
+    UINT8 i,i1;
     UINT16 alarm_Minutes,time_differ;
     UINT16 Compare_data0=0xFFFF;
     UINT8 xl[2]={0xFF,0xFF};
@@ -322,17 +322,16 @@ void NEW_set_alarm_pcf8563(UINT16 value0)
                 }
         }
         else {
-                i_num=i-12;
-                if((Emial_time_data[i_num][1]==0x00)||(Emial_time_data[i_num][2]==0xFF)||(Emial_time_data[i_num][3]==0xFF));
-                else if(Emial_time_data[i_num][1]==0x01)
-                {
+                i1=i-12;
+                if((Emial_time_data[i1][1]==0x00)||(Emial_time_data[i1][2]==0xFF)||(Emial_time_data[i1][3]==0xFF));
+                else if(WIFI_alarm_data[i1][1]==0x01){
                     //alarm_Minutes=Emial_time_data[i1][2]*60+Emial_time_data[i1][3];
-                     alarm_Minutes=Hex_Decimal(Emial_time_data[i_num][2],Emial_time_data[i_num][3]);    //2014.10.11修改   解决TIMER有时不动作
+                     alarm_Minutes=Hex_Decimal(Emial_time_data[i1][2],Emial_time_data[i1][3]);    //2014.10.11修改   解决TIMER有时不动作
                     if(alarm_Minutes>value0)time_differ=alarm_Minutes-value0;
                     //else if(alarm_Minutes<value0)time_differ=alarm_Minutes+1440-value0;
                     //else if(alarm_Minutes==value0);//相等时控制输出，后面追加控制输出代码
                     else if(alarm_Minutes<=value0)time_differ=alarm_Minutes+1440-value0;
-                    if((time_differ<Compare_data0)&&(time_differ>0)){Compare_data0=time_differ;xl[1]=Emial_time_data[i_num][2];xl[0]=Emial_time_data[i_num][3];}
+                    if((time_differ<Compare_data0)&&(time_differ>0)){Compare_data0=time_differ;xl[1]=Emial_time_data[i1][2];xl[0]=Emial_time_data[i1][3];}
                 }
         }
     }

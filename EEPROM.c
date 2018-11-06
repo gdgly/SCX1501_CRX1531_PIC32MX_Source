@@ -18,6 +18,8 @@ addr:0x000～0x01D      ID1～ID10    一个ID号有3个字节 低字节在前
      0x03E 0x03F       未用
      ...
      ...  ～0x33F      最大256PCS
+addr:0x3A0～0x3BF      追加To半开，存储在通信机   2015.08.21追加
+addr:0x3C0～0x3DF      追加Tc半闭，存储在通信机   2015.08.21追加
 addr:0x5E0～0x7BF      按照initial.C文件中Sunrise_sunset_DATA数值的顺序依次存储
 addr:0x7DC             存储日出日落表格数据DATA来源   =0 RAM的数据    =1 EEPROM的数据
      0x7DD             日出ON/OFF  ON=1  OFF=0
@@ -354,23 +356,32 @@ void ID_EEPROM_Initial(void)
         xn.IDB[2]=xm[2];
         xn.IDB[3]=0;
         ID_Receiver_DATA[i]=xn.IDL;
+#if defined(__Product_PIC32MX2_WIFI__)      //以下2015.08.21追加
+        ClearWDT();
+        Read(&xm[0],0x3A0+i,1);
+        if((xm[0]==0)||(xm[0]==0xFF))ID_DATA_To[i]=16;  //默认为20秒   20-4
+        else ID_DATA_To[i]=xm[0];
+        Read(&xm[0],0x3C0+i,1);
+        if((xm[0]==0)||(xm[0]==0xFF))ID_DATA_Tc[i]=16;  //默认为20秒   20-4
+        else ID_DATA_Tc[i]=xm[0];
+#endif
 #if defined(__Product_PIC32MX2_Receiver__)
         ClearWDT();
         if((FLAG_POER_on==0)&&(ID_Receiver_DATA[i]!=0)){FLAG_POER_on=1;DATA_Packet_ID=ID_Receiver_DATA[i];}
 #endif
     }
-#if defined(__Product_PIC32MX2_Receiver__)
-    Read(&xm[0],0x7E5,1);
-    if((xm[0]>0xBD)||(xm[0]<0x81))TIMER_Semi_open=20;      //30
-    else TIMER_Semi_open=(xm[0]-1)&0x7F;
-#endif
+//#if defined(__Product_PIC32MX2_Receiver__)
+//    Read(&xm[0],0x7E5,1);
+//    if((xm[0]>0xBD)||(xm[0]<0x81))TIMER_Semi_open=20;      //30
+//    else TIMER_Semi_open=(xm[0]-1)&0x7F;
+//#endif
 #if defined(__Product_PIC32MX2_WIFI__)
 //    Write(&Sunrise_sunset_DATA[0],0xD00,32);
 //    Delay100us(100);
 
     Read(&xm[0],0x7DC,4);       //0x7DC存储日出日落表格数据DATA来源   =0 RAM的数据    =1 EEPROM的数据
-    if(xm[1]>1)xm[1]=0;
-    if(xm[2]>1)xm[2]=0;
+    if(xm[1]==0xFF)xm[1]=0;
+    if(xm[2]==0xFF)xm[2]=0;
     if(xm[3]>10)xm[3]=0;
     SUN_ON_OFF_seat[0]=xm[1];   //0x7DD 日出ON/OFF  ON=1  OFF=0
     SUN_ON_OFF_seat[1]=xm[2];  //0x7DE 日落ON/OFF  ON=1  OFF=0
@@ -378,14 +389,32 @@ void ID_EEPROM_Initial(void)
 
     Read(&xm[0],0xD80,32);
     Delay100us(100);
+
     for(i=0;i<13;i++){
        ClearWDT(); // Service the WDT
        if(i!=10){
-               if(i==11){Read(&xm[0],0x800+12*128,103);xm[0]=11;xm[1]=SUN_ON_OFF_seat[0];xm[2]=0x08;}
+               if(i==11){
+                   Read(&xm[0],0x800+12*128,103);
+                   xm[0]=11;
+                   if(SUN_ON_OFF_seat[0]==0x00)xm[1]=0;
+                   else xm[1]=1;
+                   if(SUN_ON_OFF_seat[0]==0x01) xm[2]=0x08;
+                   else if(SUN_ON_OFF_seat[0]==0x11) xm[2]=0x80;
+                   else if(SUN_ON_OFF_seat[0]==0x10) xm[2]=0x01;
+               }
+               else if(i==12){
+                   Read(&xm[0],0x800+12*128,103);
+                   xm[0]=12;
+                   if(SUN_ON_OFF_seat[1]==0x00)xm[1]=0;
+                   else xm[1]=1;
+                   if(SUN_ON_OFF_seat[1]==0x01) xm[2]=0x02;
+                   else if(SUN_ON_OFF_seat[1]==0x11) xm[2]=0xC0;
+                   else if(SUN_ON_OFF_seat[1]==0x10) xm[2]=0x01;
+               }
                else Read(&xm[0],0x800+i*128,103);
                if(i>10)m1=i-1;
                else m1=i;
-               if((xm[0]==0x00)||(xm[0]>12)||(xm[1]>1)||(xm[2]>8)||(xm[3]>0x24)||(xm[4]>0x60)||(xm[5]>0x80)||(xm[6]>0x20)){
+               if((xm[0]==0x00)||(xm[0]>12)||(xm[1]>1)||(xm[3]>0x24)||(xm[4]>0x60)||(xm[5]>0x80)||(xm[6]>0x20)){
                    WIFI_alarm_data[m1][0]=m1+1;
                    for(j=1;j<103;j++)WIFI_alarm_data[m1][j]=0x00;
                }
@@ -480,7 +509,7 @@ UINT8 Email_check_TO_APP(void)     //2015.4.1修正3 由于APP查询受信器HA状态需要很
 {
     UINT16 i;
    for(i=0;i<35;i++){
-       if(HA_Cache_IDdata[i]==ID_data_uart_CMD0101_01.IDL){Emial_Cache_HA=HA_Cache_ha[i]&0x0F;Emial_Cache_SWITCH=HA_Cache_SWITCH_DIP[i];i=64;}     //
+       if(HA_Cache_IDdata[i]==ID_data_uart_CMD0101_01.IDL){Emial_Cache_HA=HA_Cache_ha[i]&0xFF;Emial_Cache_SWITCH=HA_Cache_SWITCH_DIP[i];i=64;}     //
    }
    if(i==35) return 1;
    else return 0;
@@ -504,7 +533,22 @@ void eeprom_IDcheck_CMD0101_01_UART(void)
                 //20150501 JAPAN追加  解决是反复启动APP时，在查询通信机缓沉内部HA状态时，将Control_code=1控制出去了（在之前有一齐操作的情况，正在实施当中）
     UINT16 i;
    for(i=0;i<ID_DATA_PCS;i++){
-       if(ID_Receiver_DATA[i]==ID_data_uart_CMD0101_01.IDL){i=ID_DATA_PCS;FLAG_IDCheck_OK=1;}
+       if(ID_Receiver_DATA[i]==ID_data_uart_CMD0101_01.IDL){CMD0102_To_or_Tc_place=i;i=ID_DATA_PCS;FLAG_IDCheck_OK=1;}
+       if(FLAG_ID_Erase_Login==1){i=ID_DATA_PCS;FLAG_IDCheck_OK=0;}
+   }
+}
+void IDcheck_CMD0102_HA_Cache(void)        //以下2015.08.21追加
+{
+    UINT16 i;
+   for(i=0;i<ID_DATA_PCS;i++){
+       if(HA_Cache_IDdata[i]==ID_data.IDL){CMD0102_To_or_Tc_HA=i;i=ID_DATA_PCS;FLAG_IDcheck_CMD0102_HA=1;}
+   }
+}
+void eeprom_IDcheck_CMD0111_UART(void)
+{
+    UINT16 i;
+   for(i=0;i<ID_DATA_PCS;i++){
+       if(ID_Receiver_DATA[i]==ID_data_uart_CMD0111.IDL){ID_DATA_To_or_Tc_place=i;i=ID_DATA_PCS;FLAG_IDCheck_OK=1;}
        if(FLAG_ID_Erase_Login==1){i=ID_DATA_PCS;FLAG_IDCheck_OK=0;}
    }
 }
@@ -691,13 +735,25 @@ void SUN_EEPROM_write(void)
     SUN_ON_OFF_seat_Cache[2]=UART1_DATA[13];  //0x7DF 日本地点  1=东北, 2=关东,3=关西,4=九州
 
     WIFI_alarm_data_Cache[0][0]=11;
-    WIFI_alarm_data_Cache[0][1]=UART1_DATA[11];
-    WIFI_alarm_data_Cache[0][2]=0x08;
+    //WIFI_alarm_data_Cache[0][1]=UART1_DATA[11];     //以下2015.08.21追加
+    //WIFI_alarm_data_Cache[0][2]=0x08;
+    if(SUN_ON_OFF_seat_Cache[0]==0x00)WIFI_alarm_data_Cache[0][1]=0;
+    else WIFI_alarm_data_Cache[0][1]=1;
+    if(SUN_ON_OFF_seat_Cache[0]==0x01)WIFI_alarm_data_Cache[0][2]=0x08;
+    else if(SUN_ON_OFF_seat_Cache[0]==0x11)WIFI_alarm_data_Cache[0][2]=0x80;
+    else if(SUN_ON_OFF_seat_Cache[0]==0x10)WIFI_alarm_data_Cache[0][2]=0x01;
+
     WIFI_alarm_data_Cache[0][3]=0;         //在EEPROM中的日出日落时间数据为0，是靠SUN_time_get(SUN_ON_OFF_seat[2])函数在表中查询获取
     WIFI_alarm_data_Cache[0][4]=0;
     WIFI_alarm_data_Cache[1][0]=12;
-    WIFI_alarm_data_Cache[1][1]=UART1_DATA[12];
-    WIFI_alarm_data_Cache[1][2]=0x02;
+    //WIFI_alarm_data_Cache[1][1]=UART1_DATA[12];   //以下2015.08.21追加
+    //WIFI_alarm_data_Cache[1][2]=0x02;
+    if(SUN_ON_OFF_seat_Cache[1]==0x00)WIFI_alarm_data_Cache[1][1]=0;
+    else WIFI_alarm_data_Cache[1][1]=1;
+    if(SUN_ON_OFF_seat_Cache[1]==0x01)WIFI_alarm_data_Cache[1][2]=0x02;
+    else if(SUN_ON_OFF_seat_Cache[1]==0x11)WIFI_alarm_data_Cache[1][2]=0xC0;
+    else if(SUN_ON_OFF_seat_Cache[1]==0x10)WIFI_alarm_data_Cache[1][2]=0x01;
+    
     WIFI_alarm_data_Cache[1][3]=0;       //在EEPROM中的日出日落时间数据为0，是靠SUN_time_get(SUN_ON_OFF_seat[2])函数在表中查询获取
     WIFI_alarm_data_Cache[1][4]=0;
     m2=16+UART1_DATA[15]*3;
@@ -845,6 +901,21 @@ void HA_Change_EEPROM_write(void)
         for(i=0;i<3;i++)HA_Change_send_email[i]=HA_Change_send_email_Cache[i];
     }
 }
+
+void EEPROM_write_To_or_Tc(UINT8 vlue_x,UINT8 vlue_y,UINT8 vlue_z)      //说明  vlue_x-》什么位置    vlue_y-》是To/Tc   vlue_z-》To/Tc值
+{
+    UINT8 xm[2]={0};
+    xm[0]=vlue_z;
+    if(vlue_y==2){
+        Write(&xm[0],0x3A0+vlue_x,1);
+        ID_DATA_To[vlue_x]=xm[0];
+    }
+    else{
+        Write(&xm[0],0x3C0+vlue_x,1);
+        ID_DATA_Tc[vlue_x]=xm[0];
+    }
+    Delay100us(100);
+}
 #endif
 
 
@@ -875,6 +946,10 @@ void ID_EEPROM_write(void)
      Write(&xm[0],0x7FE,2);
      Delay100us(100);
      ID_Receiver_DATA[ID_DATA_PCS-1]=ID_Receiver_Login;
+#if defined(__Product_PIC32MX2_WIFI__)    //以下2015.08.21追加
+     ID_DATA_To[ID_DATA_PCS-1]=16;
+     ID_DATA_Tc[ID_DATA_PCS-1]=16;
+#endif
      xn.IDL=ID_Receiver_Login;
      xm[0]=xn.IDB[0];
      xm[1]=xn.IDB[1];

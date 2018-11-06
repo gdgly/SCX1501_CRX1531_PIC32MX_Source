@@ -29,6 +29,7 @@ const UINT8 HA_uart_err[5]={69,82,82,32,32};
  void uart_send_APP_Emial_time(void);
  void uart_send_APP_HA_Change(void);
  void uart_send_APP_Public(UINT8 Public_X,UINT8 Public_Y);
+ void uart_send_APP_To_and_Tc(UINT8 Public_X,UINT8 Public_Y,UINT8 Public_Z);
 #endif
 
 void Uart1_Init(void)
@@ -95,7 +96,8 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
         switch(uart_x.ui){
             case 0x0101:                                           //卷帘门依次单个操作，HA状态取得
             case 0x0102:
-            case 0x0110:
+            //case 0x0110:                //以下2015.08.21追加    取消该命令
+              case 0x0111:
                         UART_DATA_i=18;
                         if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
                         break;
@@ -188,7 +190,7 @@ void UART_Decode(void)
             uart_y.uc[1]=UART1_DATA[9];
             switch(uart_y.ui){
                 case 0x0101:                                           //卷帘门依次单个HA状态取得
-                case 0x0110:
+                //case 0x0110:         //以下2015.08.21追加    取消该命令
                           APP_check_char=0;     //2014.10.11修改
                 case 0x0102:                                           //卷帘门依次单个操作
                             for(i=8;i<16;i++)  m+=UART1_DATA[i];
@@ -199,9 +201,7 @@ void UART_Decode(void)
                                     ID_data_uart_CMD0101_01.IDB[1]=UART1_DATA[12];
                                     ID_data_uart_CMD0101_01.IDB[2]=UART1_DATA[13];
                                     ID_data_uart_CMD0101_01.IDB[3]=0x00;
-                                if((UART1_DATA[14]>=0x80)&&(UART1_DATA[14]<=0xbc)){Control_code=UART1_DATA[14]+1;}
-                                else if(uart_y.ui==0x0110)Control_code=0xBF;
-                                else if((uart_y.ui==0x0101)&&(UART1_DATA[14]==0x01));
+                                if((uart_y.ui==0x0101)&&(UART1_DATA[14]==0x01));
                                 else Control_code=UART1_DATA[14];
                                 //eeprom_IDcheck_UART();
                                 eeprom_IDcheck_CMD0101_01_UART();
@@ -237,18 +237,28 @@ void UART_Decode(void)
                                         time_APP_Start_up=5;
                                     }
                                     else {
+                                        if((uart_y.ui==0x0102)&&(UART1_DATA[14]>=0x80)){     //以下2015.08.21追加
+                                            IDcheck_CMD0102_HA_Cache();
+                                            if(FLAG_IDcheck_CMD0102_HA==1){
+                                                FLAG_IDcheck_CMD0102_HA=0;
+                                                if((HA_Cache_ha[CMD0102_To_or_Tc_HA]==2)&&(UART1_DATA[14]==0x80))Control_code=0x80+ID_DATA_To[CMD0102_To_or_Tc_place];
+                                                else if((HA_Cache_ha[CMD0102_To_or_Tc_HA]==1)&&(UART1_DATA[14]==0xC0))Control_code=0xC0+ID_DATA_Tc[CMD0102_To_or_Tc_place];
+                                                else goto CMD0102_NG;
+                                            }
+                                            else goto CMD0102_NG;
+                                        }
 CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.IDB[0];
                                         ID_data.IDB[1]=ID_data_uart_CMD0101_01.IDB[1];
                                         ID_data.IDB[2]=ID_data_uart_CMD0101_01.IDB[2];
                                         ID_data.IDB[3]=0x00;
-                                        if((Control_code==0xBF)||(Control_code==0x00)||(Control_code==0x02)||(Control_code==0x08)){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
+                                        if((Control_code==0x00)||(Control_code==0x02)||(Control_code==0x08)){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
                                         FLAG_IDCheck_OK=0;
                                         FLAG_UART_ok=1;
                                         time_APP_Start_up=0;  //2015.04.27修正
                                        }                                    
                                 }
                                 else {
-                                    HA_uart_app[8]=UART1_DATA[8];
+CMD0102_NG:                         HA_uart_app[8]=UART1_DATA[8];
                                     HA_uart_app[9]=UART1_DATA[9];
                                     HA_uart_app[10]=0x01;
                                     HA_uart_app[11]=UART1_DATA[11];
@@ -361,6 +371,28 @@ CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.I
                             }
                             else uart_send_APP_Public(UART1_DATA[8],1);
                             break;
+                case 0x0111:               //以下2015.08.21追加        //半开To 半闭Tc设定和读取
+                            for(i=8;i<16;i++)  m+=UART1_DATA[i];
+                            n=UART1_DATA[16]+UART1_DATA[17]*256;
+                            if(m==n){
+                                    ID_data_uart_CMD0111.IDB[0]=UART1_DATA[11];
+                                    ID_data_uart_CMD0111.IDB[1]=UART1_DATA[12];
+                                    ID_data_uart_CMD0111.IDB[2]=UART1_DATA[13];
+                                    ID_data_uart_CMD0111.IDB[3]=0x00;
+                                    eeprom_IDcheck_CMD0111_UART();
+                                    if(FLAG_IDCheck_OK==1){
+                                        if(((UART1_DATA[14]==2)||(UART1_DATA[14]==4))&&(UART1_DATA[15]!=0)){
+                                             EEPROM_write_To_or_Tc(ID_DATA_To_or_Tc_place,UART1_DATA[14],UART1_DATA[15]);
+                                             uart_send_APP_To_and_Tc(0,UART1_DATA[14],0);
+                                        }
+                                        else if(UART1_DATA[14]==1)uart_send_APP_To_and_Tc(0,UART1_DATA[14],ID_DATA_To[ID_DATA_To_or_Tc_place]);
+                                        else if(UART1_DATA[14]==3)uart_send_APP_To_and_Tc(0,UART1_DATA[14],ID_DATA_Tc[ID_DATA_To_or_Tc_place]);
+                                        else uart_send_APP_To_and_Tc(1,UART1_DATA[14],0);
+                                    }
+                                    else uart_send_APP_To_and_Tc(1,UART1_DATA[14],0);
+                            }
+                            else uart_send_APP_To_and_Tc(1,UART1_DATA[14],0);
+                            break;
                 case 0x010B:                                            //日出日落设定要求
                 case 0x010C:                                           //日出日落取得要求
                             if(UART1_DATA[8]==0x0B){
@@ -373,7 +405,7 @@ CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.I
                             }
                             if(m==n){
                                 if(UART1_DATA[8]==0x0B){
-                                  if((UART1_DATA[11]>1)||(UART1_DATA[12]>1)||(UART1_DATA[13]>10)||(UART1_DATA[14]>0x80)||(UART1_DATA[15]>32))uart_send_APP_Public(0x0B,1);
+                                  if((UART1_DATA[13]>10)||(UART1_DATA[14]>0x80)||(UART1_DATA[15]>32))uart_send_APP_Public(0x0B,1);
                                   else {
                                         eeprom_IDcheck_Multiple(15);
                                         if(FLAG_IDCheck_OK==1){
@@ -432,10 +464,10 @@ CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.I
                                     U1TXREG=0x65;      //e
                                     U1TXREG=0x72;      //r
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-                                    U1TXREG=0x35;      //5              //2014.10.11修改
+                                    U1TXREG=0x36;      //6              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x39;      //9
-                                    U1TXREG=0xD9;     //0x16B+0x33+0x39
+                                    U1TXREG=0x31;      //1
+                                    U1TXREG=0xD2;     //0x16B+0x33+0x39
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -448,8 +480,7 @@ CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.I
                                 if(FLAG_IDCheck_OK==1){
                                     FLAG_IDCheck_OK=0;
                                     uart_send_APP_Public(0x08,0);
-                                    if((UART1_DATA[11]>=0x80)&&(UART1_DATA[11]<=0xbc))uart_Control_code=UART1_DATA[11]+1;
-                                    else uart_Control_code=UART1_DATA[11];
+                                    uart_Control_code=UART1_DATA[11];
                                     for(i=0;i<UART1_DATA[12];i++) APP_UART_OUT(i);  //2015.4.11追加修正3
                                     //for(i=UART1_DATA[12];i>0;i--) APP_UART_OUT(i-1);
                                 }
@@ -713,8 +744,7 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
     }
     HA_uart[26]=0x00;   //邮件标题结束符
 
-    //HA_uart_Length=27+23+19;
-    HA_uart_Length=27+27+19;
+    HA_uart_Length=27+23+19;
     for(j=0;j<EMIAL_id_PCS_x;j++){                      //计算邮件内容的atatus=...部分
         if((EMIAL_id_HA[j]==0x81)||(EMIAL_id_HA[j]==0x85)){
             HA_uart[HA_uart_Length]=111;      //open
@@ -831,18 +861,9 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
 
     HA_uart[HA_uart_Length]=13;      //回车
     HA_uart_Length++;
-    HA_uart[HA_uart_Length]=10;      //换行
-    HA_uart_Length++;
     HA_uart[HA_uart_Length]=13;      //回车
     HA_uart_Length++;
-    HA_uart[HA_uart_Length]=10;      //换行
-    HA_uart_Length++;
-    //for(j=0;j<45;j++)
-    for(j=0;j<49;j++)
-    {
-        HA_uart[HA_uart_Length]=HA_uart_ios[j];
-        HA_uart_Length++;
-    }
+    for(j=0;j<45;j++){HA_uart[HA_uart_Length]=HA_uart_ios[j];HA_uart_Length++;}
     for(j=0;j<EMIAL_id_PCS_x;j++){                      //计算邮件内容的atatus=...部分
         if((EMIAL_id_HA[j]==0x81)||(EMIAL_id_HA[j]==0x85)){
             HA_uart[HA_uart_Length]=111;      //open
@@ -1021,7 +1042,7 @@ void HA_uart_send_APP(void)
     HA_uart_app[12]=b0.IDB[1];
     HA_uart_app[13]=b0.IDB[2];
     if((FLAG_TIME_No_response==1)&&(TIME_No_response==0)){
-        HA_uart_app[14]=05;
+        HA_uart_app[14]=05;              
         b0.IDL=ID_data.IDL;
         DATA_Packet_ID=ID_data.IDL;
         HA_uart_app[11]=b0.IDB[0];
@@ -1035,11 +1056,11 @@ void HA_uart_send_APP(void)
         }    //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
         if(UART_DATA_buffer[8]==0x10){HA_uart_app[14]=0xFF;HA_uart_app[15]=0x00;}
     }
-    else if(read_TIMER_Semi_open!=0){HA_uart_app[14]=read_TIMER_Semi_open-1;read_TIMER_Semi_open=0;HA_uart_app[15]=0x00;}
-    else if((DATA_Packet_Control==0x81)||(DATA_Packet_Control==0x85)){HA_uart_app[14]=01;HA_uart_app[15]=SWITCH_DIP;}
-    else if((DATA_Packet_Control==0x82)||(DATA_Packet_Control==0x86)){HA_uart_app[14]=02;HA_uart_app[15]=SWITCH_DIP;}
-    else if((DATA_Packet_Control==0x83)||(DATA_Packet_Control==0x87)){HA_uart_app[14]=03;HA_uart_app[15]=SWITCH_DIP;}
-    else if((DATA_Packet_Control==0x84)||(DATA_Packet_Control==0x88)){HA_uart_app[14]=04;HA_uart_app[15]=SWITCH_DIP;}
+    else if((DATA_Packet_Control_0==0x81)||(DATA_Packet_Control_0==0x85)){HA_uart_app[14]=01;HA_uart_app[15]=SWITCH_DIP;}
+    else if((DATA_Packet_Control_0==0x82)||(DATA_Packet_Control_0==0x86)){HA_uart_app[14]=02;HA_uart_app[15]=SWITCH_DIP;}
+    else if((DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x87)){HA_uart_app[14]=03;HA_uart_app[15]=SWITCH_DIP;}
+    else if((DATA_Packet_Control_0==0x84)||(DATA_Packet_Control_0==0x88)){HA_uart_app[14]=04;HA_uart_app[15]=SWITCH_DIP;}
+
     //HA_uart_app[15]=0x00;
     HA_Cache_ha_1Hz_bak=HA_uart_app[14];
     //if(HA_uart_app[14]!=5)
@@ -1048,6 +1069,7 @@ void HA_uart_send_APP(void)
         HA_Cache_SWITCH_DIP_bak=HA_uart_app[15];
     SWITCH_DIP_bak=SWITCH_DIP;
     SWITCH_DIP_id_data_bak=DATA_Packet_ID;
+    if(DATA_Packet_soft_ver==1)HA_uart_app[15]=SWITCH_DIP|0x10;
     m=0;
     for(i=8;i<16;i++)m=m+HA_uart_app[i];
     HA_uart_app[16]=m%256;
@@ -1346,7 +1368,29 @@ void uart_send_APP_Public(UINT8 Public_X,UINT8 Public_Y)     //Public_X ->指令类
     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
  #endif
 }
-
+ #if defined(__Product_PIC32MX2_WIFI__)
+void uart_send_APP_To_and_Tc(UINT8 Public_X,UINT8 Public_Y,UINT8 Public_Z)  //Public_X ->返回结果  0（OK） 1（NG）  Public_Y ->To/Tc SET/read指令   Public_Z ->To/Tc数据
+{
+    UINT16 i_x;
+    uart_send_APP_Head();
+    U1TXREG=0x08;
+    U1TXREG=0x00;
+    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+    U1TXREG=0x11;
+    U1TXREG=0x01;
+    U1TXREG=Public_X;
+    U1TXREG=UART1_DATA[11];
+    U1TXREG=UART1_DATA[12];
+    U1TXREG=UART1_DATA[13];
+    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+    U1TXREG=Public_Y;
+    U1TXREG=Public_Z;
+    i_x=0x12+Public_X+UART1_DATA[11]+UART1_DATA[12]+UART1_DATA[13]+Public_Y+Public_Z;
+    U1TXREG=i_x%256;
+    U1TXREG=i_x/256;
+    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+}
+ #endif
 
  #if defined(__32MX250F128D__)
 void APP_OUT_TEST1(unsigned char *time_TEST1)

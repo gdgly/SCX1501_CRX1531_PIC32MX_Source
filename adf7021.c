@@ -898,8 +898,8 @@ void ADF7021_change_TXorRX(void)
     else {
         TIMER_Sensor_close_1s=120;
         if(TIMER_Sensor_open_1s==0){
-            if((DATA_Packet_Control_err==0x08)||(DATA_Packet_Control_err==0x10)){FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;FLAG_close_Sensor=0;}
-            if((DATA_Packet_Control_err==0x02)&&(FLAG_close_Sensor==1)){FLAG_open_Sensor=0;FLAG_HA_ERR_Sensor=1;FLAG_close_Sensor=0;}
+            if((DATA_Packet_Control_err==0x08)||((DATA_Packet_Control_err&0xDF)<0xC0)){FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;FLAG_close_Sensor=0;}
+            if(((DATA_Packet_Control_err==0x02)||((DATA_Packet_Control_err&0xDF)>0xC0))&&(FLAG_close_Sensor==1)){FLAG_open_Sensor=0;FLAG_HA_ERR_Sensor=1;FLAG_close_Sensor=0;}
 //            FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;
 //            FLAG_close_Sensor=0;
         }
@@ -1020,7 +1020,7 @@ void ADF7021_change_TXorRX(void)
                                    if(((Emial_time_data[i_n][4]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==Emial_time_data[i_n][2])&&(xmv[1]==Emial_time_data[i_n][3])){
                                        for(i_m=0;i_m<ID_DATA_PCS;i_m++)Emial_time_OUT(i_m);
                                        // for(i_m=ID_DATA_PCS;i_m>0;i_m--) Emial_time_OUT(i_m-1);     //2015.4.11追加修正3
-                                       FLAG_Emial_time=1;
+                                       //FLAG_Emial_time=1;
                                        HA_Change_email_time=0;
                                        HA_Change_email_Step=1;
 
@@ -1082,9 +1082,23 @@ AUTO_SEND_exit:
 
             eeprom_IDcheck_UART();            //2015.4.11追加修正2
             if((ID_data.IDL!=0)&&(FLAG_IDCheck_OK==1)){    //如果ID=0的话，不允许发送  //2015.4.11追加修正2
-                TIME_alarm_AUTO=350;                  //2014.10.11修改  250
+                
+
+                if((Control_code==0x80)||(Control_code==0xC0)){
+                    IDcheck_CMD0102_HA_Cache();
+                    if(FLAG_IDcheck_CMD0102_HA==1){
+                        FLAG_IDcheck_CMD0102_HA=0;
+                        if((HA_Cache_ha[CMD0102_To_or_Tc_HA]==2)&&(Control_code==0x80))Control_code=0x80+ID_DATA_To[CMD0102_To_or_Tc_HA];
+                        else if((HA_Cache_ha[CMD0102_To_or_Tc_HA]==1)&&(Control_code==0xC0))Control_code=0xC0+ID_DATA_Tc[CMD0102_To_or_Tc_HA];
+                        else Control_code=0;
+                    }
+                    else Control_code=0;
+                }
+
+                TIME_alarm_AUTO=380;//350;                  //2014.10.11修改  250
                 FLAG_HA_Inquiry=1;
                 DATA_Packet_Control_0=0x00;    //表示APP查询
+                DATA_Packet_soft_ver=0;
                 FLAG_AUTO_SEND_ok=1;
                 FLAG_IDCheck_OK=0;  //2015.4.11追加修正2
                 FG_send_Faile_again=0;       //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次

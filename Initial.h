@@ -270,7 +270,9 @@ extern UINT8 FLAG_close_Sensor;
 extern UINT8 FLAG_HA_ERR_Sensor;
 extern UINT8 FLAG_HA_ERR_bit;
 extern UINT16 TIMER_Semi_open;
+extern UINT16 TIMER_Semi_close;
 extern UINT8 FLAG__Semi_open_T;
+extern UINT8 FLAG__Semi_close_T;
 
 extern UINT16  TIME_auto_out;
 extern UINT16  TIME_auto_close;
@@ -310,8 +312,7 @@ extern UINT8 FG_auto_open_time;
     extern UINT16 TIME_alarm_AUTO;
     extern UINT8 AUTO_HA_Inquiry;
     extern UINT8 HA_uart[1200];
-    //extern UINT8 HA_uart_ios[45];
-    extern UINT8 HA_uart_ios[49];
+    extern UINT8 HA_uart_ios[45];
     extern UINT32 EMIAL_id_data[35];
     extern UINT32 EMIAL_id_data_chek;
     extern UINT8  EMIAL_id_HA[35];
@@ -374,6 +375,17 @@ extern UINT8 FG_auto_open_time;
     extern UINT16 time_APP_Start_up;   //2015.04.27修正
     extern UINT8 TIME_ID_Login_delay; //20150430 japan修改1
     extern uni_rom_id ID_data_uart_CMD0101_01;   //20150501 JAPAN追加
+
+                                      //以下2015.08.21追加
+    extern UINT8 ID_DATA_To[32];
+    extern UINT8 ID_DATA_Tc[32];
+    extern uni_rom_id ID_data_uart_CMD0111;
+    extern UINT8 ID_DATA_To_or_Tc_place;
+    extern UINT8  DATA_Packet_soft_ver;
+    extern UINT8 CMD0102_To_or_Tc_place;
+    extern UINT8 CMD0102_To_or_Tc_HA;
+    extern UINT8 FLAG_IDcheck_CMD0102_HA;
+    extern UINT8 HA_uart_send_APP_number;
 #endif
 
 
