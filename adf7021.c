@@ -1048,7 +1048,7 @@ void ADF7021_change_TXorRX(void)
        FLAG_UART_R=0;
        UART_Decode();
    }
-   if((FLAG_email_Repeat==1)&&(TIME_email_Repeat==0)){
+   if((FLAG_email_Repeat==1)&&(TIME_email_Repeat==0)&&(TIME_UART==0)){
        TIME_email_Repeat=9000;
        UART_send_count++;
        if(UART_send_count>10)FLAG_email_Repeat=0;

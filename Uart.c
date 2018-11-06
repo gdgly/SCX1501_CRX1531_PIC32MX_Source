@@ -63,6 +63,7 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
         if(UART_DATA_buffer[UART_DATA_cnt]==0xBB)TIME_UART=2;      //解决开机UART收到乱码，APP正常控制时不能正确收到。
         else if((UART_DATA_buffer[UART_DATA_cnt-1]==0xBB)&&(UART_DATA_buffer[UART_DATA_cnt]==0x00)){TIME_UART=13;UART_DATA_cnt=1;UART_DATA_buffer[0]=0xBB;UART_DATA_buffer[1]=0x00;FLAG_UART_0xBB=1;}
     }
+    TIME_email_Repeat=9000;
     UART_DATA_cnt++;
 //            if(UART_DATA_buffer[6]==0x05){
 //                if(UART_DATA_cnt>=15){
@@ -490,8 +491,8 @@ CMD0102_NG:                         HA_uart_app[8]=UART1_DATA[8];
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x37;      //7              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x34;      //4
-                                    U1TXREG=0xD6;     //0x16B+0x37+0x34
+                                    U1TXREG=0x36;      //6
+                                    U1TXREG=0xD8;     //0x16B+0x37+0x36
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -1056,7 +1057,11 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
         Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
         for(i=0;i<j;i++){
             U1TXREG=HA_uart[i];
-            if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+            //if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+            if(i%6==0){
+                TIME_1ms=3;
+                while(TIME_1ms!=0);  
+            }
         }
     }
        Delay100us(300);
@@ -1081,11 +1086,15 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
 void HA_uart_email_Repeat(void)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
-    UINT8 i;
+    UINT16 i;
         //uart_send_APP_Public(0xFF,0);               //测试是否发送了邮件
         for(i=0;i<HA_uart_Length+2;i++){
             U1TXREG=HA_uart[i];
-            if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+            //if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+            if(i%6==0){
+                TIME_1ms=3;
+                while(TIME_1ms!=0);
+            }
         }
        Delay100us(300);
  #endif

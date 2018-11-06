@@ -90,6 +90,8 @@ UINT16 FLAG_all_Erase_time=0;
 UINT8 TIME_EMC=0;   //静电测试
 UINT8 read_TIMER_Semi_open=0;
 
+UINT8  TIME_1ms=0;
+
 //*********以下为测试代码所用变量****************
 UINT8 Tx_Rx_mode=0;
 FLAG FLAG_test;

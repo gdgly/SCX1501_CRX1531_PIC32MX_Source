@@ -12,7 +12,7 @@
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <itemPath>../linker_scripts/app_32MX250F128D.ld</itemPath>
+      <itemPath>../../Application Ver7.8 PIC32MX250F128D/linker_scripts/app_32MX250F128D.ld</itemPath>
     </logicalFolder>
     <logicalFolder name="ObjectFiles"
                    displayName="Object Files"
@@ -44,6 +44,7 @@
     <Elem>D:/Program Files/Microchip/xc32/v1.21/pic32mx/include</Elem>
     <Elem>../../PIC32_Bootloaders PIC32MX250F0128D/Firmware/Bootloader/linker_scripts/others</Elem>
     <Elem>../../Application Ver5.0 PIC32MX250F128D  TELEC/linker_scripts</Elem>
+    <Elem>../../Application Ver7.8 PIC32MX250F128D/linker_scripts</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

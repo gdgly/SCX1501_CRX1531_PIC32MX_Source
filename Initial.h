@@ -239,6 +239,8 @@ extern UINT16 FLAG_all_Erase_time;
 
 extern UINT8 TIME_EMC;
 
+extern UINT8  TIME_1ms;
+
 extern UINT16 TIME_No_response;
 extern UINT8 FLAG_TIME_No_response;
 extern UINT8 read_TIMER_Semi_open;
