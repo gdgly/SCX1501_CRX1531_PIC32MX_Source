@@ -320,22 +320,22 @@ void ID_Decode_IDCheck(void)
                                                 TIMER1s=1700;
                                                 switch(DATA_Packet_Control){
                                                     case 0x41:
-                                                             TIME_angle_n=250;
+                                                             TIME_angle_n=60*3-30;//250;   //3指
                                                              break;
                                                     case 0x42:
-                                                             TIME_angle_n=350;
+                                                             TIME_angle_n=60*4-30;//350;   //4指
                                                              break; 
                                                     case 0x43:
-                                                             TIME_angle_n=450;
+                                                             TIME_angle_n=60*5-30;//450;   //5指
                                                              break; 
                                                     case 0x44:
-                                                             TIME_angle_n=550;
+                                                             TIME_angle_n=60*6-30;//550;  //6指
                                                              break;  
                                                     case 0x45:
-                                                             TIME_angle_n=750;
+                                                             TIME_angle_n=60*8-30;//750;  //8指
                                                              break;   
                                                     case 0x46:
-                                                             TIME_angle_n=950;
+                                                             TIME_angle_n=60*10-30;//950; //10指
                                                              break;          
                                                 }
                                                 
@@ -482,9 +482,12 @@ void Receiver_BEEP(void)
 void Angle_OUT(void)
 {
     
-        if((TIME_angle_n>900)||((TIME_angle_n<=850)&&(TIME_angle_n>800))||((TIME_angle_n<=750)&&(TIME_angle_n>700))||((TIME_angle_n<=650)&&(TIME_angle_n>600))
-                             ||((TIME_angle_n<=550)&&(TIME_angle_n>500))||((TIME_angle_n<=450)&&(TIME_angle_n>400))||((TIME_angle_n<=350)&&(TIME_angle_n>300))     
-                             ||((TIME_angle_n<=250)&&(TIME_angle_n>200))||((TIME_angle_n<=150)&&(TIME_angle_n>100))||((TIME_angle_n<=50)&&(TIME_angle_n>0)))
+//        if((TIME_angle_n>900)||((TIME_angle_n<=850)&&(TIME_angle_n>800))||((TIME_angle_n<=750)&&(TIME_angle_n>700))||((TIME_angle_n<=650)&&(TIME_angle_n>600))
+//                             ||((TIME_angle_n<=550)&&(TIME_angle_n>500))||((TIME_angle_n<=450)&&(TIME_angle_n>400))||((TIME_angle_n<=350)&&(TIME_angle_n>300))     
+//                             ||((TIME_angle_n<=250)&&(TIME_angle_n>200))||((TIME_angle_n<=150)&&(TIME_angle_n>100))||((TIME_angle_n<=50)&&(TIME_angle_n>0)))
+        if((TIME_angle_n>540)||((TIME_angle_n<=510)&&(TIME_angle_n>480))||((TIME_angle_n<=450)&&(TIME_angle_n>420))||((TIME_angle_n<=390)&&(TIME_angle_n>360))
+                             ||((TIME_angle_n<=330)&&(TIME_angle_n>300))||((TIME_angle_n<=270)&&(TIME_angle_n>240))||((TIME_angle_n<=210)&&(TIME_angle_n>180))     
+                             ||((TIME_angle_n<=150)&&(TIME_angle_n>120))||((TIME_angle_n<=90)&&(TIME_angle_n>60))||((TIME_angle_n<=30)&&(TIME_angle_n>0)))            
         {
             //Receiver_OUT_OPEN=1;
             LATASET=0x0002;
@@ -920,22 +923,22 @@ void ID_Decode_OUT(void)
                                        FLAG_angle_closeing=0;
                                        switch(DATA_Packet_Control){
                                                     case 0x41:
-                                                             TIME_angle_n=150;
+                                                             TIME_angle_n=60*3-30;//250;   //3指
                                                              break;
                                                     case 0x42:
-                                                             TIME_angle_n=350;
+                                                             TIME_angle_n=60*4-30;//350;   //4指
                                                              break; 
                                                     case 0x43:
-                                                             TIME_angle_n=450;
+                                                             TIME_angle_n=60*5-30;//450;   //5指
                                                              break; 
                                                     case 0x44:
-                                                             TIME_angle_n=550;
+                                                             TIME_angle_n=60*6-30;//550;  //6指
                                                              break;  
                                                     case 0x45:
-                                                             TIME_angle_n=750;
+                                                             TIME_angle_n=60*8-30;//750;  //8指
                                                              break;   
                                                     case 0x46:
-                                                             TIME_angle_n=950;
+                                                             TIME_angle_n=60*10-30;//950; //10指
                                                              break;          
                                                 }                                       
                                    }
