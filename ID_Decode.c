@@ -213,11 +213,11 @@ void ID_Decode_IDCheck(void)
                 //DATA_Packet_Control_0=DATA_Packet_Control;
                 if(DATA_Packet_Control>=0x80){
                     SWITCH_DIP=(DATA_Packet_Control&0x70)>>4;
-                    //DATA_Packet_Control_0=DATA_Packet_Control&0x8F;      //以下2015.08.21追加
-                    value_num=DATA_Packet_Control&0x8F;
-                    if(value_num==0x80){DATA_Packet_soft_ver=1;DATA_Packet_Control_0=0x88;}
-                    else if(value_num>0x88){DATA_Packet_soft_ver=1;DATA_Packet_Control_0=value_num-8;}
-                    else {DATA_Packet_soft_ver=0;DATA_Packet_Control_0=value_num;}
+                    DATA_Packet_Control_0=DATA_Packet_Control&0x8F;      //以下2015.08.21追加
+//                    value_num=DATA_Packet_Control&0x8F;
+//                    if(value_num==0x80){DATA_Packet_soft_ver=1;DATA_Packet_Control_0=0x88;}
+//                    else if(value_num>0x88){DATA_Packet_soft_ver=1;DATA_Packet_Control_0=value_num-8;}
+//                    else {DATA_Packet_soft_ver=0;DATA_Packet_Control_0=value_num;}
                     DATA_Packet_Control=DATA_Packet_Control_0;
                 }
              #endif
@@ -594,10 +594,13 @@ void ID_Decode_OUT(void)
 //           if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
 //           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status+4;FLAG_HA_START=1;}   //受信器自动发送HA状态码为实际HA码+4
            if((FLAG_APP_Reply==1)||(FLAG_426MHz_Reply==1)){
-               if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status+8;}
-               if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;
-                                        if(HA_Status==0x84)HA_Status_buf=0x80;
-                                        else HA_Status_buf=HA_Status+12;}    //受信器自动发送HA状态码为实际HA码+4
+//               if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status+8;}
+//               if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;
+//                                        if(HA_Status==0x84)HA_Status_buf=0x80;
+//                                        else HA_Status_buf=HA_Status+12;}    //受信器自动发送HA状态码为实际HA码+4
+               if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status;}
+               if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;HA_Status_buf=HA_Status+4;}    //受信器自动发送HA状态码为实际HA码+4
+
                ID_data.IDL=DATA_Packet_ID;
                    if(DIP_switch1==1)HA_Status_buf=HA_Status_buf&0xBF;
                       else HA_Status_buf=HA_Status_buf|0x40;
