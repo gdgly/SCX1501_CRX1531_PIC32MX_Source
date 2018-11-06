@@ -179,7 +179,6 @@ main_start:
                Freq_Scanning();
             //}
             if(rxphase!=0)READ_RSSI_avg();
-            else RSSI_level=0;
         }
         else if(TIMER1s==0)goto main_start;
         ID_learn();

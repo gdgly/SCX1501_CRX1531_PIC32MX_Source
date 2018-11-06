@@ -300,8 +300,6 @@ extern UINT8 RAM_rssi_AVG;
 extern UINT8 FLAG_rssi_AVG;
 extern UINT8 RSSI_level;
 extern UINT8 TIME_display_RSSI;
-
-extern UINT8 TIME_RSSI_valid;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)

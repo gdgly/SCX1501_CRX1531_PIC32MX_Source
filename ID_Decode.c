@@ -397,56 +397,39 @@ void Receiver_BEEP(void)
 void ID_Decode_OUT(void)
 {
     UINT8 Control_i,data0,data_sum,data_xm[2];
-    UINT16 i_xm,x,y;
+    UINT16 i_xm;
  #if defined(__Product_PIC32MX2_Receiver__)
 
     if(TIME_display_RSSI==0)RSSI_level=0;
-    if((RSSI_level>0)&&(TIME_RSSI_valid==0)){
+    if(RSSI_level>0){
         if(rxphase!=0){
                 if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5)){Receiver_LED_TX_buffer=0;Receiver_LED_RX_buffer=1;}   //暂时记录下收到信号的频率信道,0代表426M
                    else {Receiver_LED_TX_buffer=1;Receiver_LED_RX_buffer=0;}      //                       1代表429M
         }
-//        if(RSSI_level==1){
-//               Receiver_Buzzer_buffer=0;
-//               Receiver_OUT_CLOSE_buffer=0;
-//               Receiver_OUT_STOP_buffer=0;
-//               Receiver_OUT_OPEN_buffer=1;
-//        }
-//        else  if(RSSI_level==2){
-//               Receiver_Buzzer_buffer=0;
-//               Receiver_OUT_CLOSE_buffer=0;
-//               Receiver_OUT_STOP_buffer=1;
-//               Receiver_OUT_OPEN_buffer=1;
-//        }
-//        else  if(RSSI_level==3){
-//               Receiver_Buzzer_buffer=0;
-//               Receiver_OUT_CLOSE_buffer=1;
-//               Receiver_OUT_STOP_buffer=1;
-//               Receiver_OUT_OPEN_buffer=1;
-//        }
-//        else  if(RSSI_level==4){
-//               Receiver_Buzzer_buffer=1;
-//               Receiver_OUT_CLOSE_buffer=1;
-//               Receiver_OUT_STOP_buffer=1;
-//               Receiver_OUT_OPEN_buffer=1;
-//        }
-      
-        
-    if(TIME_RSSI_valid==0)TIME_RSSI_valid=70; 
-        
-     for(y=0;y<RSSI_level;y++){  
-       for(x=0;x<200;x++){
-         Receiver_Buzzer_buffer=!Receiver_Buzzer_buffer;   //蜂鸣器频率2.08KHZ
-         Delayus(240);
-         ClearWDT(); // Service the WDT
-       }
-        for(x=0;x<600;x++){
-         Receiver_Buzzer_buffer=0;   //蜂鸣器频率2.08KHZ
-         Delayus(240);
-         ClearWDT(); // Service the WDT
-       }      
-     }        
-        
+        if(RSSI_level==1){
+               Receiver_Buzzer_buffer=0;
+               Receiver_OUT_CLOSE_buffer=0;
+               Receiver_OUT_STOP_buffer=0;
+               Receiver_OUT_OPEN_buffer=1;
+        }
+        else  if(RSSI_level==2){
+               Receiver_Buzzer_buffer=0;
+               Receiver_OUT_CLOSE_buffer=0;
+               Receiver_OUT_STOP_buffer=1;
+               Receiver_OUT_OPEN_buffer=1;
+        }
+        else  if(RSSI_level==3){
+               Receiver_Buzzer_buffer=0;
+               Receiver_OUT_CLOSE_buffer=1;
+               Receiver_OUT_STOP_buffer=1;
+               Receiver_OUT_OPEN_buffer=1;
+        }
+        else  if(RSSI_level==4){
+               Receiver_Buzzer_buffer=1;
+               Receiver_OUT_CLOSE_buffer=1;
+               Receiver_OUT_STOP_buffer=1;
+               Receiver_OUT_OPEN_buffer=1;
+        }
     }
     else {
        Receiver_Buzzer_buffer=0;
