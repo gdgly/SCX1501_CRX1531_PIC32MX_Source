@@ -397,236 +397,297 @@ void Receiver_BEEP(void)
 void ID_Decode_OUT(void)
 {
     UINT8 Control_i,data0,data_sum,data_xm[2];
-    UINT16 i_xm;
+    UINT16 i_xm,x,y;
  #if defined(__Product_PIC32MX2_Receiver__)
-//    if(Freq_Scanning_CH_bak==0) Control_i=DATA_Packet_Control&0xFF;
-//    else Control_i=DATA_Packet_Control&0x0E;
-//    if(HA_Sensor_signal==1)Receiver_LED_TX=0;                      //test 接近信号回路
-//     else Receiver_LED_TX=1;
-    if(time_Login_exit_256!=0)return;
-    Control_i=DATA_Packet_Control&0xFF;
-    if(TIMER1s){
-                switch (Control_i){
-                     case 0x14:                     //stop+login
-                                Receiver_LED_OUT=1;
-                                TIMER250ms_STOP=250;
-                                Receiver_OUT_STOP=1;
-                                Receiver_OUT_VENT=0;
-                                if(TIMER1s<3550){//Receiver_OUT_OPEN=1;
-                                                 LATASET=0x0002;
-                                                 Receiver_OUT_CLOSE=1;Receiver_BEEP();}
-                                break;
-                     case 0x02:                        //close
-                                Receiver_LED_OUT=1;
-                                //Receiver_OUT_OPEN=0;
-                                LATACLR=0x0002;
-                                Receiver_OUT_VENT=0;
-                                Receiver_OUT_STOP=0;
-                                Receiver_OUT_CLOSE=1;
-                                break;
-                     case 0x04:                      //stop
-                                Receiver_LED_OUT=1;
-                                //Receiver_OUT_OPEN=0;
-                                LATACLR=0x0002;
-                                Receiver_OUT_VENT=0;
-                                Receiver_OUT_CLOSE=0;
-                                Receiver_OUT_STOP=1;
-                                break;
-                     case 0x08:                      //open
-                                Receiver_LED_OUT=1;
-                                Receiver_OUT_STOP=0;
-                                Receiver_OUT_CLOSE=0;
-                                Receiver_OUT_VENT=0;
-                                //Receiver_OUT_OPEN=1;
-                                LATASET=0x0002;
-                                break;
-                    case 0x09:                       //vent+OPEN
-                                Receiver_LED_OUT=1;
-                                Receiver_OUT_STOP=0;
-				Receiver_OUT_CLOSE=0;
-                                //Receiver_OUT_OPEN=1;
-                                LATASET=0x0002;
-                                Receiver_OUT_VENT=1;
-                                break;
-                     case 0x03:                       //vent+close
-                                Receiver_LED_OUT=1;
-                                Receiver_OUT_STOP=0;
-				//Receiver_OUT_OPEN=0;
-                                LATACLR=0x0002;
-                                Receiver_OUT_CLOSE=1;
-                                Receiver_OUT_VENT=1;
-                                break;
-                     case 0x0C:                    //open+stop
-                                Receiver_LED_OUT=1;
-                                TIMER250ms_STOP=250;
-                                Receiver_OUT_CLOSE=0;
-                                Receiver_OUT_VENT=0;
-                                Receiver_OUT_STOP=1;
-				if(FG_OUT_OPEN_CLOSE==0){FG_OUT_OPEN_CLOSE=1;TIME_OUT_OPEN_CLOSE=25;}          //2015.3.23修改
-                                if(TIME_OUT_OPEN_CLOSE==0)LATASET=0x0002;  //Receiver_OUT_OPEN=1;
-                                break;
-                     case 0x06:                  //close+stop
-                                Receiver_LED_OUT=1;
-                                TIMER250ms_STOP=250;
-                                //Receiver_OUT_OPEN=0;
-                                LATACLR=0x0002;
-                                Receiver_OUT_VENT=0;
-                                Receiver_OUT_STOP=1;
-				if(FG_OUT_OPEN_CLOSE==0){FG_OUT_OPEN_CLOSE=1;TIME_OUT_OPEN_CLOSE=25;}       //2015.3.23修改
-                                if(TIME_OUT_OPEN_CLOSE==0)Receiver_OUT_CLOSE=1;
-                                break;
-                     case 0x01:                  //VENT
-                                Receiver_LED_OUT=1;
-                                if(Freq_Scanning_CH_bak==1){             //429M   换气
-                                    //Receiver_OUT_OPEN=1;
-                                    LATASET=0x0002;
-                                    Receiver_OUT_STOP=0;
-                                    Receiver_OUT_CLOSE=1;
-                                }
-                                else {                   //426M  换气
-                                    Receiver_OUT_VENT=1;
-                                    //Receiver_OUT_OPEN=0;
-                                    LATACLR=0x0002;
-                                    Receiver_OUT_STOP=0;
-                                    Receiver_OUT_CLOSE=0;
-                                }
-                                break;
-                     case 0x20:
-                                if(Freq_Scanning_CH_bak==1){          //429M  角度调整（开）
-                                        Receiver_LED_OUT=1;
-                                        //Receiver_OUT_OPEN=1;
-                                        LATASET=0x0002;
-                                        Receiver_OUT_STOP=0;
-                                        Receiver_OUT_CLOSE=0;
-                                }
-                                break;
-                     case 0x0A:                       //close+OPEN
-                                Receiver_LED_OUT=1;
-                                Receiver_OUT_STOP=0;
-				Receiver_OUT_VENT=0;
-                                //Receiver_OUT_OPEN=1;
-                                LATASET=0x0002;
-                                Receiver_OUT_CLOSE=1;
-                                break;
-                     case 0x40:
-                                if(Freq_Scanning_CH_bak==1){          //429M  角度调整（关）
-                                        Receiver_LED_OUT=1;
-                                        //Receiver_OUT_OPEN=0;
-                                        LATACLR=0x0002;
-                                        Receiver_OUT_STOP=0;
-                                        Receiver_OUT_CLOSE=1;
-                                }
-                                else{
-                                    if((FG_auto_out==0)&&(Manual_override_TIMER==0)){                  //自动送信
-                                        Receiver_LED_OUT=1;
-                                        TIMER250ms_STOP=0;
-                                        Receiver_OUT_VENT=0;
-                                        Receiver_OUT_CLOSE=0;
-                                        if(TIMER1s>2000){Receiver_OUT_STOP=1;LATACLR=0x0002;}
-                                        else if(TIMER1s>1000){Receiver_OUT_STOP=0;LATACLR=0x0002;}
-                                        else {FG_auto_open_time=1;Receiver_OUT_STOP=0;LATASET=0x0002;}
-                                    }
-                                }
-                                break;
-//                     case 0x10:
-//                                if(Freq_Scanning_CH_bak==1){             //429M   半开信号
-//                                    Receiver_LED_OUT=1;
-//                                    Receiver_OUT_STOP=0;
-//                                    Receiver_OUT_CLOSE=0;
-//                                    //Receiver_OUT_OPEN=1;
-//                                    LATASET=0x0002;
-//                                    TIMER250ms_STOP=(TIMER_Semi_open+1)*1000;
-//                                }
-//                                break;
-                     default:
-                                break;
-                     }
-                if(Freq_Scanning_CH_bak==1){             //429M   半开信号/半闭
-                    if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00)){
-                                if((DATA_Packet_Control&0xDF)<0xC0){
-                                    FLAG__Semi_open_T=1;
-                                    FLAG__Semi_close_T=0;
-                                    Receiver_LED_OUT=1;
-                                    Receiver_OUT_STOP=0;
-                                    Receiver_OUT_CLOSE=0;
-                                    //Receiver_OUT_OPEN=1;
-                                    LATASET=0x0002;
-                                    TIMER250ms_STOP=((TIMER_Semi_open+1)*1000/107)*100;
-                                }
-                                else {
-                                    FLAG__Semi_open_T=0;
-                                    FLAG__Semi_close_T=1;
-                                    Receiver_LED_OUT=1;
-                                    Receiver_OUT_STOP=0;
-                                    Receiver_OUT_CLOSE=1;
-                                    //Receiver_OUT_OPEN=0;
-                                    LATACLR=0x0002;
-                                    TIMER250ms_STOP=((TIMER_Semi_close+1)*1000/107)*100;
-                                }
-                      }
-                }
-                if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
-                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)||((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
-                     FLAG_APP_Reply=1;
-                if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
-                    if((DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
-                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)){
-                        FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;TIMER250ms_STOP=0;
-                    }
-                }
 
+    if(TIME_display_RSSI==0)RSSI_level=0;
+    if((RSSI_level>0)&&(TIME_RSSI_valid==0)){
+        if(rxphase!=0){
+                if((Freq_Scanning_CH==1)||(Freq_Scanning_CH==3)||(Freq_Scanning_CH==5)){Receiver_LED_TX_buffer=0;Receiver_LED_RX_buffer=1;}   //暂时记录下收到信号的频率信道,0代表426M
+                   else {Receiver_LED_TX_buffer=1;Receiver_LED_RX_buffer=0;}      //                       1代表429M
+        }
+//        if(RSSI_level==1){
+//               Receiver_Buzzer_buffer=0;
+//               Receiver_OUT_CLOSE_buffer=0;
+//               Receiver_OUT_STOP_buffer=0;
+//               Receiver_OUT_OPEN_buffer=1;
+//        }
+//        else  if(RSSI_level==2){
+//               Receiver_Buzzer_buffer=0;
+//               Receiver_OUT_CLOSE_buffer=0;
+//               Receiver_OUT_STOP_buffer=1;
+//               Receiver_OUT_OPEN_buffer=1;
+//        }
+//        else  if(RSSI_level==3){
+//               Receiver_Buzzer_buffer=0;
+//               Receiver_OUT_CLOSE_buffer=1;
+//               Receiver_OUT_STOP_buffer=1;
+//               Receiver_OUT_OPEN_buffer=1;
+//        }
+//        else  if(RSSI_level==4){
+//               Receiver_Buzzer_buffer=1;
+//               Receiver_OUT_CLOSE_buffer=1;
+//               Receiver_OUT_STOP_buffer=1;
+//               Receiver_OUT_OPEN_buffer=1;
+//        }
+      
+        
+    if(TIME_RSSI_valid==0)TIME_RSSI_valid=70; 
+        
+     for(y=0;y<RSSI_level;y++){  
+       for(x=0;x<200;x++){
+         Receiver_Buzzer_buffer=!Receiver_Buzzer_buffer;   //蜂鸣器频率2.08KHZ
+         Delayus(240);
+         ClearWDT(); // Service the WDT
+       }
+        for(x=0;x<600;x++){
+         Receiver_Buzzer_buffer=0;   //蜂鸣器频率2.08KHZ
+         Delayus(240);
+         ClearWDT(); // Service the WDT
+       }      
+     }        
+        
+    }
+    else {
+       Receiver_Buzzer_buffer=0;
+       Receiver_LED_OUT_buffer=0;
+       Receiver_LED_TX_buffer=0;
+       Receiver_LED_RX_buffer=0;
+       Receiver_OUT_OPEN_buffer=0;
+       Receiver_OUT_CLOSE_buffer=0;
+       Receiver_OUT_STOP_buffer=0;
+       Receiver_OUT_VENT_buffer=0;
+    }
 
-               }       
-     else {
-               if((FG_auto_out==1)&&(TIME_auto_out==0)){FG_auto_out=0;TIME_auto_close=270;Receiver_LED_OUT=1;}   //300
-               if(TIME_auto_close){
-                    if(TIME_auto_close>180){Receiver_OUT_STOP=1;Receiver_OUT_CLOSE=0;}  //200
-                    else if(TIME_auto_close>90){Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=0;}   //100
-                    else {Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=1;}	     
-               }
-               else   {FG_auto_manual_mode=0;Receiver_OUT_CLOSE=0;}
-               FG_First_auto=0;
-               LATACLR=0x0002;
-               Receiver_OUT_VENT=0;
-               if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)||(TIME_auto_close));
-               else  if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=1;    //2015.3.23修改
-	       else Receiver_LED_OUT=0;
-               if(FG_auto_open_time==1){FG_First_auto=0;FG_auto_out=1;FG_auto_open_time=0;}
-               if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
-                   if((TIMER250ms_STOP<1000)&&(TIMER250ms_STOP>0)){Receiver_OUT_STOP=1;Receiver_LED_OUT=1;}
-                   else if(TIMER250ms_STOP==0){Receiver_OUT_STOP=0;FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;}
-               }
-               else if((TIMER250ms_STOP==0)&&(TIME_auto_close==0)){Receiver_OUT_STOP=0;FG_OUT_OPEN_CLOSE=0;}    //2015.3.23修改
-
-//           if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
-//           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status+4;FLAG_HA_START=1;}   //受信器自动发送HA状态码为实际HA码+4
-           if((FLAG_APP_Reply==1)||(FLAG_426MHz_Reply==1)){
-//               if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status+8;}
-//               if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;
-//                                        if(HA_Status==0x84)HA_Status_buf=0x80;
-//                                        else HA_Status_buf=HA_Status+12;}    //受信器自动发送HA状态码为实际HA码+4
-               if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status;}
-               if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;HA_Status_buf=HA_Status+4;}    //受信器自动发送HA状态码为实际HA码+4
-
-               ID_data.IDL=DATA_Packet_ID;
-                   if(DIP_switch1==1)HA_Status_buf=HA_Status_buf&0xBF;
-                      else HA_Status_buf=HA_Status_buf|0x40;
-                   if(DIP_switch2==1)HA_Status_buf=HA_Status_buf&0xDF;
-                      else HA_Status_buf=HA_Status_buf|0x20;
-                   if(DIP_switch3==1)HA_Status_buf=HA_Status_buf&0xEF;
-                      else HA_Status_buf=HA_Status_buf|0x10;
-                   Control_code=HA_Status_buf;
-               FLAG_HA_START=1;
-           }
-           FLAG_Receiver_BEEP=0;
-           //if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
-           //else Receiver_LED_OUT=0;
-           //Receiver_OUT_OPEN=0;
-           //LATACLR=0x0002;
-           //Receiver_OUT_CLOSE=0;
-           //if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
-          }
-    if(TIMER300ms==0)Receiver_LED_RX=0;
+//////
+////////    if(Freq_Scanning_CH_bak==0) Control_i=DATA_Packet_Control&0xFF;
+////////    else Control_i=DATA_Packet_Control&0x0E;
+////////    if(HA_Sensor_signal==1)Receiver_LED_TX=0;                      //test 接近信号回路
+////////     else Receiver_LED_TX=1;
+//////    if(time_Login_exit_256!=0)return;
+//////    Control_i=DATA_Packet_Control&0xFF;
+//////    if(TIMER1s){
+//////                switch (Control_i){
+//////                     case 0x14:                     //stop+login
+//////                                Receiver_LED_OUT=1;
+//////                                TIMER250ms_STOP=250;
+//////                                Receiver_OUT_STOP=1;
+//////                                Receiver_OUT_VENT=0;
+//////                                if(TIMER1s<3550){//Receiver_OUT_OPEN=1;
+//////                                                 LATASET=0x0002;
+//////                                                 Receiver_OUT_CLOSE=1;Receiver_BEEP();}
+//////                                break;
+//////                     case 0x02:                        //close
+//////                                Receiver_LED_OUT=1;
+//////                                //Receiver_OUT_OPEN=0;
+//////                                LATACLR=0x0002;
+//////                                Receiver_OUT_VENT=0;
+//////                                Receiver_OUT_STOP=0;
+//////                                Receiver_OUT_CLOSE=1;
+//////                                break;
+//////                     case 0x04:                      //stop
+//////                                Receiver_LED_OUT=1;
+//////                                //Receiver_OUT_OPEN=0;
+//////                                LATACLR=0x0002;
+//////                                Receiver_OUT_VENT=0;
+//////                                Receiver_OUT_CLOSE=0;
+//////                                Receiver_OUT_STOP=1;
+//////                                break;
+//////                     case 0x08:                      //open
+//////                                Receiver_LED_OUT=1;
+//////                                Receiver_OUT_STOP=0;
+//////                                Receiver_OUT_CLOSE=0;
+//////                                Receiver_OUT_VENT=0;
+//////                                //Receiver_OUT_OPEN=1;
+//////                                LATASET=0x0002;
+//////                                break;
+//////                    case 0x09:                       //vent+OPEN
+//////                                Receiver_LED_OUT=1;
+//////                                Receiver_OUT_STOP=0;
+//////				Receiver_OUT_CLOSE=0;
+//////                                //Receiver_OUT_OPEN=1;
+//////                                LATASET=0x0002;
+//////                                Receiver_OUT_VENT=1;
+//////                                break;
+//////                     case 0x03:                       //vent+close
+//////                                Receiver_LED_OUT=1;
+//////                                Receiver_OUT_STOP=0;
+//////				//Receiver_OUT_OPEN=0;
+//////                                LATACLR=0x0002;
+//////                                Receiver_OUT_CLOSE=1;
+//////                                Receiver_OUT_VENT=1;
+//////                                break;
+//////                     case 0x0C:                    //open+stop
+//////                                Receiver_LED_OUT=1;
+//////                                TIMER250ms_STOP=250;
+//////                                Receiver_OUT_CLOSE=0;
+//////                                Receiver_OUT_VENT=0;
+//////                                Receiver_OUT_STOP=1;
+//////				if(FG_OUT_OPEN_CLOSE==0){FG_OUT_OPEN_CLOSE=1;TIME_OUT_OPEN_CLOSE=25;}          //2015.3.23修改
+//////                                if(TIME_OUT_OPEN_CLOSE==0)LATASET=0x0002;  //Receiver_OUT_OPEN=1;
+//////                                break;
+//////                     case 0x06:                  //close+stop
+//////                                Receiver_LED_OUT=1;
+//////                                TIMER250ms_STOP=250;
+//////                                //Receiver_OUT_OPEN=0;
+//////                                LATACLR=0x0002;
+//////                                Receiver_OUT_VENT=0;
+//////                                Receiver_OUT_STOP=1;
+//////				if(FG_OUT_OPEN_CLOSE==0){FG_OUT_OPEN_CLOSE=1;TIME_OUT_OPEN_CLOSE=25;}       //2015.3.23修改
+//////                                if(TIME_OUT_OPEN_CLOSE==0)Receiver_OUT_CLOSE=1;
+//////                                break;
+//////                     case 0x01:                  //VENT
+//////                                Receiver_LED_OUT=1;
+//////                                if(Freq_Scanning_CH_bak==1){             //429M   换气
+//////                                    //Receiver_OUT_OPEN=1;
+//////                                    LATASET=0x0002;
+//////                                    Receiver_OUT_STOP=0;
+//////                                    Receiver_OUT_CLOSE=1;
+//////                                }
+//////                                else {                   //426M  换气
+//////                                    Receiver_OUT_VENT=1;
+//////                                    //Receiver_OUT_OPEN=0;
+//////                                    LATACLR=0x0002;
+//////                                    Receiver_OUT_STOP=0;
+//////                                    Receiver_OUT_CLOSE=0;
+//////                                }
+//////                                break;
+//////                     case 0x20:
+//////                                if(Freq_Scanning_CH_bak==1){          //429M  角度调整（开）
+//////                                        Receiver_LED_OUT=1;
+//////                                        //Receiver_OUT_OPEN=1;
+//////                                        LATASET=0x0002;
+//////                                        Receiver_OUT_STOP=0;
+//////                                        Receiver_OUT_CLOSE=0;
+//////                                }
+//////                                break;
+//////                     case 0x0A:                       //close+OPEN
+//////                                Receiver_LED_OUT=1;
+//////                                Receiver_OUT_STOP=0;
+//////				Receiver_OUT_VENT=0;
+//////                                //Receiver_OUT_OPEN=1;
+//////                                LATASET=0x0002;
+//////                                Receiver_OUT_CLOSE=1;
+//////                                break;
+//////                     case 0x40:
+//////                                if(Freq_Scanning_CH_bak==1){          //429M  角度调整（关）
+//////                                        Receiver_LED_OUT=1;
+//////                                        //Receiver_OUT_OPEN=0;
+//////                                        LATACLR=0x0002;
+//////                                        Receiver_OUT_STOP=0;
+//////                                        Receiver_OUT_CLOSE=1;
+//////                                }
+//////                                else{
+//////                                    if((FG_auto_out==0)&&(Manual_override_TIMER==0)){                  //自动送信
+//////                                        Receiver_LED_OUT=1;
+//////                                        TIMER250ms_STOP=0;
+//////                                        Receiver_OUT_VENT=0;
+//////                                        Receiver_OUT_CLOSE=0;
+//////                                        if(TIMER1s>2000){Receiver_OUT_STOP=1;LATACLR=0x0002;}
+//////                                        else if(TIMER1s>1000){Receiver_OUT_STOP=0;LATACLR=0x0002;}
+//////                                        else {FG_auto_open_time=1;Receiver_OUT_STOP=0;LATASET=0x0002;}
+//////                                    }
+//////                                }
+//////                                break;
+////////                     case 0x10:
+////////                                if(Freq_Scanning_CH_bak==1){             //429M   半开信号
+////////                                    Receiver_LED_OUT=1;
+////////                                    Receiver_OUT_STOP=0;
+////////                                    Receiver_OUT_CLOSE=0;
+////////                                    //Receiver_OUT_OPEN=1;
+////////                                    LATASET=0x0002;
+////////                                    TIMER250ms_STOP=(TIMER_Semi_open+1)*1000;
+////////                                }
+////////                                break;
+//////                     default:
+//////                                break;
+//////                     }
+//////                if(Freq_Scanning_CH_bak==1){             //429M   半开信号/半闭
+//////                    if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00)){
+//////                                if((DATA_Packet_Control&0xDF)<0xC0){
+//////                                    FLAG__Semi_open_T=1;
+//////                                    FLAG__Semi_close_T=0;
+//////                                    Receiver_LED_OUT=1;
+//////                                    Receiver_OUT_STOP=0;
+//////                                    Receiver_OUT_CLOSE=0;
+//////                                    //Receiver_OUT_OPEN=1;
+//////                                    LATASET=0x0002;
+//////                                    TIMER250ms_STOP=((TIMER_Semi_open+1)*1000/107)*100;
+//////                                }
+//////                                else {
+//////                                    FLAG__Semi_open_T=0;
+//////                                    FLAG__Semi_close_T=1;
+//////                                    Receiver_LED_OUT=1;
+//////                                    Receiver_OUT_STOP=0;
+//////                                    Receiver_OUT_CLOSE=1;
+//////                                    //Receiver_OUT_OPEN=0;
+//////                                    LATACLR=0x0002;
+//////                                    TIMER250ms_STOP=((TIMER_Semi_close+1)*1000/107)*100;
+//////                                }
+//////                      }
+//////                }
+//////                if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
+//////                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)||((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
+//////                     FLAG_APP_Reply=1;
+//////                if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
+//////                    if((DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
+//////                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)){
+//////                        FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;TIMER250ms_STOP=0;
+//////                    }
+//////                }
+//////
+//////
+//////               }
+//////     else {
+//////               if((FG_auto_out==1)&&(TIME_auto_out==0)){FG_auto_out=0;TIME_auto_close=270;Receiver_LED_OUT=1;}   //300
+//////               if(TIME_auto_close){
+//////                    if(TIME_auto_close>180){Receiver_OUT_STOP=1;Receiver_OUT_CLOSE=0;}  //200
+//////                    else if(TIME_auto_close>90){Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=0;}   //100
+//////                    else {Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=1;}
+//////               }
+//////               else   {FG_auto_manual_mode=0;Receiver_OUT_CLOSE=0;}
+//////               FG_First_auto=0;
+//////               LATACLR=0x0002;
+//////               Receiver_OUT_VENT=0;
+//////               if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)||(TIME_auto_close));
+//////               else  if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=1;    //2015.3.23修改
+//////	       else Receiver_LED_OUT=0;
+//////               if(FG_auto_open_time==1){FG_First_auto=0;FG_auto_out=1;FG_auto_open_time=0;}
+//////               if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
+//////                   if((TIMER250ms_STOP<1000)&&(TIMER250ms_STOP>0)){Receiver_OUT_STOP=1;Receiver_LED_OUT=1;}
+//////                   else if(TIMER250ms_STOP==0){Receiver_OUT_STOP=0;FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;}
+//////               }
+//////               else if((TIMER250ms_STOP==0)&&(TIME_auto_close==0)){Receiver_OUT_STOP=0;FG_OUT_OPEN_CLOSE=0;}    //2015.3.23修改
+//////
+////////           if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status;FLAG_HA_START=1;}
+////////           if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;ID_data.IDL=DATA_Packet_ID;Control_code=HA_Status+4;FLAG_HA_START=1;}   //受信器自动发送HA状态码为实际HA码+4
+//////           if((FLAG_APP_Reply==1)||(FLAG_426MHz_Reply==1)){
+////////               if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status+8;}
+////////               if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;
+////////                                        if(HA_Status==0x84)HA_Status_buf=0x80;
+////////                                        else HA_Status_buf=HA_Status+12;}    //受信器自动发送HA状态码为实际HA码+4
+//////               if(FLAG_APP_Reply==1){FLAG_APP_Reply=0;HA_Status_buf=HA_Status;}
+//////               if(FLAG_426MHz_Reply==1){FLAG_426MHz_Reply=0;HA_Status_buf=HA_Status+4;}    //受信器自动发送HA状态码为实际HA码+4
+//////
+//////               ID_data.IDL=DATA_Packet_ID;
+//////                   if(DIP_switch1==1)HA_Status_buf=HA_Status_buf&0xBF;
+//////                      else HA_Status_buf=HA_Status_buf|0x40;
+//////                   if(DIP_switch2==1)HA_Status_buf=HA_Status_buf&0xDF;
+//////                      else HA_Status_buf=HA_Status_buf|0x20;
+//////                   if(DIP_switch3==1)HA_Status_buf=HA_Status_buf&0xEF;
+//////                      else HA_Status_buf=HA_Status_buf|0x10;
+//////                   Control_code=HA_Status_buf;
+//////               FLAG_HA_START=1;
+//////           }
+//////           FLAG_Receiver_BEEP=0;
+//////           //if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
+//////           //else Receiver_LED_OUT=0;
+//////           //Receiver_OUT_OPEN=0;
+//////           //LATACLR=0x0002;
+//////           //Receiver_OUT_CLOSE=0;
+//////           //if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
+//////          }
+//////    if(TIMER300ms==0)Receiver_LED_RX=0;
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
      if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
@@ -818,11 +879,13 @@ void  Freq_Scanning(void)
 //            dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
 //            TIMER18ms=18;
 
-            Freq_Scanning_CH=1;
+            //Freq_Scanning_CH=1;
+            Freq_Scanning_CH++;
             //if(Freq_Scanning_CH==3)Freq_Scanning_CH=4;
             //if(Freq_Scanning_CH>4){Freq_Scanning_CH=1;dd_set_ADF7021_ReInitial();}
             //if(TIME_EMC==0){dd_set_ADF7021_ReInitial();dd_set_RX_mode();}
             if(TIME_Fine_Calibration==0){TIME_Fine_Calibration=9000;dd_set_ADF7021_ReInitial();dd_set_RX_mode();}
+            if(Freq_Scanning_CH>6)Freq_Scanning_CH=1;
             dd_set_ADF7021_Freq(0,Freq_Scanning_CH);
             TIMER18ms=18;
         #endif

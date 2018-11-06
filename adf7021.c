@@ -717,6 +717,35 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
 //	dd_write_7021_reg(&register_value.byte[0]);
 
 
+//    	switch (CH){
+//            case 1:
+//                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
+//                    break;
+//            case 2:
+//                    register_value.whole_reg = 0x09574290;//CH=429.175MHz
+//                    break;
+//            case 3:
+//                    //register_value.whole_reg = 0x09574520;//CH=429.1875MHz
+//                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
+//                    break;
+//            case 4:
+//                    register_value.whole_reg = 0x095747B0;//CH=429.200MHz
+//                    break;
+//            case 5:
+//                    //register_value.whole_reg = 0x09574A40;//CH=429.2125MHz
+//                    register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
+//                    break;
+//            case 6:
+//                    register_value.whole_reg = 0x09574CD0;//CH=429.225MHz
+//                    break;
+////            case 7:
+////                    register_value.whole_reg = 0x09574F60;//CH=429.2375MHz
+////                    break;
+//            default:
+//                   break;
+//	}
+
+
     	switch (CH){
             case 1:
                     register_value.whole_reg = 0x0954C7B0; //CH=426.075MHz
@@ -744,6 +773,7 @@ void dd_set_ADF7021_Freq(UINT8 Mode,UINT8 CH)
             default:
                    break;
 	}
+
         dd_write_7021_reg(&register_value.byte[0]);
         Delayus(40);		//delay 40us
 //        	//write R4, turn on demodulation
@@ -787,9 +817,22 @@ void dd_set_ADF7021_ReInitial(void)
     Delayus(20);    
 }
 
+
 void dd_read_RSSI(void)
 {
+ #if defined(__Product_PIC32MX2_Receiver__)
+	ADF70XX_REG_T RSSI_value;
 
+	RSSI_value = dd_read_7021_reg(0x14);
+	RSSI_value.whole_reg += RSSI_value.whole_reg ;
+
+    rssi = RSSI_value.byte[3];
+           rssi += gain_correction[RSSI_value.byte[2] & 0x0F] ;
+    rssi = rssi /4 ;
+        //  rssi=130-rssi;
+	//RSSI(dBm) = rssi + 130
+
+ #endif
 #if defined(__Product_PIC32MX2_WIFI__)
 	ADF70XX_REG_T RSSI_value;
         UINT8 i,DATA_7021_byte[4];
@@ -807,6 +850,32 @@ void dd_read_RSSI(void)
     rssi = rssi /4;//RSSI(dBm) = - rssi
 #endif
 }
+ #if defined(__Product_PIC32MX2_Receiver__)
+void READ_RSSI_avg(void)
+{
+                   if(ADF7021_MUXOUT==1)
+                   {
+                        rssi=dd_read_rssi_7021_reg(0x14);
+                        rssi=130-rssi;
+                        RAM_rssi_CNT++;
+                        RAM_rssi_SUM +=rssi;
+                        TIME_display_RSSI=20;
+                        if(RAM_rssi_CNT>=5){
+                          RAM_rssi_AVG=RAM_rssi_SUM/RAM_rssi_CNT;
+                          RAM_rssi_CNT=0;
+                          RAM_rssi_SUM=0;
+
+                          if(rssi>115)RSSI_level=0;
+                          else if(rssi>100)RSSI_level=1;
+                          else if(rssi>80)RSSI_level=2;
+                          else if(rssi>60)RSSI_level=3;
+                          else RSSI_level=4;
+                          
+                        }
+                   }
+}
+ #endif
+
 
 void DIP_switch_Get(void)
 {
@@ -1151,16 +1220,19 @@ AUTO_SEND_exit:
        }
    }
 
-    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
-       rssi=dd_read_rssi_7021_reg(0x14);
-       if(rssi<=34){
-           rssi_COUNT++;
-           if(rssi_COUNT>10)rssi_COUNT=10;
-       }
-       else rssi_COUNT=0;
-   }
+//    if((ADF7021_MUXOUT==1)&&(FLAG_APP_RX==1)){
+//       rssi=dd_read_rssi_7021_reg(0x14);
+//       if(rssi<=34){
+//           rssi_COUNT++;
+//           if(rssi_COUNT>10)rssi_COUNT=10;
+//       }
+//       else rssi_COUNT=0;
+//   }
 
-    
+
+
+
+
 }
 
 

@@ -165,6 +165,7 @@ main_start:
 
     RF_test_mode();
     TIME_EMC=10;
+    FLAG_rssi_AVG=0;
     while(1)
     {
         all_Erase_EEPROM_next();
@@ -173,7 +174,12 @@ main_start:
             ADF7021_change_TXorRX();
             ID_Decode_IDCheck();
             ID_Decode_OUT();
-            Freq_Scanning();
+            //if(FLAG_rssi_AVG==0){
+            //   FLAG_rssi_AVG=1;
+               Freq_Scanning();
+            //}
+            if(rxphase!=0)READ_RSSI_avg();
+            else RSSI_level=0;
         }
         else if(TIMER1s==0)goto main_start;
         ID_learn();
