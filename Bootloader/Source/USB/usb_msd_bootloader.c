@@ -54,6 +54,12 @@
 #pragma config FPLLMUL = MUL_20, FPLLIDIV = DIV_2, FWDTEN = OFF
 #pragma config POSCMOD = HS, FNOSC = PRIPLL, FPBDIV = DIV_1
 #pragma config BWP = OFF
+
+#pragma config JTAGEN = OFF
+#pragma config FCKSM    = CSDCMD   // Clock Switching & Fail Safe Monitor: Clock Switching Disabled, Clock Monitoring Disabled
+#pragma config OSCIOFNC = OFF      // CLKO Enable: Disabled
+#pragma config IESO     = OFF      // Internal/External Switch-over: Disabled
+#pragma config FSOSCEN  = OFF      // Secondary Oscillator Enable: Disabled
 #if defined(TRANSPORT_LAYER_ETH)
 	#pragma config FMIIEN = OFF, FETHIO = OFF	// external PHY in RMII/alternate configuration	
 #endif
@@ -250,7 +256,7 @@ int main(void)
 	                    // Call USB tasks.
                         USBTasks();
                         // Blink LED
-        		  BlinkLED1();
+        				BlinkLED1();
                         // For a faster read, read 512 bytes at a time and buffer it.
                         readBytes = FSfread((void *)&asciiBuffer[pointer],1,512,myFile);
 
@@ -341,7 +347,7 @@ int main(void)
 ********************************************************************/
 BOOL CheckTrigger(void)
 {
-	UINT SwitchStatus;
+	UINT SwitchStatus,i;
 	SwitchStatus = ReadSwitchStatus();
 	if(SwitchStatus == SWITCH_PRESSED)
 	{
@@ -352,7 +358,8 @@ BOOL CheckTrigger(void)
 	{
 		// Switch is not pressed.
 		return FALSE;	
-	}	
+	}
+
 }	
 
 
@@ -463,9 +470,6 @@ void EraseFlash(void)
     pFlash = (void*)APP_FLASH_BASE_ADDRESS;
     for( i = 0; i < ((APP_FLASH_END_ADDRESS - APP_FLASH_BASE_ADDRESS + 1)/FLASH_PAGE_SIZE); i++ )
     {
-            // Blink LED
-        	 BlinkLED1();
-
 	     result = NVMemErasePage((void*)(pFlash + (i*FLASH_PAGE_SIZE) ) );
            //  result = NVMErasePage( pFlash + (i*FLASH_PAGE_SIZE) );
        // result = NVMemErasePage( (void*) 0x9D007000 );

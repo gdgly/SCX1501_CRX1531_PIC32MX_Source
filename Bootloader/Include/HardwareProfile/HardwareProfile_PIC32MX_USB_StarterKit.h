@@ -85,40 +85,36 @@
 
 
 
-//以下是万能板调试OK的boot
-	#define mLED              LATCbits.LATC6
+
+//	#define mLED              LATCbits.LATC6
+//	// Blinks LED 1 on USB Starter kit
+//	#define BlinkLED() (mLED = ((ReadCoreTimer() & 0x0800000) != 0))
+//	#define InitLED() do{	\
+//							TRISCbits.TRISC6 = 0;  \
+//							TRISCbits.TRISC7 = 0;  \
+//							LATCbits.LATC6 = 0; LATCbits.LATC7 = 0;\
+//						}while(0)
+//
+//	// Switch S3 on USB Starter Kit.
+//	#define ReadSwitchStatus() (PORTReadBits(IOPORT_C, BIT_8) & BIT_8)
+//   // Error indication.
+//	#define Error()   do{LATCbits.LATC6 = 1; LATCbits.LATC7 = 1;} while(0);
+
+
+//以下是调试板调试的boot
+	#define mLED              LATCbits.LATC9
 	// Blinks LED 1 on USB Starter kit
 	#define BlinkLED() (mLED = ((ReadCoreTimer() & 0x0800000) != 0))
 	#define BlinkLED1() (mLED = ((ReadCoreTimer() & 0x0040000) != 0))
 	#define InitLED() do{	\
-							TRISCbits.TRISC6 = 0;  \
-							TRISCbits.TRISC7 = 0;  \
-							LATCbits.LATC6 = 0; LATCbits.LATC7 = 0;\
+							TRISCbits.TRISC8 = 0;  \
+                                                        TRISCbits.TRISC9 = 0;  \
+							LATCbits.LATC8 = 0; LATCbits.LATC9 = 1;\
 						}while(0)
 
 	// Switch S3 on USB Starter Kit.
-	#define ReadSwitchStatus() (PORTReadBits(IOPORT_C, BIT_8) & BIT_8)
+	#define ReadSwitchStatus() (PORTReadBits(IOPORT_C, BIT_7) & BIT_7)
    // Error indication.
-	#define Error()   do{LATCbits.LATC6 = 1; LATCbits.LATC7 = 1;} while(0);
-
-
-
-////以下是调试板调试的boot
-//	#define mLED              LATCbits.LATC6
-//	// Blinks LED 1 on USB Starter kit
-//	#define BlinkLED() (mLED = ((ReadCoreTimer() & 0x0800000) != 0))
-//	#define BlinkLED1() (mLED = ((ReadCoreTimer() & 0x0040000) != 0))
-//	#define InitLED() do{	\
-//							TRISCbits.TRISC6 = 0;  \
-//							TRISCbits.TRISC8 = 0;  \
-//                                                        TRISCbits.TRISC9 = 0;  \
-//							LATCbits.LATC6 = 0; LATCbits.LATC8 = 0; LATCbits.LATC9 = 0;\
-//						}while(0)
-//
-//	// Switch S3 on USB Starter Kit.
-//	#define ReadSwitchStatus() (PORTReadBits(IOPORT_C, BIT_7) & BIT_7)
-//   // Error indication.
-//	#define Error()   do{LATCbits.LATC6 = 1; LATCbits.LATC8 = 1;LATCbits.LATC9 = 1;} while(0);
-
+	#define Error()   do{LATCbits.LATC8 = 0;LATCbits.LATC9 = 0;} while(0);
 
 #endif

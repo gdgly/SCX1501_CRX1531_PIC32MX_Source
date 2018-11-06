@@ -19,8 +19,8 @@
 * Software License Agreement
 *
 * The software supplied herewith by Microchip Technology Incorporated
-* (the ï¿½Companyï¿½) for its PICmicroï¿½ Microcontroller is intended and
-* supplied to you, the Companyï¿½s customer, for use solely and
+* (the “Company”) for its PICmicro® Microcontroller is intended and
+* supplied to you, the Company’s customer, for use solely and
 * exclusively on Microchip PICmicro Microcontroller products. The
 * software is owned by the Company and/or its supplier, and is
 * protected under applicable copyright laws. All rights are reserved.
@@ -29,7 +29,7 @@
 * civil liability for the breach of the terms and conditions of this
 * license.
 *
-* THIS SOFTWARE IS PROVIDED IN AN ï¿½AS ISï¿½ CONDITION. NO WARRANTIES,
+* THIS SOFTWARE IS PROVIDED IN AN “AS IS” CONDITION. NO WARRANTIES,
 * WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED
 * TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
 * PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. THE COMPANY SHALL NOT,
@@ -5673,33 +5673,23 @@ int FSremove (const char * fileName)
 	if(!fo->utf16LFNlength)
 	{
 		FileObjectCopy (&cwdTemp, fo);
-		prevHandle = fo->entry - 1;
-
+		prevHandle = fo->entry - 1;
 		lfno = (LFN_ENTRY *)Cache_File_Entry (fo, &prevHandle, FALSE);
-
-
-	   	while((lfno->LFN_Attribute == ATTR_LONG_NAME) && (lfno->LFN_SequenceNo != DIR_DEL)
-
-	   			&& (lfno->LFN_SequenceNo != DIR_EMPTY))
-
-	   	{
-
+
+	   	while((lfno->LFN_Attribute == ATTR_LONG_NAME) && (lfno->LFN_SequenceNo != DIR_DEL)
+	   			&& (lfno->LFN_SequenceNo != DIR_EMPTY))
+	   	{
 
 			i = i + MAX_UTF16_CHARS_IN_LFN_ENTRY;
 
-	   		prevHandle = prevHandle - 1;
-
-	   		lfno = (LFN_ENTRY *)Cache_File_Entry (fo, &prevHandle, FALSE);
-
-	   	}
-
-
-
+	   		prevHandle = prevHandle - 1;
+	   		lfno = (LFN_ENTRY *)Cache_File_Entry (fo, &prevHandle, FALSE);
+	   	}
+
 	   	FileObjectCopy (fo, &cwdTemp);
 
 		// Find the length of LFN file
-		fo->utf16LFNlength = i;
-
+		fo->utf16LFNlength = i;
 	}
 	#endif
 
@@ -5796,171 +5786,171 @@ void FSrewind (FSFILE * fo)
     None.
   Return Values:
     FSInit       -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_INIT_ERROR ï¿½            The physical media could not be initialized
-                 - CE_BAD_SECTOR_READ ï¿½       The MBR or the boot sector could not be
+                 - CE_GOOD –                  No Error
+                 - CE_INIT_ERROR –            The physical media could not be initialized
+                 - CE_BAD_SECTOR_READ –       The MBR or the boot sector could not be
                                               read correctly
-                 - CE_BAD_PARITION ï¿½          The MBR signature code was incorrect.
-                 - CE_NOT_FORMATTED ï¿½         The boot sector signature code was incorrect or
+                 - CE_BAD_PARITION –          The MBR signature code was incorrect.
+                 - CE_NOT_FORMATTED –         The boot sector signature code was incorrect or
                                               indicates an invalid number of bytes per sector.
                  - CE_UNSUPPORTED_SECTOR_SIZE - The number of bytes per sector is unsupported
-                 - CE_CARDFAT32 ï¿½             The physical media is FAT32 type (only an error
+                 - CE_CARDFAT32 –             The physical media is FAT32 type (only an error
                                               when FAT32 support is disabled).
-                 - CE_UNSUPPORTED_FS ï¿½        The device is formatted with an unsupported file
+                 - CE_UNSUPPORTED_FS –        The device is formatted with an unsupported file
                                               system (not FAT12 or 16).
     FSfopen      -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_NOT_INIT ï¿½              The device has not been initialized.
-                 - CE_TOO_MANY_FILES_OPEN ï¿½   The function could not allocate any
+                 - CE_GOOD –                  No Error
+                 - CE_NOT_INIT –              The device has not been initialized.
+                 - CE_TOO_MANY_FILES_OPEN –   The function could not allocate any
                                               additional file information to the array
                                               of FSFILE structures or the heap.
-                 - CE_INVALID_FILENAME ï¿½      The file name argument was invalid.
-                 - CE_INVALID_ARGUMENT ï¿½      The user attempted to open a directory in a
+                 - CE_INVALID_FILENAME –      The file name argument was invalid.
+                 - CE_INVALID_ARGUMENT –      The user attempted to open a directory in a
                                               write mode or specified an invalid mode argument.
-                 - CE_FILE_NOT_FOUND ï¿½        The specified file (which was to be opened in read
+                 - CE_FILE_NOT_FOUND –        The specified file (which was to be opened in read
                                               mode) does not exist on the device.
-                 - CE_BADCACHEREAD ï¿½          A read from the device failed.
-                 - CE_ERASE_FAIL ï¿½            The existing file could not be erased (when opening
+                 - CE_BADCACHEREAD –          A read from the device failed.
+                 - CE_ERASE_FAIL –            The existing file could not be erased (when opening
                                               a file in WRITE mode).
-                 - CE_DIR_FULL ï¿½              The directory is full.
-                 - CE_DISK_FULLï¿½              The data memory section is full.
-                 - CE_WRITE_ERROR ï¿½           A write to the device failed.
-                 - CE_SEEK_ERROR ï¿½            The current position in the file could not be set to
+                 - CE_DIR_FULL –              The directory is full.
+                 - CE_DISK_FULL–              The data memory section is full.
+                 - CE_WRITE_ERROR –           A write to the device failed.
+                 - CE_SEEK_ERROR –            The current position in the file could not be set to
                                               the end (when the file was opened in APPEND mode).
     FSfclose     -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_WRITE_ERROR ï¿½           The existing data in the data buffer or the new file
+                 - CE_GOOD –                  No Error
+                 - CE_WRITE_ERROR –           The existing data in the data buffer or the new file
                                               entry information could not be written to the device.
-                 - CE_BADCACHEREAD ï¿½          The file entry information could not be cached
+                 - CE_BADCACHEREAD –          The file entry information could not be cached
     FSfread      -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_WRITEONLY ï¿½             The file was opened in a write-only mode.
-                 - CE_WRITE_ERROR ï¿½           The existing data in the data buffer could not be
+                 - CE_GOOD –                  No Error
+                 - CE_WRITEONLY –             The file was opened in a write-only mode.
+                 - CE_WRITE_ERROR –           The existing data in the data buffer could not be
                                               written to the device.
-                 - CE_BAD_SECTOR_READ ï¿½       The data sector could not be read.
-                 - CE_EOF ï¿½                   The end of the file was reached.
-                 - CE_COULD_NOT_GET_CLUSTER ï¿½ Additional clusters in the file could not be loaded.
+                 - CE_BAD_SECTOR_READ –       The data sector could not be read.
+                 - CE_EOF –                   The end of the file was reached.
+                 - CE_COULD_NOT_GET_CLUSTER – Additional clusters in the file could not be loaded.
     FSfwrite     -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_READONLY ï¿½              The file was opened in a read-only mode.
-                 - CE_WRITE_PROTECTED ï¿½       The device write-protect check function indicated
+                 - CE_GOOD –                  No Error
+                 - CE_READONLY –              The file was opened in a read-only mode.
+                 - CE_WRITE_PROTECTED –       The device write-protect check function indicated
                                               that the device has been write-protected.
-                 - CE_WRITE_ERROR ï¿½           There was an error writing data to the device.
-                 - CE_BADCACHEREAD ï¿½          The data sector to be modified could not be read from
+                 - CE_WRITE_ERROR –           There was an error writing data to the device.
+                 - CE_BADCACHEREAD –          The data sector to be modified could not be read from
                                               the device.
-                 - CE_DISK_FULL ï¿½             All data clusters on the device are in use.
+                 - CE_DISK_FULL –             All data clusters on the device are in use.
     FSfseek      -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_WRITE_ERROR ï¿½           The existing data in the data buffer could not be
+                 - CE_GOOD –                  No Error
+                 - CE_WRITE_ERROR –           The existing data in the data buffer could not be
                                               written to the device.
-                 - CE_INVALID_ARGUMENT ï¿½      The specified offset exceeds the size of the file.
-                 - CE_BADCACHEREAD ï¿½          The sector that contains the new current position
+                 - CE_INVALID_ARGUMENT –      The specified offset exceeds the size of the file.
+                 - CE_BADCACHEREAD –          The sector that contains the new current position
                                               could not be loaded.
-                 - CE_COULD_NOT_GET_CLUSTER ï¿½ Additional clusters in the file could not be
+                 - CE_COULD_NOT_GET_CLUSTER – Additional clusters in the file could not be
                                               loaded/allocated.
     FSftell      -
-                 - CE_GOOD ï¿½                  No Error
+                 - CE_GOOD –                  No Error
     FSattrib     -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_INVALID_ARGUMENT ï¿½      The attribute argument was invalid.
-                 - CE_BADCACHEREAD ï¿½          The existing file entry information could not be
+                 - CE_GOOD –                  No Error
+                 - CE_INVALID_ARGUMENT –      The attribute argument was invalid.
+                 - CE_BADCACHEREAD –          The existing file entry information could not be
                                               loaded.
-                 - CE_WRITE_ERROR ï¿½           The file entry information could not be written to
+                 - CE_WRITE_ERROR –           The file entry information could not be written to
                                               the device.
     FSrename     -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_FILENOTOPENED ï¿½         A null file pointer was passed into the function.
-                 - CE_INVALID_FILENAME ï¿½      The file name passed into the function was invalid.
-                 - CE_BADCACHEREAD ï¿½          A read from the device failed.
-                 - CE_FILENAME_EXISTS ï¿½       A file with the specified name already exists.
-                 - CE_WRITE_ERROR ï¿½           The new file entry data could not be written to the
+                 - CE_GOOD –                  No Error
+                 - CE_FILENOTOPENED –         A null file pointer was passed into the function.
+                 - CE_INVALID_FILENAME –      The file name passed into the function was invalid.
+                 - CE_BADCACHEREAD –          A read from the device failed.
+                 - CE_FILENAME_EXISTS –       A file with the specified name already exists.
+                 - CE_WRITE_ERROR –           The new file entry data could not be written to the
                                               device.
     FSfeof       -
-                 - CE_GOOD ï¿½                  No Error
+                 - CE_GOOD –                  No Error
     FSformat     -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_INIT_ERROR ï¿½            The device could not be initialized.
-                 - CE_BADCACHEREAD ï¿½          The master boot record or boot sector could not be
+                 - CE_GOOD –                  No Error
+                 - CE_INIT_ERROR –            The device could not be initialized.
+                 - CE_BADCACHEREAD –          The master boot record or boot sector could not be
                                               loaded successfully.
-                 - CE_INVALID_ARGUMENT ï¿½      The user selected to create their own boot sector on
+                 - CE_INVALID_ARGUMENT –      The user selected to create their own boot sector on
                                               a device that has no master boot record, or the mode
                                               argument was invalid.
-                 - CE_WRITE_ERROR ï¿½           The updated MBR/Boot sector could not be written to
+                 - CE_WRITE_ERROR –           The updated MBR/Boot sector could not be written to
                                               the device.
-                 - CE_BAD_PARTITION ï¿½         The calculated number of sectors per clusters was
+                 - CE_BAD_PARTITION –         The calculated number of sectors per clusters was
                                               invalid.
-                 - CE_NONSUPPORTED_SIZE ï¿½     The card has too many sectors to be formatted as
+                 - CE_NONSUPPORTED_SIZE –     The card has too many sectors to be formatted as
                                               FAT12 or FAT16.
     FSremove     -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_WRITE_PROTECTED ï¿½       The device write-protect check function indicated
+                 - CE_GOOD –                  No Error
+                 - CE_WRITE_PROTECTED –       The device write-protect check function indicated
                                               that the device has been write-protected.
-                 - CE_INVALID_FILENAME ï¿½      The specified filename was invalid.
-                 - CE_FILE_NOT_FOUND ï¿½        The specified file could not be found.
-                 - CE_ERASE_FAIL ï¿½            The file could not be erased.
+                 - CE_INVALID_FILENAME –      The specified filename was invalid.
+                 - CE_FILE_NOT_FOUND –        The specified file could not be found.
+                 - CE_ERASE_FAIL –            The file could not be erased.
     FSchdir      -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_INVALID_ARGUMENT ï¿½      The path string was mis-formed or the user tried to
+                 - CE_GOOD –                  No Error
+                 - CE_INVALID_ARGUMENT –      The path string was mis-formed or the user tried to
                                               change to a non-directory file.
-                 - CE_BADCACHEREAD ï¿½          A directory entry could not be cached.
-                 - CE_DIR_NOT_FOUND ï¿½         Could not find a directory in the path.
+                 - CE_BADCACHEREAD –          A directory entry could not be cached.
+                 - CE_DIR_NOT_FOUND –         Could not find a directory in the path.
     FSgetcwd     -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_INVALID_ARGUMENT ï¿½      The user passed a 0-length buffer into the function.
-                 - CE_BADCACHEREAD ï¿½          A directory entry could not be cached.
-                 - CE_BAD_SECTOR_READ ï¿½       The function could not determine a previous directory
+                 - CE_GOOD –                  No Error
+                 - CE_INVALID_ARGUMENT –      The user passed a 0-length buffer into the function.
+                 - CE_BADCACHEREAD –          A directory entry could not be cached.
+                 - CE_BAD_SECTOR_READ –       The function could not determine a previous directory
                                               of the current working directory.
     FSmkdir      -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_WRITE_PROTECTED ï¿½       The device write-protect check function indicated
+                 - CE_GOOD –                  No Error
+                 - CE_WRITE_PROTECTED –       The device write-protect check function indicated
                                               that the device has been write-protected.
-                 - CE_INVALID_ARGUMENT ï¿½      The path string was mis-formed.
-                 - CE_BADCACHEREAD ï¿½          Could not successfully change to a recently created
+                 - CE_INVALID_ARGUMENT –      The path string was mis-formed.
+                 - CE_BADCACHEREAD –          Could not successfully change to a recently created
                                               directory to store its dir entry information, or
                                               could not cache directory entry information.
-                 - CE_INVALID_FILENAME ï¿½      One or more of the directory names has an invalid
+                 - CE_INVALID_FILENAME –      One or more of the directory names has an invalid
                                               format.
-                 - CE_WRITE_ERROR ï¿½           The existing data in the data buffer could not be
+                 - CE_WRITE_ERROR –           The existing data in the data buffer could not be
                                               written to the device or the dot/dotdot entries could
                                               not be written to a newly created directory.
-                 - CE_DIR_FULL ï¿½              There are no available dir entries in the CWD.
-                 - CE_DISK_FULL ï¿½             There are no available clusters in the data region of
+                 - CE_DIR_FULL –              There are no available dir entries in the CWD.
+                 - CE_DISK_FULL –             There are no available clusters in the data region of
                                               the device.
     FSrmdir      -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_DIR_NOT_FOUND ï¿½         The directory specified could not be found or the
+                 - CE_GOOD –                  No Error
+                 - CE_DIR_NOT_FOUND –         The directory specified could not be found or the
                                               function could not change to a subdirectory within
                                               the directory to be deleted (when recursive delete is
                                               enabled).
-                 - CE_INVALID_ARGUMENT ï¿½      The user tried to remove the CWD or root directory.
-                 - CE_BADCACHEREAD ï¿½          A directory entry could not be cached.
-                 - CE_DIR_NOT_EMPTY ï¿½         The directory to be deleted was not empty and
+                 - CE_INVALID_ARGUMENT –      The user tried to remove the CWD or root directory.
+                 - CE_BADCACHEREAD –          A directory entry could not be cached.
+                 - CE_DIR_NOT_EMPTY –         The directory to be deleted was not empty and
                                               recursive subdirectory removal was disabled.
-                 - CE_ERASE_FAIL ï¿½            The directory or one of the directories or files
+                 - CE_ERASE_FAIL –            The directory or one of the directories or files
                                               within it could not be deleted.
-                 - CE_BAD_SECTOR_READ ï¿½       The function could not determine a previous directory
+                 - CE_BAD_SECTOR_READ –       The function could not determine a previous directory
                                               of the CWD.
     SetClockVars -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_INVALID_ARGUMENT ï¿½      The time values passed into the function were
+                 - CE_GOOD –                  No Error
+                 - CE_INVALID_ARGUMENT –      The time values passed into the function were
                                               invalid.
     FindFirst    -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_INVALID_FILENAME ï¿½      The specified filename was invalid.
-                 - CE_FILE_NOT_FOUND ï¿½        No file matching the specified criteria was found.
-                 - CE_BADCACHEREAD ï¿½          The file information for the file that was found
+                 - CE_GOOD –                  No Error
+                 - CE_INVALID_FILENAME –      The specified filename was invalid.
+                 - CE_FILE_NOT_FOUND –        No file matching the specified criteria was found.
+                 - CE_BADCACHEREAD –          The file information for the file that was found
                                               could not be cached.
     FindNext     -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_NOT_INIT ï¿½              The SearchRec object was not initialized by a call to
+                 - CE_GOOD –                  No Error
+                 - CE_NOT_INIT –              The SearchRec object was not initialized by a call to
                                               FindFirst.
-                 - CE_INVALID_ARGUMENT ï¿½      The SearchRec object was initialized in a different
+                 - CE_INVALID_ARGUMENT –      The SearchRec object was initialized in a different
                                               directory from the CWD.
-                 - CE_INVALID_FILENAME ï¿½      The filename is invalid.
-                 - CE_FILE_NOT_FOUND ï¿½        No file matching the specified criteria was found.
+                 - CE_INVALID_FILENAME –      The filename is invalid.
+                 - CE_FILE_NOT_FOUND –        No file matching the specified criteria was found.
     FSfprintf    -
-                 - CE_GOOD ï¿½                  No Error
-                 - CE_WRITE_ERROR ï¿½           Characters could not be written to the file.
+                 - CE_GOOD –                  No Error
+                 - CE_WRITE_ERROR –           Characters could not be written to the file.
   Description:
     The FSerror function will return the FSerrno variable.  This global
     variable will have been set to an error value during the last call of a
@@ -7284,14 +7274,11 @@ BYTE FormatDirName (char * string,FILEOBJ fptr, BYTE mode)
 				localFileName = (char *)tempAsciiLFN;
 
 				// Copy the validated/Fomated name in the Ascii string
-				count2 = 0;
-
+				count2 = 0;
 				for(count1 = 0; count1 < temp; count1++)
 				{
-					localFileName[count2++] = asciiFilename[count1];
-
-					localFileName[count2++] = (BYTE)0x00;
-
+					localFileName[count2++] = asciiFilename[count1];
+					localFileName[count2++] = (BYTE)0x00;
 				}
 
 				// Copy the validated/Fomated name in the UTF16 string
@@ -7832,17 +7819,13 @@ int FSfseek(FSFILE *stream, long offset, int whence)
 
 int FSrenamepgm (const rom char * fileName, FSFILE * fo)
 {
-	#if defined(SUPPORT_LFN)
-
+	#if defined(SUPPORT_LFN)
 		char tempArray[257];
 		unsigned short int count;
-	#else
-
-		char	tempArray[13];
-
+	#else
+		char	tempArray[13];
 	    BYTE count;
-	#endif
-
+	#endif
 
     *fileName;
     for(count = 0; count < sizeof(tempArray); count++)
@@ -7932,13 +7915,10 @@ int FSremovepgm (const rom char * fileName)
 	#ifdef SUPPORT_LFN
 		char tempArray[257];
 		unsigned short int count;
-	#else
-
-		char	tempArray[13];
-
+	#else
+		char	tempArray[13];
 	    BYTE count;
-	#endif
-
+	#endif
 
     *fileName;
     for(count = 0; count < sizeof(tempArray); count++)
@@ -7978,17 +7958,13 @@ int FSremovepgm (const rom char * fileName)
 #ifdef ALLOW_FILESEARCH
 int FindFirstpgm (const rom char * fileName, unsigned int attr, SearchRec * rec)
 {
-	#if defined(SUPPORT_LFN)
-
+	#if defined(SUPPORT_LFN)
 		char tempArray[257];
 		unsigned short int count;
-	#else
-
-		char	tempArray[13];
-
+	#else
+		char	tempArray[13];
 	    BYTE count;
-	#endif
-
+	#endif
 
     *fileName;
     for(count = 0; count < sizeof(tempArray); count++)
@@ -8568,10 +8544,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
     if (mode)
 	{
 		#ifdef SUPPORT_LFN
-		if(utfModeFileName)
-
-		{
-
+		if(utfModeFileName)
+		{
 			i = *utf16path2;
 		}
 		else
@@ -8584,10 +8558,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
 #endif
 	{
 		#ifdef SUPPORT_LFN
-		if(utfModeFileName)
-
-		{
-
+		if(utfModeFileName)
+		{
 			i = *utf16path;
 		}
 		else
@@ -8615,10 +8587,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                 if (mode)
                 {
 					#ifdef SUPPORT_LFN
-					if(utfModeFileName)
-
-					{
-
+					if(utfModeFileName)
+					{
                 	    utf16path2++;
                 	    i = *utf16path2;
 					}
@@ -8633,10 +8603,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                 {
 #endif
 					#ifdef SUPPORT_LFN
-					if(utfModeFileName)
-
-					{
-
+					if(utfModeFileName)
+					{
                 	    utf16path++;
                 	    i = *utf16path;
 					}
@@ -8657,10 +8625,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                     if (mode)
                     {
 						#ifdef SUPPORT_LFN
-						if(utfModeFileName)
-
-						{
-
+						if(utfModeFileName)
+						{
                 		    utf16path2++;
                 		    i = *utf16path2;
 						}
@@ -8675,10 +8641,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                     {
 #endif
 						#ifdef SUPPORT_LFN
-						if(utfModeFileName)
-
-						{
-
+						if(utfModeFileName)
+						{
                 		    utf16path++;
                 		    i = *utf16path;
 						}
@@ -8768,10 +8732,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                             if (mode)
                             {
 								#ifdef SUPPORT_LFN
-								if(utfModeFileName)
-
-								{
-
+								if(utfModeFileName)
+								{
                 				    utf16path2++;
                 				    i = *utf16path2;
 								}
@@ -8786,10 +8748,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                             {
 #endif
 								#ifdef SUPPORT_LFN
-								if(utfModeFileName)
-
-								{
-
+								if(utfModeFileName)
+								{
                 				    utf16path++;
                 				    i = *utf16path;
 								}
@@ -8830,10 +8790,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                                 if (mode)
                                 {
 									#ifdef SUPPORT_LFN
-									if(utfModeFileName)
-
-									{
-
+									if(utfModeFileName)
+									{
                 					    utf16path2++;
                 					    i = *utf16path2;
 									}
@@ -8848,10 +8806,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                                 {
 #endif
 									#ifdef SUPPORT_LFN
-									if(utfModeFileName)
-
-									{
-
+									if(utfModeFileName)
+									{
                 					    utf16path++;
                 					    i = *utf16path;
 									}
@@ -8891,10 +8847,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
             if (mode)
             {
 				#ifdef SUPPORT_LFN
-				if(utfModeFileName)
-
-				{
-
+				if(utfModeFileName)
+				{
                     utf16path2++;
                     i = *utf16path2;
 				}
@@ -8909,10 +8863,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
             {
 #endif
 				#ifdef SUPPORT_LFN
-				if(utfModeFileName)
-
-				{
-
+				if(utfModeFileName)
+				{
                     utf16path++;
                     i = *utf16path;
 				}
@@ -8977,15 +8929,11 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
             if (mode)
             {
 				#ifdef SUPPORT_LFN
-				if(utfModeFileName)
-
-				{
-
+				if(utfModeFileName)
+				{
             	    // Change directories as specified
-					k = 512;
-
-
-
+					k = 512;
+
             	    // Parse the next token
             	    while ((i != 0) && (i != '\\') && (j < k))
             	    {
@@ -8995,47 +8943,33 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
             	    }
 
 					tempDirectoryString[j++] = 0;
-				}
-
-				else
-
+				}
+				else
 				#endif
-        		{
-
-					#if defined(SUPPORT_LFN)
-
-						k = 256;
-
-					#else
-
-						k = 12;
-
-					#endif
-
-
-
+        		{
+					#if defined(SUPPORT_LFN)
+						k = 256;
+					#else
+						k = 12;
+					#endif
+
             	    // Parse the next token
             	    while ((i != 0) && (i != '\\') && (j < k))
             	    {
             	        tempDirectoryString[j++] = i;
             	        i = *(++temppath2);
             	    }
-				}
-
+				}
             }
             else
             {
 #endif
 				#ifdef SUPPORT_LFN
-				if(utfModeFileName)
-
-				{
-
+				if(utfModeFileName)
+				{
             	    // Change directories as specified
-					k = 512;
-
-
-
+					k = 512;
+
             	    // Parse the next token
             	    while ((i != 0) && (i != '\\') && (j < k))
             	    {
@@ -9045,33 +8979,23 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
             	    }
 
 					tempDirectoryString[j++] = 0;
-				}
-
-				else
-
+				}
+				else
 				#endif
-        		{
-
-					#if defined(SUPPORT_LFN)
-
-						k = 256;
-
-					#else
-
-						k = 12;
-
-					#endif
-
-
-
+        		{
+					#if defined(SUPPORT_LFN)
+						k = 256;
+					#else
+						k = 12;
+					#endif
+
             	    // Parse the next token
             	    while ((i != 0) && (i != '\\') && (j < k))
             	    {
             	        tempDirectoryString[j++] = i;
             	        i = *(++temppath);
             	    }
-				}
-
+				}
 #ifdef ALLOW_PGMFUNCTIONS
             }
 #endif
@@ -9088,16 +9012,13 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                     if (mode)
                     {
 						#ifdef SUPPORT_LFN
-						if(utfModeFileName)
-
-						{
-
+						if(utfModeFileName)
+						{
                         	i = *(++utf16path2);
                     	}
 						else
 						#endif
-						{
-
+						{
                         	i = *(++temppath2);
                     	}
                     }
@@ -9105,16 +9026,13 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                     {
 #endif
 						#ifdef SUPPORT_LFN
-						if(utfModeFileName)
-
-						{
-
+						if(utfModeFileName)
+						{
                         	i = *(++utf16path);
                     	}
 						else
 						#endif
-						{
-
+						{
                         	i = *(++temppath);
                     	}
 #ifdef ALLOW_PGMFUNCTIONS
@@ -9174,10 +9092,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                     if (mode)
                     {
 						#ifdef SUPPORT_LFN
-						if(utfModeFileName)
-
-						{
-
+						if(utfModeFileName)
+						{
                 		    utf16path2++;
                 		    i = *utf16path2;
 						}
@@ -9192,10 +9108,8 @@ int chdirhelper (BYTE mode, char * ramptr, char * romptr)
                     {
 #endif
 						#ifdef SUPPORT_LFN
-						if(utfModeFileName)
-
-						{
-
+						if(utfModeFileName)
+						{
                 		    utf16path++;
                 		    i = *utf16path;
 						}
@@ -9375,75 +9289,41 @@ char * FSgetcwd (char * path, int numchars)
 
 		#if defined(SUPPORT_LFN)
        	FileObjectCopy (&cwdTemp, tempCWD);
-	   	prevHandle = fHandle - 1;
-
+	   	prevHandle = fHandle - 1;
 	   	lfno = (LFN_ENTRY *)Cache_File_Entry (tempCWD, &prevHandle, FALSE);
-
-
-	   	while((lfno->LFN_Attribute == ATTR_LONG_NAME) && (lfno->LFN_SequenceNo != DIR_DEL)
-
-	   			&& (lfno->LFN_SequenceNo != DIR_EMPTY))
-
-	   	{
-
-	   		tempShift.byte.LB = lfno->LFN_Part1[0];
-
-	   		tempShift.byte.HB = lfno->LFN_Part1[1];
-
-	   		tempLFN[i++] = tempShift.Val;
-
-	   		tempShift.byte.LB = lfno->LFN_Part1[2];
-
-	   		tempShift.byte.HB = lfno->LFN_Part1[3];
-
-	   		tempLFN[i++] = tempShift.Val;
-
-	   		tempShift.byte.LB = lfno->LFN_Part1[4];
-
-	   		tempShift.byte.HB = lfno->LFN_Part1[5];
-
-	   		tempLFN[i++] = tempShift.Val;
-
-	   		tempShift.byte.LB = lfno->LFN_Part1[6];
-
-	   		tempShift.byte.HB = lfno->LFN_Part1[7];
-
-	   		tempLFN[i++] = tempShift.Val;
-
-	   		tempShift.byte.LB = lfno->LFN_Part1[8];
-
-	   		tempShift.byte.HB = lfno->LFN_Part1[9];
-
-	   		tempLFN[i++] = tempShift.Val;
-
-
-
-	   		tempLFN[i++] = lfno->LFN_Part2[0];
-
-	   		tempLFN[i++] = lfno->LFN_Part2[1];
-
-	   		tempLFN[i++] = lfno->LFN_Part2[2];
-
-	   		tempLFN[i++] = lfno->LFN_Part2[3];
-
-	   		tempLFN[i++] = lfno->LFN_Part2[4];
-
-	   		tempLFN[i++] = lfno->LFN_Part2[5];
-
-
-
-	   		tempLFN[i++] = lfno->LFN_Part3[0];
-
-	   		tempLFN[i++] = lfno->LFN_Part3[1];
-
-	   
-
-	   		prevHandle = prevHandle - 1;
-
-	   		lfno = (LFN_ENTRY *)Cache_File_Entry (tempCWD, &prevHandle, FALSE);
-
-	   	}
-
+
+	   	while((lfno->LFN_Attribute == ATTR_LONG_NAME) && (lfno->LFN_SequenceNo != DIR_DEL)
+	   			&& (lfno->LFN_SequenceNo != DIR_EMPTY))
+	   	{
+	   		tempShift.byte.LB = lfno->LFN_Part1[0];
+	   		tempShift.byte.HB = lfno->LFN_Part1[1];
+	   		tempLFN[i++] = tempShift.Val;
+	   		tempShift.byte.LB = lfno->LFN_Part1[2];
+	   		tempShift.byte.HB = lfno->LFN_Part1[3];
+	   		tempLFN[i++] = tempShift.Val;
+	   		tempShift.byte.LB = lfno->LFN_Part1[4];
+	   		tempShift.byte.HB = lfno->LFN_Part1[5];
+	   		tempLFN[i++] = tempShift.Val;
+	   		tempShift.byte.LB = lfno->LFN_Part1[6];
+	   		tempShift.byte.HB = lfno->LFN_Part1[7];
+	   		tempLFN[i++] = tempShift.Val;
+	   		tempShift.byte.LB = lfno->LFN_Part1[8];
+	   		tempShift.byte.HB = lfno->LFN_Part1[9];
+	   		tempLFN[i++] = tempShift.Val;
+
+	   		tempLFN[i++] = lfno->LFN_Part2[0];
+	   		tempLFN[i++] = lfno->LFN_Part2[1];
+	   		tempLFN[i++] = lfno->LFN_Part2[2];
+	   		tempLFN[i++] = lfno->LFN_Part2[3];
+	   		tempLFN[i++] = lfno->LFN_Part2[4];
+	   		tempLFN[i++] = lfno->LFN_Part2[5];
+
+	   		tempLFN[i++] = lfno->LFN_Part3[0];
+	   		tempLFN[i++] = lfno->LFN_Part3[1];
+	   
+	   		prevHandle = prevHandle - 1;
+	   		lfno = (LFN_ENTRY *)Cache_File_Entry (tempCWD, &prevHandle, FALSE);
+	   	}
 	   	FileObjectCopy (tempCWD, &cwdTemp);
 		#endif
 
@@ -9455,19 +9335,14 @@ char * FSgetcwd (char * path, int numchars)
         	    cwdptr->name[j] = entry->DIR_Name[j];
        	    }
 			#if defined(SUPPORT_LFN)
-	   		cwdptr->utf16LFNlength = 0;
-
-	   		tempCWD->utf16LFNlength = 0;
-
+	   		cwdptr->utf16LFNlength = 0;
+	   		tempCWD->utf16LFNlength = 0;
 			#endif
-	   	}
-
+	   	}
 		#if defined(SUPPORT_LFN)
 	   	else
-	   	{
-
-	   		tempCWD->utf16LFNlength = i;
-
+	   	{
+	   		tempCWD->utf16LFNlength = i;
 			for(j = 12;j >= 0;j--)
 			{
 				if((tempLFN[i - j - 1]) == 0x0000)
@@ -9476,14 +9351,10 @@ char * FSgetcwd (char * path, int numchars)
 					break;
 				}
 			}
-			cwdptr->utf16LFNlength = tempCWD->utf16LFNlength;
-
-	   		tempCWD->utf16LFNptr = (unsigned short int *)&tempDirectoryString[0];
-
-	   		cwdptr->utf16LFNptr = (unsigned short int *)&tempDirectoryString[0];
-
-	   	}
-
+			cwdptr->utf16LFNlength = tempCWD->utf16LFNlength;
+	   		tempCWD->utf16LFNptr = (unsigned short int *)&tempDirectoryString[0];
+	   		cwdptr->utf16LFNptr = (unsigned short int *)&tempDirectoryString[0];
+	   	}
 		#endif
         // Reset our temp dir back to that cluster
         tempCWD->dirclus = curclus;
@@ -9794,11 +9665,9 @@ BYTE GetPreviousEntry (FSFILE * fo)
 	#ifdef SUPPORT_LFN
 		unsigned short int *tempLFN = (unsigned short int *)&tempDirectoryString[0];
 		FSFILE cwdTemp;
-		LFN_ENTRY *lfno;
-
+		LFN_ENTRY *lfno;
 		WORD prevHandle;
-		UINT16_VAL tempShift;
-
+		UINT16_VAL tempShift;
 	#endif
 
     // Load the previous entry
@@ -9882,117 +9751,70 @@ BYTE GetPreviousEntry (FSFILE * fo)
    	i = 0;
 	#ifdef SUPPORT_LFN
        	FileObjectCopy (&cwdTemp, fo);
-	   	prevHandle = fHandle - 2;
-
+	   	prevHandle = fHandle - 2;
 	   	lfno = (LFN_ENTRY *)Cache_File_Entry (fo, &prevHandle, FALSE);
 
 		// Get the long file name of the short file name(if present)
-	   	while((lfno->LFN_Attribute == ATTR_LONG_NAME) && (lfno->LFN_SequenceNo != DIR_DEL)
+	   	while((lfno->LFN_Attribute == ATTR_LONG_NAME) && (lfno->LFN_SequenceNo != DIR_DEL)
+	   			&& (lfno->LFN_SequenceNo != DIR_EMPTY))
+	   	{
+	   		tempShift.byte.LB = lfno->LFN_Part1[0];
+	   		tempShift.byte.HB = lfno->LFN_Part1[1];
+	   		tempLFN[i++] = tempShift.Val;
+	   		tempShift.byte.LB = lfno->LFN_Part1[2];
+	   		tempShift.byte.HB = lfno->LFN_Part1[3];
+	   		tempLFN[i++] = tempShift.Val;
+	   		tempShift.byte.LB = lfno->LFN_Part1[4];
+	   		tempShift.byte.HB = lfno->LFN_Part1[5];
+	   		tempLFN[i++] = tempShift.Val;
+	   		tempShift.byte.LB = lfno->LFN_Part1[6];
+	   		tempShift.byte.HB = lfno->LFN_Part1[7];
+	   		tempLFN[i++] = tempShift.Val;
+	   		tempShift.byte.LB = lfno->LFN_Part1[8];
+	   		tempShift.byte.HB = lfno->LFN_Part1[9];
+	   		tempLFN[i++] = tempShift.Val;
 
-	   			&& (lfno->LFN_SequenceNo != DIR_EMPTY))
+	   		tempLFN[i++] = lfno->LFN_Part2[0];
+	   		tempLFN[i++] = lfno->LFN_Part2[1];
+	   		tempLFN[i++] = lfno->LFN_Part2[2];
+	   		tempLFN[i++] = lfno->LFN_Part2[3];
+	   		tempLFN[i++] = lfno->LFN_Part2[4];
+	   		tempLFN[i++] = lfno->LFN_Part2[5];
 
-	   	{
-
-	   		tempShift.byte.LB = lfno->LFN_Part1[0];
-
-	   		tempShift.byte.HB = lfno->LFN_Part1[1];
-
-	   		tempLFN[i++] = tempShift.Val;
-
-	   		tempShift.byte.LB = lfno->LFN_Part1[2];
-
-	   		tempShift.byte.HB = lfno->LFN_Part1[3];
-
-	   		tempLFN[i++] = tempShift.Val;
-
-	   		tempShift.byte.LB = lfno->LFN_Part1[4];
-
-	   		tempShift.byte.HB = lfno->LFN_Part1[5];
-
-	   		tempLFN[i++] = tempShift.Val;
-
-	   		tempShift.byte.LB = lfno->LFN_Part1[6];
-
-	   		tempShift.byte.HB = lfno->LFN_Part1[7];
-
-	   		tempLFN[i++] = tempShift.Val;
-
-	   		tempShift.byte.LB = lfno->LFN_Part1[8];
-
-	   		tempShift.byte.HB = lfno->LFN_Part1[9];
-
-	   		tempLFN[i++] = tempShift.Val;
-
-
-	   		tempLFN[i++] = lfno->LFN_Part2[0];
-
-	   		tempLFN[i++] = lfno->LFN_Part2[1];
-
-	   		tempLFN[i++] = lfno->LFN_Part2[2];
-
-	   		tempLFN[i++] = lfno->LFN_Part2[3];
-
-	   		tempLFN[i++] = lfno->LFN_Part2[4];
-
-	   		tempLFN[i++] = lfno->LFN_Part2[5];
-
-
-	   		tempLFN[i++] = lfno->LFN_Part3[0];
-
-	   		tempLFN[i++] = lfno->LFN_Part3[1];
-
-	   
-
-	   		prevHandle = prevHandle - 1;
-
-	   		lfno = (LFN_ENTRY *)Cache_File_Entry (fo, &prevHandle, FALSE);
-
-	   	}
-
+	   		tempLFN[i++] = lfno->LFN_Part3[0];
+	   		tempLFN[i++] = lfno->LFN_Part3[1];
+	   
+	   		prevHandle = prevHandle - 1;
+	   		lfno = (LFN_ENTRY *)Cache_File_Entry (fo, &prevHandle, FALSE);
+	   	}
 
 	   	FileObjectCopy (fo, &cwdTemp);
 	#endif
 
-   	if(i == 0)
-
+   	if(i == 0)
 	{
    	    for (j = 0; j < 11; j++)
         	fo->name[j] = dirptr->DIR_Name[j];
 		#ifdef SUPPORT_LFN
-   			fo->utf16LFNlength = 0;
-
+   			fo->utf16LFNlength = 0;
    		#endif
    	}
 	#ifdef SUPPORT_LFN
-   	else
-
-   	{
-
-		fo->utf16LFNlength = i;
-
+   	else
+   	{
+		fo->utf16LFNlength = i;
+		
+		for(j = 12;j >= 0;j--)
+		{
+			if((tempLFN[i - j - 1]) == 0x0000)
+			{
+				fo->utf16LFNlength = i - j;
+				break;
+			}
+		}
 		
-
-		for(j = 12;j >= 0;j--)
-
-		{
-
-			if((tempLFN[i - j - 1]) == 0x0000)
-
-			{
-
-				fo->utf16LFNlength = i - j;
-
-				break;
-
-			}
-
-		}
-
-		
-   		fo->utf16LFNptr = (unsigned short int *)&tempDirectoryString[0];
-
-   	}
-
+   		fo->utf16LFNptr = (unsigned short int *)&tempDirectoryString[0];
+   	}
 	#endif
 
     return 0;
@@ -11354,8 +11176,7 @@ int rmdirhelper (BYTE mode, char * ramptr, char * romptr, unsigned char rmsubdir
     short int Index3 = 0;
     char Index, Index2;
 
-	#if defined(SUPPORT_LFN)
-
+	#if defined(SUPPORT_LFN)
 		BOOL prevUtfModeFileName = utfModeFileName;
 		char tempArray[514];
     	WORD prevHandle;
@@ -11364,12 +11185,9 @@ int rmdirhelper (BYTE mode, char * ramptr, char * romptr, unsigned char rmsubdir
 		UINT16_VAL tempShift;
 		unsigned short int *tempLFN = (unsigned short int *)&tempArray[0];
 		BOOL	forFirstTime;
-	#else
-
-		char	tempArray[13];
-
-	#endif
-
+	#else
+		char	tempArray[13];
+	#endif
 #ifndef __18CXX
 
 #else
@@ -11678,26 +11496,18 @@ int rmdirhelper (BYTE mode, char * ramptr, char * romptr, unsigned char rmsubdir
 
 #ifndef __18CXX
 	#ifdef SUPPORT_LFN
-	if(utfModeFileName)
-
-        Index3 = FSchdir (".\0.\0\0");
-
-	else
-
+	if(utfModeFileName)
+        Index3 = FSchdir (".\0.\0\0");
+	else
 	#endif
-        Index3 = FSchdir ("..");
-
+        Index3 = FSchdir ("..");
 #else
 	#ifdef SUPPORT_LFN
-	if(utfModeFileName)
-
-        Index3 = FSchdir (dotdotname1);
-
-	else
-
+	if(utfModeFileName)
+        Index3 = FSchdir (dotdotname1);
+	else
 	#endif
-        Index3 = FSchdir (dotdotname);
-
+        Index3 = FSchdir (dotdotname);
 #endif
                     if(Index3)
                     {
@@ -11864,26 +11674,18 @@ int rmdirhelper (BYTE mode, char * ramptr, char * romptr, unsigned char rmsubdir
     // If we're here, this directory is empty
 #ifndef __18CXX
 	#ifdef SUPPORT_LFN
-	if(utfModeFileName)
-
-        Index3 = FSchdir (".\0.\0\0");
-
-	else
-
+	if(utfModeFileName)
+        Index3 = FSchdir (".\0.\0\0");
+	else
 	#endif
-        Index3 = FSchdir ("..");
-
+        Index3 = FSchdir ("..");
 #else
 	#ifdef SUPPORT_LFN
-	if(utfModeFileName)
-
-        Index3 = FSchdir (dotdotname1);
-
-	else
-
+	if(utfModeFileName)
+        Index3 = FSchdir (dotdotname1);
+	else
 	#endif
-        Index3 = FSchdir (dotdotname);
-
+        Index3 = FSchdir (dotdotname);
 #endif
     if(Index3)
     {

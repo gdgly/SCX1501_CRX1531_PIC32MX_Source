@@ -16,8 +16,6 @@
       <itemPath>../../Include/USB/usb_config_host.h</itemPath>
       <itemPath>../../Include/USB/usb_device_local.h</itemPath>
       <itemPath>../../Include/USB/usb_hal_local.h</itemPath>
-      <itemPath>D:/Program Files/Microchip/xc32/v1.20/pic32mx/include/proc/p32mx230f064d.h</itemPath>
-      <itemPath>../../Include/Compiler.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LibraryFiles"
                    displayName="Library Files"
@@ -52,7 +50,6 @@
   <sourceRootList>
     <Elem>../../linker_scripts/others</Elem>
     <Elem>D:/Program Files/Microchip/xc32/v1.20/pic32mx/include/proc</Elem>
-    <Elem>../../Include</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -64,7 +61,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>1.20</languageToolchainVersion>
+        <languageToolchainVersion>1.21</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <compileType>
@@ -87,8 +84,47 @@
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C32>
+        <property key="additional-warnings" value="false"/>
+        <property key="enable-app-io" value="false"/>
+        <property key="enable-omit-frame-pointer" value="false"/>
+        <property key="enable-symbols" value="true"/>
+        <property key="enable-unroll-loops" value="false"/>
+        <property key="exclude-floating-point" value="false"/>
+        <property key="extra-include-directories"
+                  value="../..;../../Include;../../Include/MDD File System;../../Include/HardwareProfile;../../Include/Usb/Stack;../../Include/FrameWork;../../Include/USB"/>
+        <property key="generate-16-bit-code" value="true"/>
+        <property key="isolate-each-function" value="false"/>
+        <property key="keep-inline" value="false"/>
+        <property key="make-warnings-into-errors" value="false"/>
+        <property key="optimization-level" value="-Os"/>
+        <property key="place-data-into-section" value="false"/>
+        <property key="post-instruction-scheduling" value="default"/>
+        <property key="pre-instruction-scheduling" value="default"/>
+        <property key="preprocessor-macros"
+                  value="TRANSPORT_LAYER_USB_HOST;DEMO_BOARD_USB_STARTER_KIT"/>
+        <property key="strict-ansi" value="false"/>
+        <property key="support-ansi" value="false"/>
+        <property key="use-cci" value="false"/>
+        <property key="use-indirect-calls" value="false"/>
       </C32>
       <C32-AS>
+        <property key="assembler-symbols" value=""/>
+        <property key="exclude-floating-point-library" value="false"/>
+        <property key="expand-macros" value="false"/>
+        <property key="extra-include-directories-for-assembler"
+                  value="../../MPLAB_Workspace;"/>
+        <property key="extra-include-directories-for-preprocessor" value=""/>
+        <property key="false-conditionals" value="false"/>
+        <property key="keep-locals" value="false"/>
+        <property key="list-assembly" value="false"/>
+        <property key="list-file" value=""/>
+        <property key="list-section-info" value="false"/>
+        <property key="list-source" value="false"/>
+        <property key="list-symbols" value="false"/>
+        <property key="omit-debug-dirs" value="false"/>
+        <property key="omit-forms" value="false"/>
+        <property key="preprocessor-macros" value=""/>
+        <property key="warning-level" value=""/>
       </C32-AS>
       <C32-LD>
         <property key="enable-check-sections" value="false"/>
