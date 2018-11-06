@@ -362,6 +362,8 @@ UINT8 FG_Blind_Shutter_Semi=0;
     UINT8 CMD0102_To_or_Tc_HA;
     UINT8 FLAG_IDcheck_CMD0102_HA;
     UINT8 HA_uart_send_APP_number=0;
+    
+    UINT8 Weather_Connect_data=0;   
 #endif
 
 

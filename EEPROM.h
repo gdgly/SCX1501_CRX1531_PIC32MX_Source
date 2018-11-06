@@ -31,4 +31,6 @@ extern void eeprom_IDcheck_CMD0101_01_UART(void);
 extern void eeprom_IDcheck_CMD0111_UART(void);
 extern void IDcheck_CMD0102_HA_Cache(void);
 extern void EEPROM_write_To_or_Tc(UINT8 vlue_x,UINT8 vlue_y,UINT8 vlue_z);
+
+extern void Weather_Connect_write(void);
 #endif

@@ -20,6 +20,7 @@ addr:0x000～0x01D      ID1～ID10    一个ID号有3个字节 低字节在前
      ...  ～0x33F      最大256PCS
 addr:0x3A0～0x3BF      追加To半开，存储在通信机   2015.08.21追加
 addr:0x3C0～0x3DF      追加Tc半闭，存储在通信机   2015.08.21追加
+addr:0x3EF             追加气象联动，存储在通信机   2015.09.20追加
 addr:0x5E0～0x7BF      按照initial.C文件中Sunrise_sunset_DATA数值的顺序依次存储
 addr:0x7DC             存储日出日落表格数据DATA来源   =0 RAM的数据    =1 EEPROM的数据
      0x7DD             日出ON/OFF  ON=1  OFF=0
@@ -472,7 +473,10 @@ void ID_EEPROM_Initial(void)
     HA_Change_send_email[1]=xm[1];  //0x7EE  卷帘门状态变化邮件通知地址低字节
     HA_Change_send_email[2]=xm[2];  //0x7EF  卷帘门状态变化邮件通知地址高字节
 
-
+    Read(&xm[0],0x3EF,1);       //0x3EF             气象联动   0x00->OFF    0x01->ON
+    if(xm[0]>1)xm[0]=0;
+    Weather_Connect_data=xm[0];
+    
 //    for(i=0;i<100;i++)
 //        for(j=0;j<10;j++)
 //        {
@@ -910,6 +914,34 @@ void HA_Change_EEPROM_write(void)
     }    
     if(FLAG_Write_Read_compare==1){
         for(i=0;i<3;i++)HA_Change_send_email[i]=HA_Change_send_email_Cache[i];
+    }
+}
+
+void Weather_Connect_write(void)
+{
+    UINT16 i;
+    UINT8 Write_Read_compare[2];
+    UINT8 Weather_Connect_data_Cache[2];
+    UINT8 Write_Read_compare_count=0;
+
+    Write_Read_compare[0]=0;
+    Weather_Connect_data_Cache[0]=0;
+    FLAG_Write_Read_compare=0;
+
+    Weather_Connect_data_Cache[0]=UART1_DATA[11];
+    while((FLAG_Write_Read_compare==0)&&(Write_Read_compare_count<3))
+    {
+//                Write(&HA_Change_send_email[0],0x7ED,3);    //写入数据到24LC16
+//                Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        Write(&Weather_Connect_data_Cache[0],0x3EF,1);    //写入数据到24LC16
+        Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
+        Read(&Write_Read_compare[0],0x3EF,1);
+            if(Write_Read_compare[0]==Weather_Connect_data_Cache[0])FLAG_Write_Read_compare=1;
+            else FLAG_Write_Read_compare=0;
+        Write_Read_compare_count++;
+    }    
+    if(FLAG_Write_Read_compare==1){
+        Weather_Connect_data=Weather_Connect_data_Cache[0];
     }
 }
 

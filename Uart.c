@@ -30,6 +30,8 @@ const UINT8 HA_uart_err[5]={69,82,82,32,32};
  void uart_send_APP_HA_Change(void);
  void uart_send_APP_Public(UINT8 Public_X,UINT8 Public_Y);
  void uart_send_APP_To_and_Tc(UINT8 Public_X,UINT8 Public_Y,UINT8 Public_Z);
+ 
+ void uart_send_APP_Weather_Connect(void);
 #endif
 
 void Uart1_Init(void)
@@ -114,6 +116,7 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
                         break;
             case 0x0107:                                    //控制定时器取得要求
             case 0x010A:                                    //邮件定时器取得要求
+            case 0x0112:                                    //气象联动设定
                         UART_DATA_i=14;
                         if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
                         break;
@@ -138,6 +141,7 @@ void __ISR(_UART_1_VECTOR,ipl3)Uart1Handler(void)
             case 0x010C:                                    //日出日落取得要求
             case 0x010E:                                   //卷帘门状态变化是否邮件送信取得
             case 0x010F:                                   //集中通讯机版本取得
+            case 0x0113:                                   //气象联动取得
             case 0x01F1:                                   //日出日落表格数据DATA取得
                         UART_DATA_i=13;
                         if(UART_DATA_cnt>=UART_DATA_i)UART_DATA_cope();
@@ -441,6 +445,26 @@ CMD0102_NG:                         HA_uart_app[8]=UART1_DATA[8];
                             }
                             else uart_send_APP_Public(UART1_DATA[8],1);
                             break;
+                case 0x0112:                                            // 气象联动设定
+                case 0x0113:                                           // 气象联动取得
+                            if(UART1_DATA[8]==0x12){
+                                for(i=8;i<12;i++)  m+=UART1_DATA[i];
+                                n=UART1_DATA[12]+UART1_DATA[13]*256;
+                            }
+                            else {
+                                 for(i=8;i<11;i++)  m+=UART1_DATA[i];
+                                 n=UART1_DATA[11]+UART1_DATA[12]*256;
+                            }
+                            if(m==n){
+                                if(UART1_DATA[8]==0x12){
+                                      Weather_Connect_write();
+                                      if(FLAG_Write_Read_compare==1)uart_send_APP_Public(0x12,0);
+                                      else uart_send_APP_Public(0x12,1);
+                                }
+                                else uart_send_APP_Weather_Connect();
+                            }
+                            else uart_send_APP_Public(UART1_DATA[8],1);
+                            break;                            
                 case 0x0103:                                            //APP获取卷帘门ID全部
                             for(i=8;i<11;i++)  m+=UART1_DATA[i];
                             n=UART1_DATA[11]+UART1_DATA[12]*256;
@@ -1400,6 +1424,27 @@ void uart_send_APP_HA_Change(void)
                  U1TXREG=HA_Change_send_email[i];
                  d0=d0+HA_Change_send_email[i];
              }
+             Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+             U1TXREG=d0%256;
+             U1TXREG=d0/256;
+ #endif
+}
+
+void uart_send_APP_Weather_Connect(void)
+{
+ #if defined(__Product_PIC32MX2_WIFI__)
+    UINT16 i;
+    UINT16 d0;
+             uart_send_APP_Head();
+             U1TXREG=0x04;
+             U1TXREG=0x00;
+             Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+             U1TXREG=0x13;
+             U1TXREG=0x01;
+             U1TXREG=0x00;
+             d0=0x14;
+                 U1TXREG=Weather_Connect_data;
+                 d0=d0+Weather_Connect_data;
              Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
              U1TXREG=d0%256;
              U1TXREG=d0/256;

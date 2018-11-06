@@ -402,6 +402,8 @@ extern UINT8 FG_Blind_Shutter_Semi;
     extern UINT8 CMD0102_To_or_Tc_HA;
     extern UINT8 FLAG_IDcheck_CMD0102_HA;
     extern UINT8 HA_uart_send_APP_number;
+    
+    extern UINT8 Weather_Connect_data;     
 #endif
 
 

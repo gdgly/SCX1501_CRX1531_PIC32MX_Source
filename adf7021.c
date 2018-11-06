@@ -1079,7 +1079,7 @@ void ADF7021_change_TXorRX(void)
         if((WIFI_alarm_Hours_Minutes[0]==xmv[2])&&(WIFI_alarm_Hours_Minutes[1]==xmv[1])){
             for(i=0;i<22;i++){
                 if(i<12){
-                            if(WIFI_alarm_data[i][1]==0x01){
+                            if((WIFI_alarm_data[i][1]==0x01)&&(Weather_Connect_data==0)){      //20160922  气象联动
                                    Weekday_alarm=0x01;
                                    Weekday_alarm=Weekday_alarm<<xmv[4];
                                    if(((WIFI_alarm_data[i][5]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==WIFI_alarm_data[i][3])&&(xmv[1]==WIFI_alarm_data[i][4])){
