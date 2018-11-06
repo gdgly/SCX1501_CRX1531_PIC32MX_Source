@@ -551,7 +551,7 @@ void ID_Decode_OUT(void)
                                     Receiver_OUT_CLOSE=0;
                                     //Receiver_OUT_OPEN=1;
                                     LATASET=0x0002;
-                                    TIMER250ms_STOP=(TIMER_Semi_open+1)*1000;
+                                    TIMER250ms_STOP=((TIMER_Semi_open+1)*1000/107)*100;
                                 }
                                 else {
                                     FLAG__Semi_open_T=0;
@@ -561,7 +561,7 @@ void ID_Decode_OUT(void)
                                     Receiver_OUT_CLOSE=1;
                                     //Receiver_OUT_OPEN=0;
                                     LATACLR=0x0002;
-                                    TIMER250ms_STOP=(TIMER_Semi_close+1)*1000;
+                                    TIMER250ms_STOP=((TIMER_Semi_close+1)*1000/107)*100;
                                 }
                       }
                 }
