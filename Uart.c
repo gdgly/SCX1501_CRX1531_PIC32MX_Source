@@ -434,8 +434,8 @@ CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.I
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x35;      //5              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x35;      //5
-                                    U1TXREG=0xD5;     //0x16B+0x33+0x39
+                                    U1TXREG=0x39;      //9
+                                    U1TXREG=0xD9;     //0x16B+0x33+0x39
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
