@@ -33,6 +33,7 @@ UINT8  DATA_Packet_Control_0=0;
 UINT8  DATA_Packet_Control_err=0;
 UINT8  Control_bak=0;
 UINT16  TIMER1s=0;
+UINT8   TIMER_Relay_OUT=0;
 UINT16  TIMER300ms=0;
 UINT16  TIMER18ms=0;
 UINT16   TIMER250ms_STOP=0;

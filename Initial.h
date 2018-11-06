@@ -24,6 +24,7 @@
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 
     #define		PIC32MX2_Receiver_mode   1              //模式选择  0=RX      1=TX and RX
+    #define		Blind_Shutter                 //百叶窗类型的开闭机
 #endif
 
     //============================================
@@ -161,6 +162,7 @@ extern UINT8  DATA_Packet_Control_0;
 extern UINT8  DATA_Packet_Control_err;
 extern UINT8  Control_bak;
 extern UINT16  TIMER1s;
+extern UINT8   TIMER_Relay_OUT;
 extern UINT16  TIMER300ms;
 extern UINT16  TIMER18ms;
 extern UINT16   TIMER250ms_STOP;

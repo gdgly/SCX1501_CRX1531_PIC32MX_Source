@@ -86,6 +86,7 @@ void ID_learn(void)
 
 //     if(time_3sec)--time_3sec;
      if(TIME_EMC)--TIME_EMC;
+     if(TIMER_Relay_OUT)--TIMER_Relay_OUT;
 
      if(rssi_TIME)--rssi_TIME;
      if(TIMER60s)--TIMER60s;

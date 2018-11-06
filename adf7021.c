@@ -811,18 +811,22 @@ void dd_read_RSSI(void)
 void DIP_switch_Get(void)
 {
 #if defined(__Product_PIC32MX2_Receiver__)
-       if(DIP_switch1==1)DIP_switch_data=DIP_switch_data&0xBF;
-          else DIP_switch_data=DIP_switch_data|0x40;
-       if(DIP_switch2==1)DIP_switch_data=DIP_switch_data&0xDF;
-          else DIP_switch_data=DIP_switch_data|0x20;
-       if(DIP_switch3==1)DIP_switch_data=DIP_switch_data&0xEF;
-          else DIP_switch_data=DIP_switch_data|0x10;
-       if((DIP_switch_data!=DIP_switch_data_bak)&&(FLAG_DIP_switch==0)){FLAG_DIP_switch=1;TIME_DIP_switch=3;}
-       if((DIP_switch_data!=DIP_switch_data_bak)&&(TIME_DIP_switch==0)){
-           FLAG_DIP_switch=0;
-           DIP_switch_data_bak=DIP_switch_data;
-           FLAG_426MHz_Reply=1;
-       }
+            #ifndef Blind_Shutter
+               if(DIP_switch1==1)DIP_switch_data=DIP_switch_data&0xBF;
+                  else DIP_switch_data=DIP_switch_data|0x40;
+               if(DIP_switch2==1)DIP_switch_data=DIP_switch_data&0xDF;
+                  else DIP_switch_data=DIP_switch_data|0x20;
+               if(DIP_switch3==1)DIP_switch_data=DIP_switch_data&0xEF;
+                  else DIP_switch_data=DIP_switch_data|0x10;
+               if((DIP_switch_data!=DIP_switch_data_bak)&&(FLAG_DIP_switch==0)){FLAG_DIP_switch=1;TIME_DIP_switch=3;}
+               if((DIP_switch_data!=DIP_switch_data_bak)&&(TIME_DIP_switch==0)){
+                   FLAG_DIP_switch=0;
+                   DIP_switch_data_bak=DIP_switch_data;
+                   FLAG_426MHz_Reply=1;
+               }
+            #else
+
+            #endif
 #endif
 }
 
@@ -868,60 +872,63 @@ void ADF7021_change_TXorRX(void)
 //       }
 //   }
 
-    if(HA_L_signal==1){
-       TIMER60s=25;//20;//200;//6000;
-           FLAG_open=1;
-           FLAG_close=0;
-           FLAG_HA_ERR=0;
-   }
-   else if(TIMER60s==0){
-           FLAG_close=1;
-           FLAG_open=0;
-           FLAG_HA_ERR=0;
-   }
-    if(HA_ERR_signal==1){
-       TIMER_err_1s=120;//20;//120;
-   }
-   else if(TIMER_err_1s==0){
-           FLAG_close=0;
-           FLAG_open=0;
-           FLAG_HA_ERR=1;
-   }
-    if(HA_Sensor_signal==1){
-       TIMER_Sensor_open_1s=120;//20;//120;
-       if(TIMER_Sensor_close_1s==0){
-            FLAG_open_Sensor=0;
-            FLAG_close_Sensor=1;
-            FLAG_HA_ERR_Sensor=0;
-       }
-   }
-    else {
-        TIMER_Sensor_close_1s=120;
-        if(TIMER_Sensor_open_1s==0){
-            if((DATA_Packet_Control_err==0x08)||(((DATA_Packet_Control_err&0xDF)<0xC0)&&((DATA_Packet_Control_err&0xDF)>=0x80))){FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;FLAG_close_Sensor=0;}  //2015.12.29追加，异常2没有起作用
-            if(((DATA_Packet_Control_err==0x02)||((DATA_Packet_Control_err&0xDF)>0xC0))&&(FLAG_close_Sensor==1)){FLAG_open_Sensor=0;FLAG_HA_ERR_Sensor=1;FLAG_close_Sensor=0;}
-//            FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;
-//            FLAG_close_Sensor=0;
-        }
-    }
-    if(((FLAG_HA_ERR==1)||(FLAG_HA_ERR_Sensor==1))&&(HA_Status!=0x83)&&(FLAG_HA_ERR_bit==0)){
-           if(FLAG_HA_ERR==1)HA_Status=0x83;
-           else HA_Status=0x84;
-           FLAG_HA_ERR_bit=1;
-           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
-           else FLAG_APP_Reply=1;
-    }
-    if(((FLAG_open==1)&&(FLAG_open_Sensor==1))&&(HA_Status!=0x81)){
-           HA_Status=0x81;
-           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
-           else FLAG_APP_Reply=1;     //ver2.12追加
-    }
-    if(((FLAG_close==1)||(FLAG_close_Sensor==1))&&(HA_Status!=0x82)&&((FLAG_HA_ERR==0)||(FLAG_HA_ERR_Sensor==0))&&(FLAG_HA_ERR_bit==0)){
-           HA_Status=0x82;
-           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
-           else FLAG_APP_Reply=1;
-    }
+    #ifndef Blind_Shutter
+                    if(HA_L_signal==1){
+                       TIMER60s=25;//20;//200;//6000;
+                           FLAG_open=1;
+                           FLAG_close=0;
+                           FLAG_HA_ERR=0;
+                   }
+                   else if(TIMER60s==0){
+                           FLAG_close=1;
+                           FLAG_open=0;
+                           FLAG_HA_ERR=0;
+                   }
+                    if(HA_ERR_signal==1){
+                       TIMER_err_1s=120;//20;//120;
+                   }
+                   else if(TIMER_err_1s==0){
+                           FLAG_close=0;
+                           FLAG_open=0;
+                           FLAG_HA_ERR=1;
+                   }
+                    if(HA_Sensor_signal==1){
+                       TIMER_Sensor_open_1s=120;//20;//120;
+                       if(TIMER_Sensor_close_1s==0){
+                            FLAG_open_Sensor=0;
+                            FLAG_close_Sensor=1;
+                            FLAG_HA_ERR_Sensor=0;
+                       }
+                   }
+                    else {
+                        TIMER_Sensor_close_1s=120;
+                        if(TIMER_Sensor_open_1s==0){
+                            if((DATA_Packet_Control_err==0x08)||(((DATA_Packet_Control_err&0xDF)<0xC0)&&((DATA_Packet_Control_err&0xDF)>=0x80))){FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;FLAG_close_Sensor=0;}  //2015.12.29追加，异常2没有起作用
+                            if(((DATA_Packet_Control_err==0x02)||((DATA_Packet_Control_err&0xDF)>0xC0))&&(FLAG_close_Sensor==1)){FLAG_open_Sensor=0;FLAG_HA_ERR_Sensor=1;FLAG_close_Sensor=0;}
+                //            FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;
+                //            FLAG_close_Sensor=0;
+                        }
+                    }
+                    if(((FLAG_HA_ERR==1)||(FLAG_HA_ERR_Sensor==1))&&(HA_Status!=0x83)&&(FLAG_HA_ERR_bit==0)){
+                           if(FLAG_HA_ERR==1)HA_Status=0x83;
+                           else HA_Status=0x84;
+                           FLAG_HA_ERR_bit=1;
+                           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+                           else FLAG_APP_Reply=1;
+                    }
+                    if(((FLAG_open==1)&&(FLAG_open_Sensor==1))&&(HA_Status!=0x81)){
+                           HA_Status=0x81;
+                           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+                           else FLAG_APP_Reply=1;     //ver2.12追加
+                    }
+                    if(((FLAG_close==1)||(FLAG_close_Sensor==1))&&(HA_Status!=0x82)&&((FLAG_HA_ERR==0)||(FLAG_HA_ERR_Sensor==0))&&(FLAG_HA_ERR_bit==0)){
+                           HA_Status=0x82;
+                           if(Freq_Scanning_CH_save_HA==0)FLAG_426MHz_Reply=1;
+                           else FLAG_APP_Reply=1;
+                    }
+    #else
 
+    #endif
 
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
