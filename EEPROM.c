@@ -906,7 +906,7 @@ void EEPROM_write_To_or_Tc(UINT8 vlue_x,UINT8 vlue_y,UINT8 vlue_z)      //หตร๗  
 {
     UINT8 xm[2]={0};
     xm[0]=vlue_z;
-    if(vlue_y==2){
+    if(vlue_y==1){
         Write(&xm[0],0x3A0+vlue_x,1);
         ID_DATA_To[vlue_x]=xm[0];
     }

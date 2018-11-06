@@ -381,12 +381,12 @@ CMD0102_NG:                         HA_uart_app[8]=UART1_DATA[8];
                                     ID_data_uart_CMD0111.IDB[3]=0x00;
                                     eeprom_IDcheck_CMD0111_UART();
                                     if(FLAG_IDCheck_OK==1){
-                                        if(((UART1_DATA[14]==2)||(UART1_DATA[14]==4))&&(UART1_DATA[15]!=0)){
+                                        if(((UART1_DATA[14]==1)||(UART1_DATA[14]==3))&&(UART1_DATA[15]!=0)){
                                              EEPROM_write_To_or_Tc(ID_DATA_To_or_Tc_place,UART1_DATA[14],UART1_DATA[15]);
                                              uart_send_APP_To_and_Tc(0,UART1_DATA[14],0);
                                         }
-                                        else if(UART1_DATA[14]==1)uart_send_APP_To_and_Tc(0,UART1_DATA[14],ID_DATA_To[ID_DATA_To_or_Tc_place]);
-                                        else if(UART1_DATA[14]==3)uart_send_APP_To_and_Tc(0,UART1_DATA[14],ID_DATA_Tc[ID_DATA_To_or_Tc_place]);
+                                        else if(UART1_DATA[14]==2)uart_send_APP_To_and_Tc(0,UART1_DATA[14],ID_DATA_To[ID_DATA_To_or_Tc_place]);
+                                        else if(UART1_DATA[14]==4)uart_send_APP_To_and_Tc(0,UART1_DATA[14],ID_DATA_Tc[ID_DATA_To_or_Tc_place]);
                                         else uart_send_APP_To_and_Tc(1,UART1_DATA[14],0);
                                     }
                                     else uart_send_APP_To_and_Tc(1,UART1_DATA[14],0);
