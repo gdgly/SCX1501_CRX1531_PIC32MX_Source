@@ -408,6 +408,7 @@ void ID_EEPROM_Initial(void)
                    if(SUN_ON_OFF_seat[0]==0x01) xm[2]=0x08;
                    else if(SUN_ON_OFF_seat[0]==0x11) xm[2]=0x80;
                    else if(SUN_ON_OFF_seat[0]==0x10) xm[2]=0x01;
+                   else if((SUN_ON_OFF_seat[0]>=0x41)&&(SUN_ON_OFF_seat[0]<=0x46))xm[2]=SUN_ON_OFF_seat[0];
                }
                else if(i==12){
                    Read(&xm[0],0x800+12*128,103);
@@ -417,6 +418,7 @@ void ID_EEPROM_Initial(void)
                    if(SUN_ON_OFF_seat[1]==0x01) xm[2]=0x02;
                    else if(SUN_ON_OFF_seat[1]==0x11) xm[2]=0xC0;
                    else if(SUN_ON_OFF_seat[1]==0x10) xm[2]=0x01;
+                   else if((SUN_ON_OFF_seat[1]>=0x41)&&(SUN_ON_OFF_seat[1]<=0x46))xm[2]=SUN_ON_OFF_seat[1];
                }
                else Read(&xm[0],0x800+i*128,103);
                if(i>10)m1=i-1;
@@ -749,6 +751,7 @@ void SUN_EEPROM_write(void)
     if(SUN_ON_OFF_seat_Cache[0]==0x01)WIFI_alarm_data_Cache[0][2]=0x08;
     else if(SUN_ON_OFF_seat_Cache[0]==0x11)WIFI_alarm_data_Cache[0][2]=0x80;
     else if(SUN_ON_OFF_seat_Cache[0]==0x10)WIFI_alarm_data_Cache[0][2]=0x01;
+    else if((SUN_ON_OFF_seat_Cache[0]>=0x41)&&(SUN_ON_OFF_seat_Cache[0]<=0x46))WIFI_alarm_data_Cache[0][2]=SUN_ON_OFF_seat_Cache[0];   //日出百叶窗角度
 
     WIFI_alarm_data_Cache[0][3]=0;         //在EEPROM中的日出日落时间数据为0，是靠SUN_time_get(SUN_ON_OFF_seat[2])函数在表中查询获取
     WIFI_alarm_data_Cache[0][4]=0;
@@ -760,6 +763,7 @@ void SUN_EEPROM_write(void)
     if(SUN_ON_OFF_seat_Cache[1]==0x01)WIFI_alarm_data_Cache[1][2]=0x02;
     else if(SUN_ON_OFF_seat_Cache[1]==0x11)WIFI_alarm_data_Cache[1][2]=0xC0;
     else if(SUN_ON_OFF_seat_Cache[1]==0x10)WIFI_alarm_data_Cache[1][2]=0x01;
+    else if((SUN_ON_OFF_seat_Cache[1]>=0x41)&&(SUN_ON_OFF_seat_Cache[1]<=0x46))WIFI_alarm_data_Cache[1][2]=SUN_ON_OFF_seat_Cache[1];  //日出百叶窗角度
     
     WIFI_alarm_data_Cache[1][3]=0;       //在EEPROM中的日出日落时间数据为0，是靠SUN_time_get(SUN_ON_OFF_seat[2])函数在表中查询获取
     WIFI_alarm_data_Cache[1][4]=0;

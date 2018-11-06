@@ -466,8 +466,8 @@ CMD0102_NG:                         HA_uart_app[8]=UART1_DATA[8];
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x37;      //7              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x31;      //1
-                                    U1TXREG=0xD3;     //0x16B+0x37+0x31
+                                    U1TXREG=0x32;      //2
+                                    U1TXREG=0xD4;     //0x16B+0x37+0x32
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -1041,15 +1041,15 @@ void HA_uart_send_APP(void)
     UINT8 i;
     UINT16 m;
 
-//    HA_uart_app[9]=0x01;
-//    if(UART_DATA_buffer[8]==0x01)HA_uart_app[8]=0x01;
-//    else if(UART_DATA_buffer[8]==0x02){HA_uart_app[8]=0x02;UART_DATA_buffer[8]=0x00;}
-//    else if(UART_DATA_buffer[8]==0x10)HA_uart_app[8]=0x10;
-//    else HA_uart_app[8]=0x01;
-
     HA_uart_app[9]=0x01;
-    if(UART1_DATA[8]==0x02)HA_uart_app[8]=0x02;
+    if(UART_DATA_buffer[8]==0x01)HA_uart_app[8]=0x01;
+    else if(UART_DATA_buffer[8]==0x02){HA_uart_app[8]=0x02;UART_DATA_buffer[8]=0x00;}
+    else if(UART_DATA_buffer[8]==0x10)HA_uart_app[8]=0x10;
     else HA_uart_app[8]=0x01;
+
+//    HA_uart_app[9]=0x01;
+//    if(UART1_DATA[8]==0x02)HA_uart_app[8]=0x02;
+//    else HA_uart_app[8]=0x01;
 
     HA_uart_app[10]=0x00;
     b0.IDL=DATA_Packet_ID;
