@@ -313,7 +313,7 @@ extern UINT8 FG_auto_open_time;
     extern UINT8 AUTO_HA_Inquiry;
     extern UINT8 HA_uart[1200];
     //extern UINT8 HA_uart_ios[45];
-    extern UINT8 HA_uart_ios[48];
+    extern UINT8 HA_uart_ios[49];
     extern UINT32 EMIAL_id_data[35];
     extern UINT32 EMIAL_id_data_chek;
     extern UINT8  EMIAL_id_HA[35];
