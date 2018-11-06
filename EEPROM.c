@@ -131,7 +131,7 @@ void ID_learn(void)
              TIME_Receiver_Login_led++;
              if(TIME_Receiver_Login_led>=45){              //2015.3.23修改
                  TIME_Receiver_Login_led=0;
-		 if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=1;   //2015.3.23修改
+		 if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;   //2015.3.23修改
                  else Receiver_LED_OUT=!Receiver_LED_OUT;
              }
              if((FLAG_ID_Login_OK==1)&&(FLAG_ID_Login_OK_bank==0)){
@@ -249,7 +249,7 @@ void ID_Login_EXIT_Initial(void)
      FLAG_ID_Login_OK_bank=0;
      FLAG_ID_Login=0;
      FLAG_ID_Erase_Login=0;
-     Receiver_LED_OUT=0;
+     Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;
      COUNT_Receiver_Login=0;     //2015.3.23修改
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)

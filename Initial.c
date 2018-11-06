@@ -13,6 +13,7 @@
 //UINT32 EEPROM_Receiver_ID=2000307;//13040292;//13040451;//2000307;//13186823;
 
 FLAG FLAG_APP;
+FLAG FLAG_PORT;
 UINT16 rssi;
 UINT8 Frequency_CH;
 
@@ -433,12 +434,16 @@ void VHF_GPIO_INIT(void){
       Receiver_Login_IO=1;// Input   受信机登录键   低电平有效
       Receiver_Buzzer_IO=0;// Output   受信机蜂鸣器  高电平有效
       Receiver_Buzzer=0;
-      Receiver_LED_OUT_IO=0;// Output   受信机继电器动作输出  低电平有效
-      Receiver_LED_OUT=1;
-      Receiver_LED_TX_IO=0;// Output   受信机送信指示  低电平有效
-      Receiver_LED_TX=0;
-      Receiver_LED_RX_IO=0;// Output   受信机受信指示  低电平有效
-      Receiver_LED_RX=0;
+      
+      FLAG_PORT_LEDoutput_allow=0;      //低电平有效
+      FLAG_PORT_LEDoutput_NOallow=1;
+      Receiver_LED_OUT_IO=0;// Output   受信机继电器动作输出 
+      Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+      Receiver_LED_TX_IO=0;// Output   受信机送信指示  
+      Receiver_LED_TX=FLAG_PORT_LEDoutput_NOallow;
+      Receiver_LED_RX_IO=0;// Output   受信机受信指示  
+      Receiver_LED_RX=FLAG_PORT_LEDoutput_NOallow;
+      
       Receiver_OUT_OPEN_IO=0;  // Output   受信机继电器OPEN  高电平有效
       Receiver_OUT_OPEN=0;
       Receiver_OUT_CLOSE_IO=0;  // Output   受信机继电器CLOSE  高电平有效
@@ -501,7 +506,7 @@ void RF_test_mode(void )
   UINT8 uart_data,Boot_i;
 
 #if defined(__Product_PIC32MX2_Receiver__)
-  Receiver_LED_OUT=1;
+  Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
   for(Boot_i=0;Boot_i<2;Boot_i++){
       for(time_3sec=0;time_3sec<1500;time_3sec++){
          Delayus(240);   //80us
@@ -509,14 +514,14 @@ void RF_test_mode(void )
       }
       Receiver_LED_OUT=!Receiver_LED_OUT;
   }
-  Receiver_LED_OUT=0;
+  Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;
 
 
 
     while(Receiver_test==0){
         ClearWDT(); // Service the WDT
-        if(HA_Sensor_signal==0)Receiver_LED_TX=1;
-        else Receiver_LED_TX=0;
+        if(HA_Sensor_signal==0)Receiver_LED_TX=FLAG_PORT_LEDoutput_allow;
+        else Receiver_LED_TX=FLAG_PORT_LEDoutput_NOallow;
 
 	if(HA_ERR_signal==0){
 	  if(HA_L_signal==0)Tx_Rx_mode=0;
@@ -528,11 +533,11 @@ void RF_test_mode(void )
 	}
 	if((Tx_Rx_mode==0)||(Tx_Rx_mode==1)){
 	  FG_test_rx=0;
-	  Receiver_LED_RX=0;
+	  Receiver_LED_RX=FLAG_PORT_LEDoutput_NOallow;
 	  FG_test_tx_off=0;
 	  //if(HA_L_signal==0){    //发载波，无调制信号
 	  if(Tx_Rx_mode==0){
-	    Receiver_LED_OUT=1;
+	    Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
 	    FG_test_mode=0;
 	    FG_test_tx_1010=0;
 	    if(FG_test_tx_on==0){FG_test_tx_on=1;ADF7021_DATA_IO=1;dd_set_TX_mode_carrier();}
@@ -550,7 +555,7 @@ void RF_test_mode(void )
         //else  {           //test ADF7021 RX
 	if((Tx_Rx_mode==2)||(Tx_Rx_mode==3)){
 	  FG_test_rx=1;
-	  Receiver_LED_OUT=0;
+	  Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;
 	  FG_test_mode=0;
 	  FG_test_tx_on=0;
 	  FG_test_tx_1010=0;
@@ -564,8 +569,8 @@ void RF_test_mode(void )
 	  if(Tx_Rx_mode==3){
             if(X_COUNT >= 1200){
               X_COUNT = 0;
-	      if(X_ERR>=60)Receiver_LED_RX=0;
-	      else Receiver_LED_RX=1;
+	      if(X_ERR>=60)Receiver_LED_RX=FLAG_PORT_LEDoutput_NOallow;
+	      else Receiver_LED_RX=FLAG_PORT_LEDoutput_allow;
 //              uart_data = (X_ERR/1000) + 48;//48;//（X_ERR/1000) + 48;
 //	      Send_char(uart_data);
 //              X_ERR = X_ERR%1000;
@@ -590,10 +595,10 @@ void RF_test_mode(void )
 //    UART1_end();
     FG_test_rx=0;
     TIMER1s=0;
-    Receiver_LED_TX=0;
-    Receiver_LED_RX=0;
-//    FG_Receiver_LED_RX=0;
-    Receiver_LED_OUT=0;
+    Receiver_LED_TX=FLAG_PORT_LEDoutput_NOallow;
+    Receiver_LED_RX=FLAG_PORT_LEDoutput_NOallow;
+//    FG_Receiver_LED_RX=FLAG_PORT_LEDoutput_NOallow;
+    Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;
 
 
     DIP_switch_data=0;

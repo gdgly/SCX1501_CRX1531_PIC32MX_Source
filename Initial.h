@@ -23,7 +23,7 @@
 #if defined(__32MX220F032D__)
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 
-    #define		PIC32MX2_Receiver_mode   1              //模式选择  0=RX      1=TX and RX
+    #define		PIC32MX2_Receiver_mode   0              //模式选择  0=RX      1=TX and RX
 #endif
 
     //============================================
@@ -139,6 +139,14 @@ extern FLAG FLAG_APP;
         #define		FLAG_ID_Erase_Login_PCS   FLAG_APP.BIT.Bit30
 	//************************************************
 
+
+
+extern FLAG FLAG_PORT;
+//************************************************
+	#define 	FLAG_PORT_BYTE		FLAG_PORT.BYTE	 
+	//------------------------------------------------
+	#define		FLAG_PORT_LEDoutput_allow		FLAG_PORT.BIT.Bit0 
+    #define		FLAG_PORT_LEDoutput_NOallow		FLAG_PORT.BIT.Bit1 
 
 //extern UINT32 EEPROM_Receiver_ID;
 
@@ -425,10 +433,10 @@ extern void RF_test_mode(void );
     #define  Receiver_Login_IO     TRISCbits.TRISC7 // Input   受信机登录键   低电平有效
     #define  Receiver_Buzzer_IO    TRISBbits.TRISB13 // Output   受信机蜂鸣器  高电平有效
     #define  Receiver_LED_OUT_IO   TRISCbits.TRISC6 // Output   受信机继电器动作输出  低电平有效
-//    #define  Receiver_LED_TX_IO    TRISCbits.TRISC9 // Output   受信机送信指示  低电平有效
-//    #define  Receiver_LED_RX_IO    TRISCbits.TRISC8 // Output   受信机受信指示  低电平有效
-    #define  Receiver_LED_TX_IO    TRISCbits.TRISC8 // Output   受信机送信指示  低电平有效
-    #define  Receiver_LED_RX_IO    TRISCbits.TRISC9 // Output   受信机受信指示  低电平有效
+    #define  Receiver_LED_TX_IO    TRISCbits.TRISC9 // Output   受信机送信指示  低电平有效
+    #define  Receiver_LED_RX_IO    TRISCbits.TRISC8 // Output   受信机受信指示  低电平有效
+//    #define  Receiver_LED_TX_IO    TRISCbits.TRISC8 // Output   受信机送信指示  低电平有效
+//    #define  Receiver_LED_RX_IO    TRISCbits.TRISC9 // Output   受信机受信指示  低电平有效
     #define  Receiver_OUT_OPEN_IO    TRISAbits.TRISA1  // Output 受信机继电器OPEN  高电平有效
     #define  Receiver_OUT_CLOSE_IO   TRISBbits.TRISB2  // Output 受信机继电器close 高电平有效
     #define  Receiver_OUT_STOP_IO    TRISCbits.TRISC0  // Output 受信机继电器STOP  高电平有效
@@ -512,10 +520,10 @@ extern void RF_test_mode(void );
     #define  Receiver_Login     PORTCbits.RC7   // Input   受信机登录键   低电平有效
     #define  Receiver_Buzzer    LATBbits.LATB13  // Output   受信机蜂鸣器  高电平有效
     #define  Receiver_LED_OUT   LATCbits.LATC6  // Output   受信机继电器动作输出  低电平有效
-//    #define  Receiver_LED_TX    LATCbits.LATC9 // Output   受信机送信指示  低电平有效
-//    #define  Receiver_LED_RX    LATCbits.LATC8  // Output   受信机受信指示  低电平有效
-    #define  Receiver_LED_TX    LATCbits.LATC8 // Output   受信机送信指示  低电平有效
-    #define  Receiver_LED_RX    LATCbits.LATC9  // Output   受信机受信指示  低电平有效
+    #define  Receiver_LED_TX    LATCbits.LATC9 // Output   受信机送信指示  低电平有效
+    #define  Receiver_LED_RX    LATCbits.LATC8  // Output   受信机受信指示  低电平有效
+//    #define  Receiver_LED_TX    LATCbits.LATC8 // Output   受信机送信指示  低电平有效
+//    #define  Receiver_LED_RX    LATCbits.LATC9  // Output   受信机受信指示  低电平有效
     #define  Receiver_OUT_OPEN    LATAbits.LATA1  // Output   受信机继电器OPEN  高电平有效
     #define  Receiver_OUT_CLOSE   LATBbits.LATB2  // Output   受信机继电器close  高电平有效
     #define  Receiver_OUT_STOP    LATCbits.LATC0  // Output   受信机继电器stop  高电平有效

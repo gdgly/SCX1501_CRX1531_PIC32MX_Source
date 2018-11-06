@@ -926,9 +926,9 @@ void ADF7021_change_TXorRX(void)
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
        FLAG_APP_RX=1;
-       Receiver_LED_OUT=0;
-       Receiver_LED_TX=0;
-       Receiver_LED_RX=0;
+       Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;
+       Receiver_LED_TX=FLAG_PORT_LEDoutput_NOallow;
+       Receiver_LED_RX=FLAG_PORT_LEDoutput_NOallow;
        ADF7021_DATA_IO=1;
        //dd_set_RX_mode();
        dd_set_ADF7021_Freq(0,1);
@@ -1131,7 +1131,6 @@ AUTO_SEND_exit:
            rssi_COUNT=0;
            TX_Freq_CH=TX_Freq_CH+2;
            if(TX_Freq_CH>4)TX_Freq_CH=2;
-           //TX_Freq_CH=2;
            dd_set_ADF7021_Freq(0,TX_Freq_CH);
        }
        if(rssi_TIME==0){
