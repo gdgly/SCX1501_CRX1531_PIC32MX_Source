@@ -662,9 +662,9 @@ void ID_Decode_OUT(void)
     if((FLAG_email_send==1)&&(TIME_email_send==0)){
         FLAG_email_send=0;
         Email_check_mail();
-        //if(FLAG_Emial_time==1){FLAG_Emial_time=0;HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=Emial_time_data[Emial_time_place][5];HA_uart[9]=Emial_time_data[Emial_time_place][6];HA_uart_email(EMIAL_id_PCS);} //邮件定时器到时 邮件送信
+        if(FLAG_Emial_time==1){FLAG_Emial_time=0;HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=Emial_time_data[Emial_time_place][5];HA_uart[9]=Emial_time_data[Emial_time_place][6];HA_uart_email(EMIAL_id_PCS);} //邮件定时器到时 邮件送信
         //2014.10.11修改
-        if((FLAG_Email_check==0)&&(HA_Change_email_Step==2))HA_Change_email_Step=0;
+        else if((FLAG_Email_check==0)&&(HA_Change_email_Step==2))HA_Change_email_Step=0;
         else if((FLAG_Email_check==1)&&(HA_Change_email_Step==2)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}     //HA状态变化通知  上次邮件发送内容和本次内容不一样
         else if((FLAG_Email_check==1)&&(HA_Change_send_email[0]==1)&&(FLAG_HA_Change_ERROR==1)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(EMIAL_id_PCS);}
     }
