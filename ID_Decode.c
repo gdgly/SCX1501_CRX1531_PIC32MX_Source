@@ -298,14 +298,16 @@ void ID_Decode_IDCheck(void)
                                     else if(DATA_Packet_Control==0x0A)TIMER1s=5200;
                                     else TIMER1s=1200;//300;//1200;    
                                 }
-                                
-
-//                                    if((DATA_Packet_Control==0x0C)||(DATA_Packet_Control==0x06))TIMER1s=500;//1200;//300;500
-//                                    else if(DATA_Packet_Control==0x0A)TIMER1s=5200;
-//                                    else TIMER1s=1200;//300;//1200;                                
+                                                              
                             }
                             else {
-                                
+                                  if(TIMER_Relay_OUT==0)
+                                    {
+                                        TIMER_Relay_OUT=36;   //360ms
+                                        if((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46))TIMER1s=300;//1200;//300;500
+                                        else if(DATA_Packet_Control==0x01)TIMER1s=5200;
+                                        else TIMER1s=1200;//300;//1200;    
+                                    }
                             }
                     #endif
 
@@ -660,17 +662,26 @@ void ID_Decode_OUT(void)
                                     switch (Control_i){
                                          case 0x14:                     //stop+login
                                                     break;
-                                         case 0x02:                        //close
-                                         case 0x06:                  //close+stop    
+                                         case 0x02:               //close
                                                     Receiver_LED_OUT=1;
                                                     //Receiver_OUT_OPEN=0;
                                                     LATACLR=0x0002;
                                                     Receiver_OUT_VENT=0;
                                                     Receiver_OUT_STOP=0;
-                                                    Receiver_OUT_CLOSE=1;
+                                                    Receiver_OUT_CLOSE=1; 
+                                                    break;                                             
+                                         case 0x06:                  //close+stop    
+                                                     if(Freq_Scanning_CH_bak==0)  //426M
+                                                     {
+                                                            Receiver_LED_OUT=1;
+                                                            //Receiver_OUT_OPEN=0;
+                                                            LATACLR=0x0002;
+                                                            Receiver_OUT_VENT=0;
+                                                            Receiver_OUT_STOP=0;
+                                                            Receiver_OUT_CLOSE=1;
+                                                     }
                                                     break;
                                          case 0x04:                      //stop
-                                         case 0x0A:                       //close+OPEN    
                                                     Receiver_LED_OUT=1;
                                                     //Receiver_OUT_OPEN=0;
                                                     LATACLR=0x0002;
@@ -678,8 +689,18 @@ void ID_Decode_OUT(void)
                                                     Receiver_OUT_CLOSE=0;
                                                     Receiver_OUT_STOP=1;
                                                     break;
+                                         case 0x0A:                       //close+OPEN    
+                                                  if(Freq_Scanning_CH_bak==0)  //426M
+                                                  {
+                                                        Receiver_LED_OUT=1;
+                                                        //Receiver_OUT_OPEN=0;
+                                                        LATACLR=0x0002;
+                                                        Receiver_OUT_VENT=0;
+                                                        Receiver_OUT_CLOSE=0;
+                                                        Receiver_OUT_STOP=1;
+                                                  }
+                                                    break;
                                          case 0x08:                      //open
-                                         case 0x0C:                    //open+stop    
                                                     Receiver_LED_OUT=1;
                                                     Receiver_OUT_STOP=0;
                                                     Receiver_OUT_CLOSE=0;
@@ -687,7 +708,38 @@ void ID_Decode_OUT(void)
                                                     //Receiver_OUT_OPEN=1;
                                                     LATASET=0x0002;
                                                     break;
+                                         case 0x0C:                    //open+stop 
+                                                   if(Freq_Scanning_CH_bak==0)  //426M
+                                                  {
+                                                        Receiver_LED_OUT=1;
+                                                        Receiver_OUT_STOP=0;
+                                                        Receiver_OUT_CLOSE=0;
+                                                        Receiver_OUT_VENT=0;
+                                                        //Receiver_OUT_OPEN=1;
+                                                        LATASET=0x0002;
+                                                   }
+                                                    break;
                                          case 0x01:                  //VENT
+                                                  if(Freq_Scanning_CH_bak==1)  //429M
+                                                  {
+                                                        Receiver_LED_OUT=1;
+                                                        //Receiver_OUT_OPEN=0;
+                                                        LATACLR=0x0002;
+                                                        Receiver_OUT_VENT=0;
+                                                        Receiver_OUT_CLOSE=0;
+                                                        Receiver_OUT_STOP=1;
+                                                  }
+                                                    break;
+                                         case 0x41:                 //½Ç¶È1
+                                                  if(Freq_Scanning_CH_bak==1)  //429M
+                                                  {
+                                                        Receiver_LED_OUT=1;
+                                                        Receiver_OUT_STOP=0;
+                                                        Receiver_OUT_CLOSE=0;
+                                                        Receiver_OUT_VENT=0;
+                                                        //Receiver_OUT_OPEN=1;
+                                                        LATASET=0x0002;
+                                                  }
                                                     break;
                                          case 0x09:                       //vent+OPEN
                                                     break;
@@ -702,9 +754,9 @@ void ID_Decode_OUT(void)
                                                     break;
                                          }
                                     
-//                                    if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
-//                                         ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)||((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
-//                                         FLAG_APP_Reply=1;
+                                    if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
+                                         ||((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46))||((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
+                                         FLAG_APP_Reply=1;
                                 }
                          else {
                                    if((FG_auto_out==1)&&(TIME_auto_out==0)){FG_auto_out=0;TIME_auto_close=270;Receiver_LED_OUT=1;}   //300
