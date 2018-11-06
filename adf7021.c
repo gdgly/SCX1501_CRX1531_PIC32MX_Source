@@ -1094,13 +1094,21 @@ void ADF7021_change_TXorRX(void)
                                    Weekday_alarm=0x01;
                                    Weekday_alarm=Weekday_alarm<<xmv[4];
                                    if(((Emial_time_data[i_n][4]&Weekday_alarm)==Weekday_alarm)&&(xmv[2]==Emial_time_data[i_n][2])&&(xmv[1]==Emial_time_data[i_n][3])){
+                                   #ifdef __Email_ha_ask__
                                        for(i_m=0;i_m<ID_DATA_PCS;i_m++)Emial_time_OUT(i_m);
-                                       // for(i_m=ID_DATA_PCS;i_m>0;i_m--) Emial_time_OUT(i_m-1);     //2015.4.11×·¼ÓÐÞÕý3
                                        FLAG_Emial_time=1;
                                        HA_Change_email_time=0;
                                        HA_Change_email_Step=1;
 
                                        Emial_time_place=i_n;
+                                   #else
+                                       //for(i_m=0;i_m<ID_DATA_PCS;i_m++)Emial_time_OUT(i_m);
+                                       FLAG_Emial_time=1;
+                                       //HA_Change_email_time=0;
+                                       //HA_Change_email_Step=1;
+
+                                       Emial_time_place=i_n;
+                                   #endif
                                    }
                             }
                 }

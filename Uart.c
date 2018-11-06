@@ -466,8 +466,8 @@ CMD0102_NG:                         HA_uart_app[8]=UART1_DATA[8];
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x37;      //7              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x33;      //3
-                                    U1TXREG=0xD5;     //0x16B+0x37+0x33
+                                    U1TXREG=0x34;      //4
+                                    U1TXREG=0xD6;     //0x16B+0x37+0x34
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -1044,7 +1044,11 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
            Email_check_ID[i]=EMIAL_id_data[i];
            //EMIAL_id_data[i]=0;    //20150430 japan修改2
            Emial_check_Control[i]=EMIAL_id_HA[i];
-           EMIAL_id_HA[i]=0;
+           #ifdef __Email_ha_ask__
+              EMIAL_id_HA[i]=0;
+           #else
+              //EMIAL_id_HA[i]=0;
+           #endif
        }
        EMIAL_id_PCS=0;
   // HA_uart_send_APP();

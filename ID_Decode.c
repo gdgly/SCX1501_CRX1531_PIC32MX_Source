@@ -293,7 +293,8 @@ void ID_Decode_IDCheck(void)
                             if(Freq_Scanning_CH_bak==0){
                                 if(TIMER_Relay_OUT==0)
                                 {
-                                    TIMER_Relay_OUT=36;   //360ms                                    
+                                    TIMER_Relay_OUT=36;   //360ms          
+                                    TIME_angle_n=0;   //2016.7.15追加，原因为角度调整过程中，如果再操作卷帘门OPEN/STOP/CLOSE，卷帘门会继续角度调整
                                     if(DATA_Packet_Control==0x08)TIMER1s=1700;    //500ms(stop)+100ms(NOP)+1100ms(open)
                                     else if(DATA_Packet_Control==0x02)TIMER1s=2450;    //500ms(stop)+100ms(NOP)+1100ms(close)+750ms(状态返回需要的反应时间)
                                     else if((DATA_Packet_Control==0x0C)||(DATA_Packet_Control==0x06)){
@@ -309,6 +310,7 @@ void ID_Decode_IDCheck(void)
                                   if(TIMER_Relay_OUT==0)
                                     {
                                         TIMER_Relay_OUT=70;   //360ms   在429MHz时需要为700ms，这样才能保证控制一次输出合格的时间
+                                        if(!((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46)))TIME_angle_n=0;   //2016.7.15追加，原因为角度调整过程中，如果再操作卷帘门OPEN/STOP/CLOSE，卷帘门会继续角度调整
                                         if(DATA_Packet_Control==0x08)TIMER1s=1700;    //500ms(stop)+100ms(NOP)+1100ms(open)
                                         else if(DATA_Packet_Control==0x02)TIMER1s=2450;    //500ms(stop)+100ms(NOP)+1100ms(close)+750ms(状态返回需要的反应时间)
                                         else if((DATA_Packet_Control>=0x41)&&(DATA_Packet_Control<=0x46)) {
@@ -318,7 +320,7 @@ void ID_Decode_IDCheck(void)
                                                 TIMER1s=1700;
                                                 switch(DATA_Packet_Control){
                                                     case 0x41:
-                                                             TIME_angle_n=150;
+                                                             TIME_angle_n=250;
                                                              break;
                                                     case 0x42:
                                                              TIME_angle_n=350;
@@ -950,6 +952,8 @@ void ID_Decode_OUT(void)
              //if((HA_Change_email_Step==0)&&(HA_Change_send_email[0]==1)){HA_Change_email_time=18000;HA_Change_email_Step=1;}//3分钟
              if((HA_Change_email_Step==0)&&(HA_Change_send_email[0]==1)){HA_Change_email_time=16530;HA_Change_email_Step=1;}//3分钟     2014年4月24日文化修改
          }
+                        
+    #ifdef __Email_ha_ask__                        
     if((FLAG_email_send==1)&&(TIME_email_send==0)){
         FLAG_email_send=0;
         Email_check_mail();
@@ -969,6 +973,17 @@ void ID_Decode_OUT(void)
         //}
         //else HA_Change_email_Step=0;
     }
+    #else 
+      if(FLAG_Emial_time==1){FLAG_Emial_time=0;HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=Emial_time_data[Emial_time_place][5];HA_uart[9]=Emial_time_data[Emial_time_place][6];HA_uart_email(ID_DATA_PCS);} //邮件定时器到时 邮件送信
+      if((HA_Change_email_time==0)&&(HA_Change_email_Step==1)){    //3分钟  
+          HA_Change_email_Step=0;
+          Email_check_mail();
+          if(FLAG_Email_check==1){FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(ID_DATA_PCS);}     //HA状态变化通知  上次邮件发送内容和本次内容不一样          
+      }
+      if((HA_Change_send_email[0]==1)&&(FLAG_HA_Change_ERROR==1)){HA_Change_email_Step=0;FLAG_HA_Change_ERROR=0;HA_uart[8]=HA_Change_send_email[1];HA_uart[9]=HA_Change_send_email[2];HA_uart_email(ID_DATA_PCS);}    
+     #endif     
+                        
+                        
  #endif    
 
 }

@@ -10,6 +10,8 @@
 
 #if defined(__32MX250F128D__)
     #define __Product_PIC32MX2_WIFI__            //"0"代表DIV8  CPU Freq=10MHz  受信机
+    //#define __Email_ha_ask__    //(1)状态收到后3分钟全部查询（2）邮件timer时间到后，先全部查询，然后再发邮件
+                                  //(1)状态收到后3分钟，如果变化发邮件（2）邮件timer时间到后，发邮件
 #endif
 
 #if defined(__32MX230F064D__)
