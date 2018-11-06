@@ -187,7 +187,7 @@ void UART_Decode(void)
             uart_y.uc[0]=UART1_DATA[8];
             uart_y.uc[1]=UART1_DATA[9];
             switch(uart_y.ui){
-                case 0x0101:                      //卷帘门依次单个HA状态取得
+                case 0x0101:                                           //卷帘门依次单个HA状态取得
                 case 0x0110:
                           APP_check_char=0;     //2014.10.11修改
                 case 0x0102:                                           //卷帘门依次单个操作
@@ -245,10 +245,6 @@ CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.I
                                         FLAG_IDCheck_OK=0;
                                         FLAG_UART_ok=1;
                                         time_APP_Start_up=0;  //2015.04.27修正
-                                        if((uart_y.ui==0x0101)&&(UART1_DATA[14]==0x00)){
-                                            if(ID_data.IDL!=APP_check_ID);
-                                            else APP_check_ID=0;
-                                        }
                                        }                                    
                                 }
                                 else {
@@ -436,10 +432,10 @@ CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.I
                                     U1TXREG=0x65;      //e
                                     U1TXREG=0x72;      //r
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-                                    U1TXREG=0x36;      //6              //2014.10.11修改
+                                    U1TXREG=0x35;      //5              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x30;      //0
-                                    U1TXREG=0xD1;     //0x16B+0x36+0x30
+                                    U1TXREG=0x35;      //5
+                                    U1TXREG=0xD5;     //0x16B+0x33+0x39
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -1025,7 +1021,7 @@ void HA_uart_send_APP(void)
         if(FG_send_Faile_again==0) {FG_send_Faile_again=1;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
         else if(FG_send_Faile_again==1){FG_send_Faile_again=2;FG_Second=0;TIME_alarm_AUTO=350; FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00; FLAG_AUTO_SEND_ok=1;}    //2015.4.2追加修改自动某ID发送一次失败，追加再发送两次
         else if(FG_send_Faile_again==2){
-           time_APP_Start_up=0; FG_Second=1;FG_send_Faile_notice=1;FG_send_Faile_again=0; //APP_check_char=0;
+           time_APP_Start_up=0; FG_Second=1;APP_check_char=0;FG_send_Faile_notice=1;
         }    //2015.3.31追加修改 2次发送都失败，SIG绿色LED 1Hz通知
         if(UART_DATA_buffer[8]==0x10){HA_uart_app[14]=0xFF;HA_uart_app[15]=0x00;}
     }
@@ -1048,8 +1044,7 @@ void HA_uart_send_APP(void)
     HA_uart_app[17]=m/256;
 
     //if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(HA_uart_app[14]==5)||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))    //2014.10.11修改
-    //if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))
-    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||((APP_check_char==0)&&(TIMER1s==0))||(FG_WIFI_SWITCH_DIP==1))
+    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))
     {
         if((HA_uart_app[14]==5)&&(FG_Second==0));
         else if(time_APP_Start_up==0){     //2015.04.27修正

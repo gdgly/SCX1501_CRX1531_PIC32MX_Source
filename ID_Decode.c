@@ -175,7 +175,12 @@ void ID_Decode_IDCheck(void)
         if(FLAG_Signal_DATA_OK==1)
         {
             eeprom_IDcheck();
+            #if defined(__Product_PIC32MX2_Receiver__)
+            if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){  
+            #endif
+            #if defined(__Product_PIC32MX2_WIFI__)
             if(((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))&&(TIME_ID_Login_delay==0)){   //20150430 japan修改1
+            #endif
              #if defined(__Product_PIC32MX2_WIFI__)
                 if((FLAG_ID_Login_OK==0)&&(DATA_Packet_Control_buf!=0x40)&&(DATA_Packet_ID_buf!=0)&&(DATA_Packet_Control_buf==0x04)){            //2015.4.1修正1 在登录模式下 不允许自动送信登录，只允许手动送信登录
 
@@ -245,7 +250,7 @@ void ID_Decode_IDCheck(void)
                 else
                    {
 #if defined(__Product_PIC32MX2_WIFI__)
-                    if(TIMER1s==0)TIMER1s=700;//500
+                    TIMER1s=500;//1000
                     FLAG_TIME_No_response=0;
 #endif
 #if defined(__Product_PIC32MX2_Receiver__)

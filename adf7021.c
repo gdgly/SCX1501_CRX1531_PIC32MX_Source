@@ -1123,7 +1123,7 @@ AUTO_SEND_exit:
            FLAG_rssi_Freq=0;
            if(rssi_COUNT>=10){
 #if defined(__Product_PIC32MX2_WIFI__)
-                if(FLAG_UART_ok==1)TIME_APP_Inquiry_HA=240;
+                if(FLAG_UART_ok==1)TIME_APP_Inquiry_HA=350;
 #endif
                 FLAG_UART_ok=0;
                 FLAG_HA_START=0;
@@ -1131,7 +1131,7 @@ AUTO_SEND_exit:
                 SendTxData();
                 TX_Freq_CH=0;
 #if defined(__Product_PIC32MX2_WIFI__)
-                TIME_No_response=280;FLAG_TIME_No_response=1;      //2014.10.11ÐÞ¸Ä   150
+                TIME_No_response=300;FLAG_TIME_No_response=1;      //2014.10.11ÐÞ¸Ä   150
 #endif
            }
        }
