@@ -776,7 +776,7 @@ void dd_set_ADF7021_Power_on(void)
         Delay100us(200);             //delay 1ms
         m_RFNormalBuf[0]=0xFF;
         m_RFNormalBuf[1]=0xFF;
-        for(i=2;i<=21;i++)m_RFNormalBuf[i]=0x55;
+        for(i=2;i<=20;i++)m_RFNormalBuf[i]=0x55;
 }
 
 void dd_set_ADF7021_ReInitial(void)

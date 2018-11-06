@@ -1223,24 +1223,56 @@ void SendTxData(void)
        FLAG_APP_TX=1;
 }
 
+//void SetTxData(void)
+//{
+//  uni_i unii,unij,unik;
+//  	/*	ID set	*/
+//        m_RFNormalBuf[22]=0x15;
+//	unii.ui = SetFixedLengthCode(ID_data.IDB[0]) ;
+//	m_RFNormalBuf[23] = unii.uc[1] ;
+//	m_RFNormalBuf[24] = unii.uc[0] ;
+//	unii.ui = SetFixedLengthCode(ID_data.IDB[1]) ;
+//	m_RFNormalBuf[25] = unii.uc[1] ;
+//	m_RFNormalBuf[26] = unii.uc[0] ;
+//	unii.ui = SetFixedLengthCode(ID_data.IDB[2]) ;
+//	m_RFNormalBuf[27] = unii.uc[1] ;
+//	m_RFNormalBuf[28] = unii.uc[0] ;
+//	/*	Control code set	*/
+//	unii.ui = SetFixedLengthCode(Control_code) ;
+//	m_RFNormalBuf[29] = unii.uc[1] ;
+//	m_RFNormalBuf[30] = unii.uc[0] ;
+//	/*	SUM set	*/
+//	unii.uc[0] = ID_data.IDB[2] ;
+//	unii.uc[1] = Control_code;
+//	unij.uc[0] = ID_data.IDB[0] ;
+//	unij.uc[1] = ID_data.IDB[1] ;
+//	unik.ui = unii.ui + unij.ui ;
+//	unii.ui = SetFixedLengthCode(unik.uc[0]) ;
+//	m_RFNormalBuf[31] = unii.uc[1] ;
+//	m_RFNormalBuf[32] = unii.uc[0] ;
+//	unii.ui = SetFixedLengthCode(unik.uc[1]) ;
+//	m_RFNormalBuf[33] = unii.uc[1] ;
+//	m_RFNormalBuf[34] = unii.uc[0] ;
+//}
+
 void SetTxData(void)
 {
   uni_i unii,unij,unik;
   	/*	ID set	*/
-        m_RFNormalBuf[22]=0x15;
+        m_RFNormalBuf[21]=0x15;
 	unii.ui = SetFixedLengthCode(ID_data.IDB[0]) ;
-	m_RFNormalBuf[23] = unii.uc[1] ;
-	m_RFNormalBuf[24] = unii.uc[0] ;
+	m_RFNormalBuf[22] = unii.uc[1] ;
+	m_RFNormalBuf[23] = unii.uc[0] ;
 	unii.ui = SetFixedLengthCode(ID_data.IDB[1]) ;
-	m_RFNormalBuf[25] = unii.uc[1] ;
-	m_RFNormalBuf[26] = unii.uc[0] ;
+	m_RFNormalBuf[24] = unii.uc[1] ;
+	m_RFNormalBuf[25] = unii.uc[0] ;
 	unii.ui = SetFixedLengthCode(ID_data.IDB[2]) ;
-	m_RFNormalBuf[27] = unii.uc[1] ;
-	m_RFNormalBuf[28] = unii.uc[0] ;
+	m_RFNormalBuf[26] = unii.uc[1] ;
+	m_RFNormalBuf[27] = unii.uc[0] ;
 	/*	Control code set	*/
 	unii.ui = SetFixedLengthCode(Control_code) ;
-	m_RFNormalBuf[29] = unii.uc[1] ;
-	m_RFNormalBuf[30] = unii.uc[0] ;
+	m_RFNormalBuf[28] = unii.uc[1] ;
+	m_RFNormalBuf[29] = unii.uc[0] ;
 	/*	SUM set	*/
 	unii.uc[0] = ID_data.IDB[2] ;
 	unii.uc[1] = Control_code;
@@ -1248,11 +1280,12 @@ void SetTxData(void)
 	unij.uc[1] = ID_data.IDB[1] ;
 	unik.ui = unii.ui + unij.ui ;
 	unii.ui = SetFixedLengthCode(unik.uc[0]) ;
-	m_RFNormalBuf[31] = unii.uc[1] ;
-	m_RFNormalBuf[32] = unii.uc[0] ;
+	m_RFNormalBuf[30] = unii.uc[1] ;
+	m_RFNormalBuf[31] = unii.uc[0] ;
 	unii.ui = SetFixedLengthCode(unik.uc[1]) ;
-	m_RFNormalBuf[33] = unii.uc[1] ;
-	m_RFNormalBuf[34] = unii.uc[0] ;
+	m_RFNormalBuf[32] = unii.uc[1] ;
+	m_RFNormalBuf[33] = unii.uc[0] ;
+    m_RFNormalBuf[34] = 0xFF ;
 }
 
 UINT16 SetFixedLengthCode(UINT8 data )
