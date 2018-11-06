@@ -187,7 +187,7 @@ void UART_Decode(void)
             uart_y.uc[0]=UART1_DATA[8];
             uart_y.uc[1]=UART1_DATA[9];
             switch(uart_y.ui){
-                case 0x0101:                                           //卷帘门依次单个HA状态取得
+                case 0x0101:                      //卷帘门依次单个HA状态取得
                 case 0x0110:
                           APP_check_char=0;     //2014.10.11修改
                 case 0x0102:                                           //卷帘门依次单个操作
@@ -245,6 +245,10 @@ CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.I
                                         FLAG_IDCheck_OK=0;
                                         FLAG_UART_ok=1;
                                         time_APP_Start_up=0;  //2015.04.27修正
+                                        if((uart_y.ui==0x0101)&&(UART1_DATA[14]==0x00)){
+                                            if(ID_data.IDL!=APP_check_ID);
+                                            else APP_check_ID=0;
+                                        }
                                        }                                    
                                 }
                                 else {
@@ -432,10 +436,10 @@ CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.I
                                     U1TXREG=0x65;      //e
                                     U1TXREG=0x72;      //r
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
-                                    U1TXREG=0x35;      //5              //2014.10.11修改
+                                    U1TXREG=0x36;      //6              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x39;      //9
-                                    U1TXREG=0xD9;     //0x16B+0x35+0x39
+                                    U1TXREG=0x30;      //0
+                                    U1TXREG=0xD1;     //0x16B+0x36+0x30
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -1044,7 +1048,8 @@ void HA_uart_send_APP(void)
     HA_uart_app[17]=m/256;
 
     //if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(HA_uart_app[14]==5)||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))    //2014.10.11修改
-    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))
+    //if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||(APP_check_char==0)||(FG_WIFI_SWITCH_DIP==1))
+    if((APP_check_ID!=b0.IDL)||(APP_check_Control!=HA_uart_app[14])||((APP_check_char==0)&&(TIMER1s==0))||(FG_WIFI_SWITCH_DIP==1))
     {
         if((HA_uart_app[14]==5)&&(FG_Second==0));
         else if(time_APP_Start_up==0){     //2015.04.27修正

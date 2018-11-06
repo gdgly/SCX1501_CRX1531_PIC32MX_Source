@@ -314,7 +314,6 @@ UINT8 FG_auto_open_time=0;
     UINT16 time_APP_Start_up=0;   //2015.04.27ÐÞÕý
     UINT8 TIME_ID_Login_delay=0; //20150430 japanÐÞ¸Ä1
     uni_rom_id ID_data_uart_CMD0101_01;   //20150501 JAPAN×·¼Ó
-
 #endif
 
 

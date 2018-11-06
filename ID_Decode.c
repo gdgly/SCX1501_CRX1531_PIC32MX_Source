@@ -245,7 +245,7 @@ void ID_Decode_IDCheck(void)
                 else
                    {
 #if defined(__Product_PIC32MX2_WIFI__)
-                    TIMER1s=500;//1000
+                    if(TIMER1s==0)TIMER1s=700;//500
                     FLAG_TIME_No_response=0;
 #endif
 #if defined(__Product_PIC32MX2_Receiver__)

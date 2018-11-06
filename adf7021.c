@@ -1123,7 +1123,7 @@ AUTO_SEND_exit:
            FLAG_rssi_Freq=0;
            if(rssi_COUNT>=10){
 #if defined(__Product_PIC32MX2_WIFI__)
-                //if(FLAG_UART_ok==1)TIME_APP_Inquiry_HA=350;
+                if(FLAG_UART_ok==1)TIME_APP_Inquiry_HA=240;
 #endif
                 FLAG_UART_ok=0;
                 FLAG_HA_START=0;
