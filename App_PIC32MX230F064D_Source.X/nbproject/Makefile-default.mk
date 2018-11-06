@@ -72,10 +72,7 @@ LDLIBSOPTIONS=
 FIXDEPS=fixDeps
 
 .build-conf:  ${BUILD_SUBPROJECTS}
-ifneq ($(INFORMATION_MESSAGE), )
-	@echo $(INFORMATION_MESSAGE)
-endif
-	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/App_PIC32MX230F064D_Source.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+	${MAKE} ${MAKE_OPTIONS} -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/App_PIC32MX230F064D_Source.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 
 MP_PROCESSOR_OPTION=32MX250F128D
 MP_LINKER_FILE_OPTION=,--script="..\linker_scripts\app_32MX250F128D.ld"
@@ -95,100 +92,84 @@ endif
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 ${OBJECTDIR}/_ext/1472/main.o: ../main.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/main.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/main.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/main.o.d" -o ${OBJECTDIR}/_ext/1472/main.o ../main.c   
 	
 ${OBJECTDIR}/_ext/1472/Initial.o: ../Initial.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/Initial.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/Initial.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/Initial.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/Initial.o.d" -o ${OBJECTDIR}/_ext/1472/Initial.o ../Initial.c   
 	
 ${OBJECTDIR}/_ext/1472/adf7021.o: ../adf7021.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/adf7021.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/adf7021.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/adf7021.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/adf7021.o.d" -o ${OBJECTDIR}/_ext/1472/adf7021.o ../adf7021.c   
 	
 ${OBJECTDIR}/_ext/1472/ID_Decode.o: ../ID_Decode.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/ID_Decode.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/ID_Decode.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/ID_Decode.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/ID_Decode.o.d" -o ${OBJECTDIR}/_ext/1472/ID_Decode.o ../ID_Decode.c   
 	
 ${OBJECTDIR}/_ext/1472/Timers.o: ../Timers.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/Timers.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/Timers.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/Timers.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/Timers.o.d" -o ${OBJECTDIR}/_ext/1472/Timers.o ../Timers.c   
 	
 ${OBJECTDIR}/_ext/1472/Uart.o: ../Uart.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/Uart.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/Uart.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/Uart.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/Uart.o.d" -o ${OBJECTDIR}/_ext/1472/Uart.o ../Uart.c   
 	
 ${OBJECTDIR}/_ext/1472/EEPROM.o: ../EEPROM.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/EEPROM.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/EEPROM.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/EEPROM.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/EEPROM.o.d" -o ${OBJECTDIR}/_ext/1472/EEPROM.o ../EEPROM.c   
 	
 ${OBJECTDIR}/_ext/1472/pcf8563.o: ../pcf8563.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/pcf8563.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/pcf8563.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/pcf8563.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/pcf8563.o.d" -o ${OBJECTDIR}/_ext/1472/pcf8563.o ../pcf8563.c   
 	
 else
 ${OBJECTDIR}/_ext/1472/main.o: ../main.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/main.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/main.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/main.o.d" -o ${OBJECTDIR}/_ext/1472/main.o ../main.c   
 	
 ${OBJECTDIR}/_ext/1472/Initial.o: ../Initial.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/Initial.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/Initial.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/Initial.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/Initial.o.d" -o ${OBJECTDIR}/_ext/1472/Initial.o ../Initial.c   
 	
 ${OBJECTDIR}/_ext/1472/adf7021.o: ../adf7021.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/adf7021.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/adf7021.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/adf7021.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/adf7021.o.d" -o ${OBJECTDIR}/_ext/1472/adf7021.o ../adf7021.c   
 	
 ${OBJECTDIR}/_ext/1472/ID_Decode.o: ../ID_Decode.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/ID_Decode.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/ID_Decode.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/ID_Decode.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/ID_Decode.o.d" -o ${OBJECTDIR}/_ext/1472/ID_Decode.o ../ID_Decode.c   
 	
 ${OBJECTDIR}/_ext/1472/Timers.o: ../Timers.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/Timers.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/Timers.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/Timers.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/Timers.o.d" -o ${OBJECTDIR}/_ext/1472/Timers.o ../Timers.c   
 	
 ${OBJECTDIR}/_ext/1472/Uart.o: ../Uart.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/Uart.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/Uart.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/Uart.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/Uart.o.d" -o ${OBJECTDIR}/_ext/1472/Uart.o ../Uart.c   
 	
 ${OBJECTDIR}/_ext/1472/EEPROM.o: ../EEPROM.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/EEPROM.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/EEPROM.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/EEPROM.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/EEPROM.o.d" -o ${OBJECTDIR}/_ext/1472/EEPROM.o ../EEPROM.c   
 	
 ${OBJECTDIR}/_ext/1472/pcf8563.o: ../pcf8563.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
 	@${RM} ${OBJECTDIR}/_ext/1472/pcf8563.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/pcf8563.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/pcf8563.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/pcf8563.o.d" -o ${OBJECTDIR}/_ext/1472/pcf8563.o ../pcf8563.c   
 	
 endif

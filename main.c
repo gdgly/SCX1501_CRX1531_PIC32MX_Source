@@ -84,7 +84,7 @@ Note: make sure the boot loader and your application, both use the same fuse set
 #pragma config FPLLMUL = MUL_20, FPLLIDIV = DIV_2, FWDTEN = OFF
 #pragma config POSCMOD = HS, FNOSC = PRIPLL, FPBDIV = DIV_1
 #pragma config BWP = OFF
-
+//#pragma config PWP = PWP28K
 #pragma config JTAGEN = OFF
 #pragma config FCKSM    = CSDCMD   // Clock Switching & Fail Safe Monitor: Clock Switching Disabled, Clock Monitoring Disabled
 #pragma config OSCIOFNC = OFF      // CLKO Enable: Disabled
