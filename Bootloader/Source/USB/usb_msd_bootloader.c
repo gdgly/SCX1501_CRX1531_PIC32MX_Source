@@ -87,7 +87,7 @@ a correct linker script from ...Demo_Application\linker_scripts\ folder and then
 #if defined( __PIC32MX1XX_2XX__)
             // Please read these before you compile this application for PIC32MX1xx/2xx devices.
             // Then you can comment these lines.
-#if !defined(__32MX230F064D__)
+#if !defined(__32MX250F128D__)
 #error "If you are compiling this application for PIC32MX1XX or PIC32MX2XX devices, \
 please read the supplied document pic321xx_2xxx_support.htm before proceeding"
 #endif
