@@ -1131,6 +1131,7 @@ AUTO_SEND_exit:
            rssi_COUNT=0;
            TX_Freq_CH=TX_Freq_CH+2;
            if(TX_Freq_CH>4)TX_Freq_CH=2;
+           //TX_Freq_CH=2;
            dd_set_ADF7021_Freq(0,TX_Freq_CH);
        }
        if(rssi_TIME==0){
