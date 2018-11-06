@@ -1066,7 +1066,7 @@ void ADF7021_change_TXorRX(void)
 //    }
 
 AUTO_SEND_exit:
-    if(FLAG_AUTO_SEND_START==1){              
+    if((FLAG_AUTO_SEND_START==1)&&(FLAG_APP_TX==0)){              
         if((TIME_alarm_AUTO==0)&&(FLAG_AUTO_SEND_ok==0)){
             if(AUTO_SEND_DATA_pcs==0){FLAG_AUTO_SEND_START=0; goto AUTO_SEND_exit;}        //2015.1.30追加修改自动某ID发送一次失败，追加再发送一次
 //            ID_data.IDB[0]=AUTO_SEND_DATA[AUTO_SEND_DATA_pcs-1][0];
