@@ -466,8 +466,8 @@ CMD0102_NG:                         HA_uart_app[8]=UART1_DATA[8];
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x37;      //7              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x32;      //2
-                                    U1TXREG=0xD4;     //0x16B+0x37+0x32
+                                    U1TXREG=0x33;      //3
+                                    U1TXREG=0xD5;     //0x16B+0x37+0x33
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);
@@ -812,6 +812,20 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
             HA_uart[HA_uart_Length]=50;
             HA_uart_Length++;
         }
+        else if((EMIAL_id_HA[j]==0x89)||(EMIAL_id_HA[j]==0x8A)){
+            HA_uart[HA_uart_Length]=101;      //error3
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=51;
+            HA_uart_Length++;
+        }
         else if((EMIAL_id_HA[j]==0xFF)||(EMIAL_id_HA[j]==0x00)){
             HA_uart[HA_uart_Length]=102;      //fail
             HA_uart_Length++;
@@ -938,6 +952,20 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
             HA_uart[HA_uart_Length]=114;
             HA_uart_Length++;
             HA_uart[HA_uart_Length]=50;
+            HA_uart_Length++;
+        }
+        else if((EMIAL_id_HA[j]==0x89)||(EMIAL_id_HA[j]==0x8A)){
+            HA_uart[HA_uart_Length]=101;      //error3
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=51;
             HA_uart_Length++;
         }
         else if((EMIAL_id_HA[j]==0xFF)||(EMIAL_id_HA[j]==0x00)){
