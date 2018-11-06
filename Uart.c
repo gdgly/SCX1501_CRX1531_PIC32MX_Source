@@ -1041,11 +1041,16 @@ void HA_uart_send_APP(void)
     UINT8 i;
     UINT16 m;
 
+//    HA_uart_app[9]=0x01;
+//    if(UART_DATA_buffer[8]==0x01)HA_uart_app[8]=0x01;
+//    else if(UART_DATA_buffer[8]==0x02){HA_uart_app[8]=0x02;UART_DATA_buffer[8]=0x00;}
+//    else if(UART_DATA_buffer[8]==0x10)HA_uart_app[8]=0x10;
+//    else HA_uart_app[8]=0x01;
+
     HA_uart_app[9]=0x01;
-    if(UART_DATA_buffer[8]==0x01)HA_uart_app[8]=0x01;
-    else if(UART_DATA_buffer[8]==0x02){HA_uart_app[8]=0x02;UART_DATA_buffer[8]=0x00;}
-    else if(UART_DATA_buffer[8]==0x10)HA_uart_app[8]=0x10;
+    if(UART1_DATA[8]==0x02)HA_uart_app[8]=0x02;
     else HA_uart_app[8]=0x01;
+
     HA_uart_app[10]=0x00;
     b0.IDL=DATA_Packet_ID;
     HA_uart_app[11]=b0.IDB[0];
@@ -1095,6 +1100,21 @@ void HA_uart_send_APP(void)
                 U1TXREG=HA_uart_app[i];
                 if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
             }
+
+            if(HA_uart_app[8]==0x02){
+                HA_uart_app[8]=0x01;
+                m=0;
+                for(i=8;i<16;i++)m=m+HA_uart_app[i];
+                HA_uart_app[16]=m%256;
+                HA_uart_app[17]=m/256;
+                //Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+                Delay100us(30);  //>=750,WIFI buffer ok
+                for(i=0;i<18;i++){
+                    U1TXREG=HA_uart_app[i];
+                    if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+                }
+            }
+
             APP_check_ID=b0.IDL;
             APP_check_Control=HA_uart_app[14];
             APP_check_char=1;
