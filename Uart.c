@@ -445,8 +445,8 @@ CMD0102_NG:                         HA_uart_app[8]=UART1_DATA[8];
                             }
                             else uart_send_APP_Public(UART1_DATA[8],1);
                             break;
-                case 0x0112:                                            // 气象联动设定
-                case 0x0113:                                           // 气象联动取得
+                case 0x0112:                                            //气象联动设定
+                case 0x0113:                                           //气象联动取得
                             if(UART1_DATA[8]==0x12){
                                 for(i=8;i<12;i++)  m+=UART1_DATA[i];
                                 n=UART1_DATA[12]+UART1_DATA[13]*256;
