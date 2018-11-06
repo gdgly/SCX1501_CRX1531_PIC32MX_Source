@@ -42,7 +42,7 @@ void BEEP_and_LED(void);
 void SWITCH_DIP_check_app(void);
 void Email_check_app(void);
 void Email_check_mail(void);
-void  HA_Cache_ha_switch(void);
+void HA_Cache_ha_switch(UINT32 ID_IN);
  #endif
 
 void ID_Decode_Initial_INT(void)
@@ -721,13 +721,13 @@ void Email_check_app(void)
             }
         }
 }
-void HA_Cache_ha_switch(void)  //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+void HA_Cache_ha_switch(UINT32 ID_IN)  //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
 {
     UINT8 i;
         for(i=0;i<35;i++)
         {
-            if(HA_Cache_IDdata[i]==0x00){ HA_Cache_IDdata[i]=DATA_Packet_ID;HA_Cache_ha[i]=HA_Cache_ha_bak;HA_Cache_ha_1Hz[i]=HA_Cache_ha_1Hz_bak;HA_Cache_SWITCH_DIP[i]=HA_Cache_SWITCH_DIP_bak;i=35;}
-            if(HA_Cache_IDdata[i]==DATA_Packet_ID){HA_Cache_ha[i]=HA_Cache_ha_bak;HA_Cache_ha_1Hz[i]=HA_Cache_ha_1Hz_bak;HA_Cache_SWITCH_DIP[i]=HA_Cache_SWITCH_DIP_bak;i=35;}
+            if(HA_Cache_IDdata[i]==0x00){ HA_Cache_IDdata[i]=ID_IN;HA_Cache_ha[i]=HA_Cache_ha_bak;HA_Cache_ha_1Hz[i]=HA_Cache_ha_1Hz_bak;HA_Cache_SWITCH_DIP[i]=HA_Cache_SWITCH_DIP_bak;i=35;}
+            if(HA_Cache_IDdata[i]==ID_IN){HA_Cache_ha[i]=HA_Cache_ha_bak;HA_Cache_ha_1Hz[i]=HA_Cache_ha_1Hz_bak;HA_Cache_SWITCH_DIP[i]=HA_Cache_SWITCH_DIP_bak;i=35;}
 //            if(HA_Cache_IDdata[i]==0x00){ HA_Cache_IDdata[i]=DATA_Packet_ID;HA_Cache_ha[i]=DATA_Packet_Control;HA_Cache_SWITCH_DIP[i]=SWITCH_DIP;break;}
 //            if(HA_Cache_IDdata[i]==DATA_Packet_ID){HA_Cache_ha[i]=DATA_Packet_Control;HA_Cache_SWITCH_DIP[i]=SWITCH_DIP;}
         }

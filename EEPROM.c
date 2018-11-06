@@ -71,6 +71,7 @@ void SUN_EEPROM_write(void);
 void Emial_time_EEPROM_write(void);
 void HA_Change_EEPROM_write(void);
 void EEPROM_write_0x00toID(void);
+void Erase_page(UINT8 Erase_data,UINT8 page);
 #endif
 
 void ID_learn(void)
@@ -973,6 +974,26 @@ void send_byte(UINT8 c)
      }
  Mack();
 }
+
+
+#if defined(__Product_PIC32MX2_WIFI__)
+//==============Erase_page()  24lc32是32个字节为一个page=================//
+void Erase_page(UINT8 Erase_data,UINT8 page)
+{
+ UINT16 i;
+ start_i2c(); //启动总线
+ /*************以下是24LC32对应的SOFT*************/
+ send_byte(0xa0); //发送器件地址
+ i=page*32;
+ send_byte(i/256); //发送字高地址
+ send_byte(i%256); //发送字低地址
+ /************************************************/
+ for (i = 0;i < 32;i++) send_byte(Erase_data); //发送字节数据
+ stop_i2c(); //发送停止位
+}
+#endif
+
+
 //==============Write()写N字节数据=================//
 void Write(UINT8 *s,UINT16 suba,UINT8 n)                //24LC16B
 {
