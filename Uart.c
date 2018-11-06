@@ -466,8 +466,8 @@ CMD0102_NG:                         HA_uart_app[8]=UART1_DATA[8];
                                     Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     U1TXREG=0x36;      //6              //2014.10.11修改
                                     U1TXREG=0x2E;      //.
-                                    U1TXREG=0x36;      //6
-                                    U1TXREG=0xD7;     //0x16B+0x33+0x39
+                                    U1TXREG=0x37;      //7
+                                    U1TXREG=0xD8;     //0x16B+0x33+0x39
                                     U1TXREG=0x01;
                             }
                             else uart_send_APP_Public(0x0F,1);

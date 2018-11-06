@@ -324,7 +324,7 @@ void NEW_set_alarm_pcf8563(UINT16 value0)
         else {
                 i1=i-12;
                 if((Emial_time_data[i1][1]==0x00)||(Emial_time_data[i1][2]==0xFF)||(Emial_time_data[i1][3]==0xFF));
-                else if(WIFI_alarm_data[i1][1]==0x01){
+                else if(Emial_time_data[i1][1]==0x01){
                     //alarm_Minutes=Emial_time_data[i1][2]*60+Emial_time_data[i1][3];
                      alarm_Minutes=Hex_Decimal(Emial_time_data[i1][2],Emial_time_data[i1][3]);    //2014.10.11修改   解决TIMER有时不动作
                     if(alarm_Minutes>value0)time_differ=alarm_Minutes-value0;

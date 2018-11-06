@@ -13,8 +13,6 @@
 //UINT32 EEPROM_Receiver_ID=2000307;//13040292;//13040451;//2000307;//13186823;
 
 FLAG FLAG_APP;
-FLAG FLAG_IO_buffer;
-
 UINT16 rssi;
 UINT8 Frequency_CH;
 
@@ -148,13 +146,6 @@ UINT16 Manual_override_TIMER=0;
 UINT8 FG_auto_manual_mode=0;
 UINT8 FG_First_auto=0;
 UINT8 FG_auto_open_time=0;
-
-UINT16 RAM_rssi_SUM=0;
-UINT8 RAM_rssi_CNT=0;
-UINT8 RAM_rssi_AVG=0;
-UINT8 FLAG_rssi_AVG=0;
-UINT8 RSSI_level;
-UINT8 TIME_display_RSSI;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -461,24 +452,6 @@ void VHF_GPIO_INIT(void){
       DIP_switch1_IO=1;
       DIP_switch2_IO=1;
       DIP_switch3_IO=1;
-      
-      if(Receiver_LED_OUT==1)Receiver_LED_OUT_buffer=1;
-      else Receiver_LED_OUT_buffer=0;
-      if(Receiver_LED_TX==1)Receiver_LED_TX_buffer=1;
-      else Receiver_LED_TX_buffer=0;
-      if(Receiver_LED_RX==1)Receiver_LED_RX_buffer=1;
-      else Receiver_LED_RX_buffer=0;
-      if(Receiver_OUT_OPEN==1)Receiver_OUT_OPEN_buffer=1;
-      else Receiver_OUT_OPEN_buffer=0;
-      if(Receiver_OUT_CLOSE==1)Receiver_OUT_CLOSE_buffer=1;
-      else Receiver_OUT_CLOSE_buffer=0;
-      if(Receiver_OUT_STOP==1)Receiver_OUT_STOP_buffer=1;
-      else Receiver_OUT_STOP_buffer=0;
-      if(Receiver_OUT_VENT==1)Receiver_OUT_VENT_buffer=1;
-      else Receiver_OUT_VENT_buffer=0;
-      if(Receiver_Buzzer==1)Receiver_Buzzer_buffer=1;
-      else Receiver_Buzzer_buffer=0;
-
     #endif
 
    #if defined(__Product_PIC32MX2_WIFI__)
@@ -535,19 +508,12 @@ void RF_test_mode(void )
          ClearWDT(); // Service the WDT
       }
       Receiver_LED_OUT=!Receiver_LED_OUT;
-
   }
   Receiver_LED_OUT=0;
 
 
 
     while(Receiver_test==0){
-      if(Receiver_LED_OUT==1)Receiver_LED_OUT_buffer=1;
-      else Receiver_LED_OUT_buffer=0;
-      if(Receiver_LED_TX==1)Receiver_LED_TX_buffer=1;
-      else Receiver_LED_TX_buffer=0;
-      if(Receiver_LED_RX==1)Receiver_LED_RX_buffer=1;
-      else Receiver_LED_RX_buffer=0; 
         ClearWDT(); // Service the WDT
         if(HA_Sensor_signal==0)Receiver_LED_TX=1;
         else Receiver_LED_TX=0;

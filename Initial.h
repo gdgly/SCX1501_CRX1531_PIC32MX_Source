@@ -23,7 +23,7 @@
 #if defined(__32MX220F032D__)
     #define __Product_PIC32MX2_Receiver__             //"0"代表DIV8  CPU Freq=10MHz  受信机
 
-    #define		PIC32MX2_Receiver_mode   0              //模式选择  0=RX      1=TX and RX
+    #define		PIC32MX2_Receiver_mode   1              //模式选择  0=RX      1=TX and RX
 #endif
 
     //============================================
@@ -293,13 +293,6 @@ extern UINT16 Manual_override_TIMER;
 extern UINT8 FG_auto_manual_mode;
 extern UINT8 FG_First_auto;
 extern UINT8 FG_auto_open_time;
-
-extern UINT16 RAM_rssi_SUM;
-extern UINT8 RAM_rssi_CNT;
-extern UINT8 RAM_rssi_AVG;
-extern UINT8 FLAG_rssi_AVG;
-extern UINT8 RSSI_level;
-extern UINT8 TIME_display_RSSI;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -517,41 +510,16 @@ extern void RF_test_mode(void );
     #define  HA_ERR_signal      PORTBbits.RB15   // Input   HA 异常信号  高电平有效
     #define  HA_Sensor_signal   PORTAbits.RA10   // Input   HA 传感器信号  高电平有效
     #define  Receiver_Login     PORTCbits.RC7   // Input   受信机登录键   低电平有效
-
-
-//    #define  Receiver_Buzzer    LATBbits.LATB13  // Output   受信机蜂鸣器  高电平有效
-//    #define  Receiver_LED_OUT   LATCbits.LATC6  // Output   受信机继电器动作输出  低电平有效
-////    #define  Receiver_LED_TX    LATCbits.LATC9 // Output   受信机送信指示  低电平有效
-////    #define  Receiver_LED_RX    LATCbits.LATC8  // Output   受信机受信指示  低电平有效
-//    #define  Receiver_LED_TX    LATCbits.LATC8 // Output   受信机送信指示  低电平有效
-//    #define  Receiver_LED_RX    LATCbits.LATC9  // Output   受信机受信指示  低电平有效
-//    #define  Receiver_OUT_OPEN    LATAbits.LATA1  // Output   受信机继电器OPEN  高电平有效
-//    #define  Receiver_OUT_CLOSE   LATBbits.LATB2  // Output   受信机继电器close  高电平有效
-//    #define  Receiver_OUT_STOP    LATCbits.LATC0  // Output   受信机继电器stop  高电平有效
-//    #define  Receiver_OUT_VENT    LATBbits.LATB3   // Output 受信机继电器STOP  高电平有效
-
-    extern FLAG FLAG_IO_buffer;
-	//************************************************
-	#define 	FLAG_IO_buffer_BYTE		FLAG_IO_buffer.BYTE
-	//------------------------------------------------
-	#define		Receiver_LED_OUT		FLAG_IO_buffer.BIT.Bit0
-	#define		Receiver_LED_TX		        FLAG_IO_buffer.BIT.Bit1
-	#define		Receiver_LED_RX		        FLAG_IO_buffer.BIT.Bit2
-	#define		Receiver_OUT_OPEN		FLAG_IO_buffer.BIT.Bit3
-	#define		Receiver_OUT_CLOSE		FLAG_IO_buffer.BIT.Bit4
-	#define		Receiver_OUT_STOP		FLAG_IO_buffer.BIT.Bit5
-	#define		Receiver_OUT_VENT		FLAG_IO_buffer.BIT.Bit6
-	#define		Receiver_Buzzer		        FLAG_IO_buffer.BIT.Bit7
-	//************************************************
-    #define  Receiver_Buzzer_buffer    LATBbits.LATB13  // Output   受信机蜂鸣器  高电平有效
-    #define  Receiver_LED_OUT_buffer   LATCbits.LATC6  // Output   受信机继电器动作输出  低电平有效
-    #define  Receiver_LED_TX_buffer    LATCbits.LATC8 // Output   受信机送信指示  低电平有效
-    #define  Receiver_LED_RX_buffer    LATCbits.LATC9  // Output   受信机受信指示  低电平有效
-    #define  Receiver_OUT_OPEN_buffer    LATAbits.LATA1  // Output   受信机继电器OPEN  高电平有效
-    #define  Receiver_OUT_CLOSE_buffer   LATBbits.LATB2  // Output   受信机继电器close  高电平有效
-    #define  Receiver_OUT_STOP_buffer    LATCbits.LATC0  // Output   受信机继电器stop  高电平有效
-    #define  Receiver_OUT_VENT_buffer    LATBbits.LATB3   // Output 受信机继电器STOP  高电平有效
-
+    #define  Receiver_Buzzer    LATBbits.LATB13  // Output   受信机蜂鸣器  高电平有效
+    #define  Receiver_LED_OUT   LATCbits.LATC6  // Output   受信机继电器动作输出  低电平有效
+//    #define  Receiver_LED_TX    LATCbits.LATC9 // Output   受信机送信指示  低电平有效
+//    #define  Receiver_LED_RX    LATCbits.LATC8  // Output   受信机受信指示  低电平有效
+    #define  Receiver_LED_TX    LATCbits.LATC8 // Output   受信机送信指示  低电平有效
+    #define  Receiver_LED_RX    LATCbits.LATC9  // Output   受信机受信指示  低电平有效
+    #define  Receiver_OUT_OPEN    LATAbits.LATA1  // Output   受信机继电器OPEN  高电平有效
+    #define  Receiver_OUT_CLOSE   LATBbits.LATB2  // Output   受信机继电器close  高电平有效
+    #define  Receiver_OUT_STOP    LATCbits.LATC0  // Output   受信机继电器stop  高电平有效
+    #define  Receiver_OUT_VENT    LATBbits.LATB3   // Output 受信机继电器STOP  高电平有效
 
     #define  Receiver_test    PORTBbits.RB10   // Input 受信机测试脚  高电平有效
     #define  DIP_switch1         PORTBbits.RB11 // Input   DIP_switch1  低电平有效

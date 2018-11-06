@@ -84,8 +84,6 @@ void ID_learn(void)
  if(FG_10ms){
      FG_10ms = 0;
 
-     if(TIME_display_RSSI)--TIME_display_RSSI;
-
 //     if(time_3sec)--time_3sec;
      if(TIME_EMC)--TIME_EMC;
 
