@@ -175,7 +175,7 @@ void ID_Decode_IDCheck(void)
         if(FLAG_Signal_DATA_OK==1)
         {
             eeprom_IDcheck();
-            if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)){
+            if(((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))&&(TIME_ID_Login_delay==0)){   //20150430 japan修改1
              #if defined(__Product_PIC32MX2_WIFI__)
                 if((FLAG_ID_Login_OK==0)&&(DATA_Packet_Control_buf!=0x40)&&(DATA_Packet_ID_buf!=0)){            //2015.4.1修正1 在登录模式下 不允许自动送信登录，只允许手动送信登录
 
@@ -644,7 +644,8 @@ void ID_Decode_OUT(void)
              FLAG_HA_Inquiry=0;
              FLAG_TIME_No_response=0;
              HA_uart_send_APP();
-             if(FG_mial_com_fail==1){FG_mial_com_fail=0;DATA_Packet_ID=ID_data.IDL;DATA_Packet_Control=0xFF;}
+             if(FG_mial_com_fail==1){FG_mial_com_fail=0;EMIAL_id_data_chek=ID_data.IDL;DATA_Packet_Control=0xFF;}
+             else EMIAL_id_data_chek=DATA_Packet_ID;
              Email_check_app();             
              if((DATA_Packet_Control_0==0x83)||(DATA_Packet_Control_0==0x87)||(DATA_Packet_Control_0==0x84)||(DATA_Packet_Control_0==0x88))FLAG_HA_Change_ERROR=1;
              DATA_Packet_Control_0=0;
@@ -681,8 +682,8 @@ void SWITCH_DIP_check_app(void)
     UINT8 i;
         for(i=0;i<35;i++)
         {
-            if(SWITCH_DIP_id_data[i]==0x00){SWITCH_DIP_id_data[i]=DATA_Packet_ID;SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
-            if(SWITCH_DIP_id_data[i]==DATA_Packet_ID)
+            if(SWITCH_DIP_id_data[i]==0x00){SWITCH_DIP_id_data[i]=EMIAL_id_data_chek;SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
+            if(SWITCH_DIP_id_data[i]==EMIAL_id_data_chek)
             {
                 if(SWITCH_DIP==SWITCH_DIP_id_DIP[i])break;
                 else {SWITCH_DIP_id_DIP[i]=SWITCH_DIP;FG_WIFI_SWITCH_DIP=1;break;}
@@ -692,10 +693,27 @@ void SWITCH_DIP_check_app(void)
 
 void Email_check_app(void)
 {
+//    UINT8 i;
+//        for(i=0;i<35;i++)
+//        {
+//            if(EMIAL_id_data[i]==0x00){ EMIAL_id_data[i]=DATA_Packet_ID;EMIAL_id_HA[i]=DATA_Packet_Control;EMIAL_id_PCS++;break;}
+//            if(EMIAL_id_data[i]==DATA_Packet_ID)
+//            {
+//                if(DATA_Packet_Control==EMIAL_id_HA[i])break;
+//                else {EMIAL_id_HA[i]=DATA_Packet_Control;break;}
+//            }
+//        }
+
+                                    //20150430 japan修改2     以下所有都是
     UINT8 i;
+    for(i=0;i<ID_DATA_PCS;i++)
+        EMIAL_id_data[i]=ID_Receiver_DATA[i];
+    EMIAL_id_PCS=ID_DATA_PCS;
         for(i=0;i<35;i++)
         {
-            if(EMIAL_id_data[i]==0x00){ EMIAL_id_data[i]=DATA_Packet_ID;EMIAL_id_HA[i]=DATA_Packet_Control;EMIAL_id_PCS++;break;}
+            if(EMIAL_id_data[i]==0x00){ EMIAL_id_data[i]=DATA_Packet_ID;EMIAL_id_HA[i]=DATA_Packet_Control;
+                          //EMIAL_id_PCS++;   
+                          break;}
             if(EMIAL_id_data[i]==DATA_Packet_ID)
             {
                 if(DATA_Packet_Control==EMIAL_id_HA[i])break;

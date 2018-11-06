@@ -170,6 +170,7 @@ void ID_learn(void)
      if(TIME_WIFI_LAN_SELECT)--TIME_WIFI_LAN_SELECT;
      if(TIME_one_hour)--TIME_one_hour;         //2015.1.30追加修改1小时查询一次HA状态
      if(time_APP_Start_up)--time_APP_Start_up;     //2015.04.27修正
+     if(TIME_ID_Login_delay)--TIME_ID_Login_delay;  //20150430 japan修改1  在切换到登录模式过程中，发现如果有429MHz，有时也会把ID登录进去。
 
      if(FLAG_all_Erase==0)          //EEPROM所有数据擦出时，以下CODE不执行
      {
@@ -180,7 +181,7 @@ void ID_learn(void)
                  if(WIFI_L_Login==0){
                      TIME_Receiver_Login++;
                      TIME_Receiver_Login_restrict=350;
-                     if(COUNT_Receiver_Login>=2){FLAG_ID_Login=1;TIME_Login_EXIT_rest=6000;}
+                     if(COUNT_Receiver_Login>=2){FLAG_ID_Login=1;TIME_Login_EXIT_rest=6000;FLAG_ID_Login_OK=0;TIME_ID_Login_delay=50;}    //20150430 japan修改1
                      if(((FLAG_ID_Erase_Login==1)&&(COUNT_Receiver_Login>=1))||
                         ((FLAG_ID_Login==1)&&(COUNT_Receiver_Login>=3)))ID_Login_EXIT_Initial();
                  }
