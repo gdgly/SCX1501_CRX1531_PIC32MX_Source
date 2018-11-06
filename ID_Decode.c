@@ -568,6 +568,13 @@ void ID_Decode_OUT(void)
                 if(((DATA_Packet_Control==0x00)||(DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
                      ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)||((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
                      FLAG_APP_Reply=1;
+                if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
+                    if((DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
+                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)){
+                        FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;TIMER250ms_STOP=0;
+                    }
+                }
+
 
                }       
      else {
