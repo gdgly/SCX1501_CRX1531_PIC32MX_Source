@@ -470,7 +470,7 @@ void Email_check_TO_APP(void)     //2015.4.1ÐÞÕý3 ÓÉÓÚAPP²éÑ¯ÊÜÐÅÆ÷HA×´Ì¬ÐèÒªºÜ³
 {
     UINT16 i;
    for(i=0;i<35;i++){
-       if(HA_Cache_IDdata[i]==ID_data.IDL){Emial_Cache_HA=HA_Cache_ha[i]&0x0F;Emial_Cache_SWITCH=HA_Cache_SWITCH_DIP[i];i=64;}     //
+       if(HA_Cache_IDdata[i]==ID_data_uart_CMD0101_01.IDL){Emial_Cache_HA=HA_Cache_ha[i]&0x0F;Emial_Cache_SWITCH=HA_Cache_SWITCH_DIP[i];i=64;}     //
    }
 }
 #endif
@@ -485,6 +485,18 @@ void eeprom_IDcheck_UART(void)
    }
 #endif
 }
+
+#if defined(__Product_PIC32MX2_WIFI__)
+void eeprom_IDcheck_CMD0101_01_UART(void)
+{
+                //20150501 JAPAN×·¼Ó  ½â¾öÊÇ·´¸´Æô¶¯APPÊ±£¬ÔÚ²éÑ¯Í¨ÐÅ»ú»º³ÁÄÚ²¿HA×´Ì¬Ê±£¬½«Control_code=1¿ØÖÆ³öÈ¥ÁË£¨ÔÚÖ®Ç°ÓÐÒ»Æë²Ù×÷µÄÇé¿ö£¬ÕýÔÚÊµÊ©µ±ÖÐ£©
+    UINT16 i;
+   for(i=0;i<ID_DATA_PCS;i++){
+       if(ID_Receiver_DATA[i]==ID_data_uart_CMD0101_01.IDL){i=ID_DATA_PCS;FLAG_IDCheck_OK=1;}
+       if(FLAG_ID_Erase_Login==1){i=ID_DATA_PCS;FLAG_IDCheck_OK=0;}
+   }
+}
+#endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
 void eeprom_IDcheck_Multiple(UINT8 value_m)

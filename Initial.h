@@ -310,6 +310,7 @@ extern UINT8 FG_auto_open_time;
     extern UINT16 TIME_alarm_AUTO;
     extern UINT8 AUTO_HA_Inquiry;
     extern UINT8 HA_uart[1200];
+    extern UINT8 HA_uart_ios[45];
     extern UINT32 EMIAL_id_data[35];
     extern UINT32 EMIAL_id_data_chek;
     extern UINT8  EMIAL_id_HA[35];
@@ -371,7 +372,7 @@ extern UINT8 FG_auto_open_time;
 
     extern UINT16 time_APP_Start_up;   //2015.04.27ÐÞÕý
     extern UINT8 TIME_ID_Login_delay; //20150430 japanÐÞ¸Ä1
-
+    extern uni_rom_id ID_data_uart_CMD0101_01;   //20150501 JAPAN×·¼Ó
 #endif
 
 

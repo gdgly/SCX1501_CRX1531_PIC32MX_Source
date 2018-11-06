@@ -194,19 +194,20 @@ void UART_Decode(void)
                             for(i=8;i<16;i++)  m+=UART1_DATA[i];
                             n=UART1_DATA[16]+UART1_DATA[17]*256;
                             if(m==n){
-
-                                ID_data.IDB[0]=UART1_DATA[11];
-                                ID_data.IDB[1]=UART1_DATA[12];
-                                ID_data.IDB[2]=UART1_DATA[13];
-                                ID_data.IDB[3]=0x00;
-                                //UART1_DATA[11];
+                                         //20150501 JAPAN追加  解决是反复启动APP时，在查询通信机缓沉内部HA状态时，将Control_code=1控制出去了（在之前有一齐操作的情况，正在实施当中）
+                                    ID_data_uart_CMD0101_01.IDB[0]=UART1_DATA[11];
+                                    ID_data_uart_CMD0101_01.IDB[1]=UART1_DATA[12];
+                                    ID_data_uart_CMD0101_01.IDB[2]=UART1_DATA[13];
+                                    ID_data_uart_CMD0101_01.IDB[3]=0x00;
                                 if((UART1_DATA[14]>=0x80)&&(UART1_DATA[14]<=0xbc)){Control_code=UART1_DATA[14]+1;}
                                 else if(uart_y.ui==0x0110)Control_code=0xBF;
-                                else    Control_code=UART1_DATA[14];
-                                eeprom_IDcheck_UART();
+                                else if((uart_y.ui==0x0101)&&(UART1_DATA[14]==0x01));
+                                else Control_code=UART1_DATA[14];
+                                //eeprom_IDcheck_UART();
+                                eeprom_IDcheck_CMD0101_01_UART();
                                 if(FLAG_IDCheck_OK==1){
                                     //if(Control_code==0x00){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
-                                    if((uart_y.ui==0x0101)&&(Control_code==0x01)){      //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+                                    if((uart_y.ui==0x0101)&&(UART1_DATA[14]==0x01)){      //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
                                         Emial_Cache_HA=0;
                                         Emial_Cache_SWITCH=0;
                                         Email_check_TO_APP();
@@ -231,13 +232,20 @@ void UART_Decode(void)
                                         m=m+Emial_Cache_SWITCH;
                                         U1TXREG=m%256;
                                         U1TXREG=m/256;
+
+                                        FLAG_IDCheck_OK=0;
+                                        time_APP_Start_up=5;
                                     }
                                     else {
+                                        ID_data.IDB[0]=ID_data_uart_CMD0101_01.IDB[0];
+                                        ID_data.IDB[1]=ID_data_uart_CMD0101_01.IDB[1];
+                                        ID_data.IDB[2]=ID_data_uart_CMD0101_01.IDB[2];
+                                        ID_data.IDB[3]=0x00;
                                         if((Control_code==0xBF)||(Control_code==0x00)||(Control_code==0x02)||(Control_code==0x08)){FLAG_HA_Inquiry=1;DATA_Packet_Control_0=0x00;}    //表示APP查询
                                         FLAG_IDCheck_OK=0;
                                         FLAG_UART_ok=1;
-                                       }
-                                    time_APP_Start_up=0;  //2015.04.27修正
+                                        time_APP_Start_up=0;  //2015.04.27修正
+                                       }                                    
                                 }
                                 else {
                                     HA_uart_app[8]=UART1_DATA[8];
@@ -252,6 +260,7 @@ void UART_Decode(void)
                                     HA_uart_app[16]=n%256;
                                     HA_uart_app[17]=n/256;
 
+                                    Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
                                     for(i=0;i<18;i++){
                                         U1TXREG=HA_uart_app[i];
                                         if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
@@ -500,6 +509,7 @@ void UART_Decode(void)
 void HA_uart_email(UINT8 EMIAL_id_PCS_x)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
+   /*
     UINT8 h,l;
     UINT8 h1,bc[8];
     UINT16 m,i,j;
@@ -674,7 +684,301 @@ void HA_uart_email(UINT8 EMIAL_id_PCS_x)
        }
        EMIAL_id_PCS=0;
   // HA_uart_send_APP();
-  
+*/
+
+
+    UINT8 h,l;
+    UINT8 h1,bc[8];
+    UINT16 m,i,j;
+    UINT32 h0;
+
+    //uart_send_APP_Public(0xFF,0);               //测试是否发送了邮件
+    Delay100us(30);
+
+//    HA_uart[8]=HA_Change_send_email[1];       //调用该该函数之前  对接收邮件地址编号进行设置
+//    HA_uart[9]=HA_Change_send_email[2];
+
+    Read_Time(number_time);           //计算邮件标题
+    for(i=1;i<7;i++){
+        if(i!=4){
+            h=number_time[i];
+            if(i<=3)j=24-(i-1)*3;
+            else j=24-(i-2)*3;
+            l=h&0x0F;
+            HA_uart[j+1]=l+0x30;
+            h=h&0xF0;
+            h=h>>4;
+            HA_uart[j]=h+0x30;
+        }
+    }
+    HA_uart[26]=0x00;   //邮件标题结束符
+
+    HA_uart_Length=27+23+19;
+    for(j=0;j<EMIAL_id_PCS_x;j++){                      //计算邮件内容的atatus=...部分
+        if((EMIAL_id_HA[j]==0x81)||(EMIAL_id_HA[j]==0x85)){
+            HA_uart[HA_uart_Length]=111;      //open
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=112;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=101;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=110;
+            HA_uart_Length++;
+        }
+        else if((EMIAL_id_HA[j]==0x82)||(EMIAL_id_HA[j]==0x86)){
+            HA_uart[HA_uart_Length]=99;      //close
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=108;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=115;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=101;
+            HA_uart_Length++;
+        }
+   #if defined(__32MX230F064D__)
+        else if((EMIAL_id_HA[j]==0x83)||(EMIAL_id_HA[j]==0x87)||(EMIAL_id_HA[j]==0x84)||(EMIAL_id_HA[j]==0x88)){
+            HA_uart[HA_uart_Length]=101;      //error
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+        }
+    #endif
+    #if defined(__32MX250F128D__)
+        else if((EMIAL_id_HA[j]==0x83)||(EMIAL_id_HA[j]==0x87)){
+            HA_uart[HA_uart_Length]=101;      //error1
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=49;
+            HA_uart_Length++;
+        }
+        else if((EMIAL_id_HA[j]==0x84)||(EMIAL_id_HA[j]==0x88)){
+            HA_uart[HA_uart_Length]=101;      //error2
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=50;
+            HA_uart_Length++;
+        }
+        else if((EMIAL_id_HA[j]==0xFF)||(EMIAL_id_HA[j]==0x00)){
+            HA_uart[HA_uart_Length]=102;      //fail
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=97;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=105;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=108;
+            HA_uart_Length++;
+        }
+    #endif
+
+
+        if(j!=(EMIAL_id_PCS_x-1)){
+            HA_uart[HA_uart_Length]=44;   //,
+            HA_uart_Length++;
+        }
+    }
+
+    HA_uart[HA_uart_Length]=38;   //&id=
+    HA_uart_Length++;
+    HA_uart[HA_uart_Length]=105;
+    HA_uart_Length++;
+    HA_uart[HA_uart_Length]=100;
+    HA_uart_Length++;
+    HA_uart[HA_uart_Length]=61;
+    HA_uart_Length++;
+
+    for(j=0;j<EMIAL_id_PCS_x;j++){      //计算邮件内容的&id=...部分
+        h0=EMIAL_id_data[j];
+        h1=0;
+        for(i=8;i>0;i--){
+            h=h0%10;
+            bc[h1]=h+0x30;
+            h1++;
+            h0=h0/10;
+            if(h0==0)i=1;
+        }
+        for(i=h1;i>0;i--){
+            HA_uart[HA_uart_Length]=bc[i-1];
+            HA_uart_Length++;
+        }
+        if(j!=(EMIAL_id_PCS_x-1)){
+            HA_uart[HA_uart_Length]=44;   //,
+            HA_uart_Length++;
+        }
+    }
+
+    HA_uart[HA_uart_Length]=13;      //回车
+    HA_uart_Length++;
+    HA_uart[HA_uart_Length]=13;      //回车
+    HA_uart_Length++;
+    for(j=0;j<45;j++){HA_uart[HA_uart_Length]=HA_uart_ios[j];HA_uart_Length++;}
+    for(j=0;j<EMIAL_id_PCS_x;j++){                      //计算邮件内容的atatus=...部分
+        if((EMIAL_id_HA[j]==0x81)||(EMIAL_id_HA[j]==0x85)){
+            HA_uart[HA_uart_Length]=111;      //open
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=112;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=101;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=110;
+            HA_uart_Length++;
+        }
+        else if((EMIAL_id_HA[j]==0x82)||(EMIAL_id_HA[j]==0x86)){
+            HA_uart[HA_uart_Length]=99;      //close
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=108;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=115;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=101;
+            HA_uart_Length++;
+        }
+   #if defined(__32MX230F064D__)
+        else if((EMIAL_id_HA[j]==0x83)||(EMIAL_id_HA[j]==0x87)||(EMIAL_id_HA[j]==0x84)||(EMIAL_id_HA[j]==0x88)){
+            HA_uart[HA_uart_Length]=101;      //error
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+        }
+    #endif
+    #if defined(__32MX250F128D__)
+        else if((EMIAL_id_HA[j]==0x83)||(EMIAL_id_HA[j]==0x87)){
+            HA_uart[HA_uart_Length]=101;      //error1
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=49;
+            HA_uart_Length++;
+        }
+        else if((EMIAL_id_HA[j]==0x84)||(EMIAL_id_HA[j]==0x88)){
+            HA_uart[HA_uart_Length]=101;      //error2
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=111;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=114;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=50;
+            HA_uart_Length++;
+        }
+        else if((EMIAL_id_HA[j]==0xFF)||(EMIAL_id_HA[j]==0x00)){
+            HA_uart[HA_uart_Length]=102;      //fail
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=97;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=105;
+            HA_uart_Length++;
+            HA_uart[HA_uart_Length]=108;
+            HA_uart_Length++;
+        }
+    #endif
+        if(j!=(EMIAL_id_PCS_x-1)){
+            HA_uart[HA_uart_Length]=44;   //,
+            HA_uart_Length++;
+        }
+    }
+
+    HA_uart[HA_uart_Length]=38;   //&id=
+    HA_uart_Length++;
+    HA_uart[HA_uart_Length]=105;
+    HA_uart_Length++;
+    HA_uart[HA_uart_Length]=100;
+    HA_uart_Length++;
+    HA_uart[HA_uart_Length]=61;
+    HA_uart_Length++;
+
+    for(j=0;j<EMIAL_id_PCS_x;j++){      //计算邮件内容的&id=...部分
+        h0=EMIAL_id_data[j];
+        h1=0;
+        for(i=8;i>0;i--){
+            h=h0%10;
+            bc[h1]=h+0x30;
+            h1++;
+            h0=h0/10;
+            if(h0==0)i=1;
+        }
+        for(i=h1;i>0;i--){
+            HA_uart[HA_uart_Length]=bc[i-1];
+            HA_uart_Length++;
+        }
+        if(j!=(EMIAL_id_PCS_x-1)){
+            HA_uart[HA_uart_Length]=44;   //,
+            HA_uart_Length++;
+        }
+    }
+
+
+    HA_uart[HA_uart_Length]=0x00;   //邮件内容结束符
+    HA_uart_Length++;
+
+    m=HA_uart_Length-8;            //计算数据长度
+    HA_uart[6]=m%256;
+    HA_uart[7]=m/256;
+
+    m=0;                       //计算CRC16
+    for(i=8;i<HA_uart_Length;i++)m=m+HA_uart[i];
+    HA_uart[HA_uart_Length]=m%256;
+    HA_uart[HA_uart_Length+1]=m/256;
+
+    j=HA_uart_Length+2;
+    if(ID_DATA_PCS!=0){
+        Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+        for(i=0;i<j;i++){
+            U1TXREG=HA_uart[i];
+            if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
+        }
+    }
+       Delay100us(300);
+       TIME_email_Repeat=9000;
+       FLAG_email_Repeat=1;
+       UART_send_count=0;
+
+       for(i=0;i<35;i++){
+           Email_check_ID[i]=EMIAL_id_data[i];
+           //EMIAL_id_data[i]=0;    //20150430 japan修改2
+           Emial_check_Control[i]=EMIAL_id_HA[i];
+           EMIAL_id_HA[i]=0;
+       }
+       EMIAL_id_PCS=0;
+  // HA_uart_send_APP();
  #endif
 }
 void HA_uart_email_Repeat(void)
@@ -743,6 +1047,7 @@ void HA_uart_send_APP(void)
     {
         if((HA_uart_app[14]==5)&&(FG_Second==0));
         else if(time_APP_Start_up==0){     //2015.04.27修正
+            Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
             for(i=0;i<18;i++){
                 U1TXREG=HA_uart_app[i];
                 if(i%6==0)Delay100us(30);//延时2.1mS以上，缓冲区是8级FIFO
@@ -1009,6 +1314,7 @@ void uart_send_APP_Head(void)
 {
  #if defined(__Product_PIC32MX2_WIFI__)
     UINT8 i;
+    Delay100us(50);//延时2.1mS以上，缓冲区是8级FIFO
    for(i=0;i<6;i++)U1TXREG=HA_uart_app[i];
  #endif
 }

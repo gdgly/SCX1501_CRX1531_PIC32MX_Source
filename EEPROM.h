@@ -27,4 +27,5 @@ extern void Emial_time_EEPROM_write(void);
 extern void HA_Change_EEPROM_write(void);
 extern void eeprom_IDcheck_0x00(void);
 extern void Email_check_TO_APP(void);
+extern void eeprom_IDcheck_CMD0101_01_UART(void);
 #endif
