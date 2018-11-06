@@ -226,6 +226,7 @@ void ID_Decode_IDCheck(void)
                 else if(((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x20)==0x00))DATA_Packet_Control_err=DATA_Packet_Control;
                 if(DATA_Packet_Control==0x02){DATA_Packet_Control_err=0x02;FLAG_HA_ERR_bit=0;}
                 else if(DATA_Packet_Control==0x01){DATA_Packet_Control_err=0x01;FLAG_HA_ERR_bit=0;}   //20150425追加
+                else if (((DATA_Packet_Control&0xDF)>0x80)&&((DATA_Packet_Control&0x40)==0x40))FLAG_HA_ERR_bit=0;  //2015.12.29追加，在半开、半闭动作中，受信机的状态变成异常1的时候，让停止继电器不动作
              #endif
                 if(((DATA_Packet_Code[1]&0x0000FFFF)==0x5556)&&(Freq_Scanning_CH_bak==0)){
                     Signal_DATA_Decode(1);
@@ -393,6 +394,7 @@ void Receiver_BEEP(void)
    }
 #endif
 }
+
 
 void ID_Decode_OUT(void)
 {
@@ -569,8 +571,9 @@ void ID_Decode_OUT(void)
                      ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)||((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)))&&(FLAG_APP_Reply==0)&&(Freq_Scanning_CH_save_HA==1))
                      FLAG_APP_Reply=1;
                 if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
-                    if((DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)
-                     ||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)){
+                    if((DATA_Packet_Control==0x02)||(DATA_Packet_Control==0x04)||(DATA_Packet_Control==0x08)||(DATA_Packet_Control==0x01)||(DATA_Packet_Control==0x20)||(DATA_Packet_Control==0x40)
+                     ||(DATA_Packet_Control==0x9)||(DATA_Packet_Control==0x03)||(DATA_Packet_Control==0x0C)||(DATA_Packet_Control==0x06)||(DATA_Packet_Control==0x0A)){
+                        //2015.12.29追加，在半开、半闭动作中，送信机（开+闭）信号，让停止继电器不动作
                         FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;TIMER250ms_STOP=0;
                     }
                 }
@@ -593,6 +596,7 @@ void ID_Decode_OUT(void)
 	       else Receiver_LED_OUT=0;
                if(FG_auto_open_time==1){FG_First_auto=0;FG_auto_out=1;FG_auto_open_time=0;}
                if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
+                   if(HA_Status==0x83)TIMER250ms_STOP=0;     //2015.12.29追加，在半开、半闭动作中，受信机的状态变成异常1的时候，让停止继电器不动作
                    if((TIMER250ms_STOP<1000)&&(TIMER250ms_STOP>0)){Receiver_OUT_STOP=1;Receiver_LED_OUT=1;}
                    else if(TIMER250ms_STOP==0){Receiver_OUT_STOP=0;FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;}
                }
@@ -684,7 +688,9 @@ void ID_Decode_OUT(void)
         //else HA_Change_email_Step=0;
     }
  #endif    
+
 }
+
 
  #if defined(__Product_PIC32MX2_WIFI__)
 void SWITCH_DIP_check_app(void)

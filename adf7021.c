@@ -898,7 +898,7 @@ void ADF7021_change_TXorRX(void)
     else {
         TIMER_Sensor_close_1s=120;
         if(TIMER_Sensor_open_1s==0){
-            if((DATA_Packet_Control_err==0x08)||((DATA_Packet_Control_err&0xDF)<0xC0)){FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;FLAG_close_Sensor=0;}
+            if((DATA_Packet_Control_err==0x08)||(((DATA_Packet_Control_err&0xDF)<0xC0)&&((DATA_Packet_Control_err&0xDF)>=0x80))){FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;FLAG_close_Sensor=0;}  //2015.12.29追加，异常2没有起作用
             if(((DATA_Packet_Control_err==0x02)||((DATA_Packet_Control_err&0xDF)>0xC0))&&(FLAG_close_Sensor==1)){FLAG_open_Sensor=0;FLAG_HA_ERR_Sensor=1;FLAG_close_Sensor=0;}
 //            FLAG_open_Sensor=1;FLAG_HA_ERR_Sensor=0;
 //            FLAG_close_Sensor=0;
