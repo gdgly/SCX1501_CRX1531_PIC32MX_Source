@@ -476,12 +476,14 @@ void eeprom_IDcheck_0x00(void)
    }
 }
 
-void Email_check_TO_APP(void)     //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
+UINT8 Email_check_TO_APP(void)     //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
 {
     UINT16 i;
    for(i=0;i<35;i++){
        if(HA_Cache_IDdata[i]==ID_data_uart_CMD0101_01.IDL){Emial_Cache_HA=HA_Cache_ha[i]&0x0F;Emial_Cache_SWITCH=HA_Cache_SWITCH_DIP[i];i=64;}     //
    }
+   if(i==35) return 1;
+   else return 0;
 }
 #endif
 

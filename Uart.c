@@ -210,7 +210,7 @@ void UART_Decode(void)
                                     if((uart_y.ui==0x0101)&&(UART1_DATA[14]==0x01)){      //2015.4.1修正3 由于APP查询受信器HA状态需要很长的时间，所以追加指令查询缓存在通信机里面的HA状态
                                         Emial_Cache_HA=0;
                                         Emial_Cache_SWITCH=0;
-                                        Email_check_TO_APP();
+                                        if(Email_check_TO_APP()){Control_code=0x00;goto CMD0101_01_to_00;}
                                         uart_send_APP_Head();
                                         U1TXREG=0x08;
                                         U1TXREG=0x00;
@@ -237,7 +237,7 @@ void UART_Decode(void)
                                         time_APP_Start_up=5;
                                     }
                                     else {
-                                        ID_data.IDB[0]=ID_data_uart_CMD0101_01.IDB[0];
+CMD0101_01_to_00:                       ID_data.IDB[0]=ID_data_uart_CMD0101_01.IDB[0];
                                         ID_data.IDB[1]=ID_data_uart_CMD0101_01.IDB[1];
                                         ID_data.IDB[2]=ID_data_uart_CMD0101_01.IDB[2];
                                         ID_data.IDB[3]=0x00;
