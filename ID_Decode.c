@@ -130,7 +130,7 @@ void ID_Decode_function(void)
  #endif
  #if defined(__Product_PIC32MX2_Receiver__)
                 if((DATA_Packet_Syn&0xFFFFFFFF)==0x55555555){rxphase=1;TIMER18ms=800;DATA_Packet_Syn=0;DATA_Packet_Head=0;
-                                                             Receiver_LED_RX=FLAG_PORT_LEDoutput_allow;
+                                                             Receiver_LED_RX=1;
                                                              TIMER300ms=500; //if(TIMER300ms==0)TIMER300ms=100;
                 }
  #endif                                                            
@@ -289,7 +289,7 @@ void ID_Decode_IDCheck(void)
                         else  TIMER1s=1000;
                     }
                     TIMER300ms=500;
-                    Receiver_LED_RX=FLAG_PORT_LEDoutput_allow;
+                    Receiver_LED_RX=1;
 #endif
                    }
             }
@@ -331,16 +331,15 @@ void BEEP_and_LED(void)
 {
    UINT16 i;
  #if defined(__Product_PIC32MX2_Receiver__)
-     Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+     Receiver_LED_OUT=1;
      for(i=0;i<4160;i++){
          Receiver_Buzzer=!Receiver_Buzzer;   //蜂鸣器频率2.08KHZ
          //Delayus(190);     //特别说明：该行采用XC32的0级优化，即无优化
-         //Delayus(240);//特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
-         Delayus(164);//窗式卷帘用无线模块  蜂鸣器频率2.73KHZ  特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
+         Delayus(240);//特别说明：该行采用XC32的1级优化，C编译器优化后延时函数的延时时间被改变了，请注意。
          ClearWDT(); // Service the WDT
      }
      Receiver_Buzzer=0;
-     //Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;   //2015.3.23修改
+     //Receiver_LED_OUT=0;   //2015.3.23修改
      TIME_Receiver_LED_OUT=185;   //2015.3.23修改
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -404,14 +403,14 @@ void ID_Decode_OUT(void)
  #if defined(__Product_PIC32MX2_Receiver__)
 //    if(Freq_Scanning_CH_bak==0) Control_i=DATA_Packet_Control&0xFF;
 //    else Control_i=DATA_Packet_Control&0x0E;
-//    if(HA_Sensor_signal==1)Receiver_LED_TX=FLAG_PORT_LEDoutput_NOallow;                      //test 接近信号回路
-//     else Receiver_LED_TX=FLAG_PORT_LEDoutput_allow;
+//    if(HA_Sensor_signal==1)Receiver_LED_TX=0;                      //test 接近信号回路
+//     else Receiver_LED_TX=1;
     if(time_Login_exit_256!=0)return;
     Control_i=DATA_Packet_Control&0xFF;
     if(TIMER1s){
                 switch (Control_i){
                      case 0x14:                     //stop+login
-                                Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                Receiver_LED_OUT=1;
                                 TIMER250ms_STOP=250;
                                 Receiver_OUT_STOP=1;
                                 Receiver_OUT_VENT=0;
@@ -420,7 +419,7 @@ void ID_Decode_OUT(void)
                                                  Receiver_OUT_CLOSE=1;Receiver_BEEP();}
                                 break;
                      case 0x02:                        //close
-                                Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                Receiver_LED_OUT=1;
                                 //Receiver_OUT_OPEN=0;
                                 LATACLR=0x0002;
                                 Receiver_OUT_VENT=0;
@@ -428,7 +427,7 @@ void ID_Decode_OUT(void)
                                 Receiver_OUT_CLOSE=1;
                                 break;
                      case 0x04:                      //stop
-                                Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                Receiver_LED_OUT=1;
                                 //Receiver_OUT_OPEN=0;
                                 LATACLR=0x0002;
                                 Receiver_OUT_VENT=0;
@@ -436,7 +435,7 @@ void ID_Decode_OUT(void)
                                 Receiver_OUT_STOP=1;
                                 break;
                      case 0x08:                      //open
-                                Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                Receiver_LED_OUT=1;
                                 Receiver_OUT_STOP=0;
                                 Receiver_OUT_CLOSE=0;
                                 Receiver_OUT_VENT=0;
@@ -444,7 +443,7 @@ void ID_Decode_OUT(void)
                                 LATASET=0x0002;
                                 break;
                     case 0x09:                       //vent+OPEN
-                                Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                Receiver_LED_OUT=1;
                                 Receiver_OUT_STOP=0;
 				Receiver_OUT_CLOSE=0;
                                 //Receiver_OUT_OPEN=1;
@@ -452,7 +451,7 @@ void ID_Decode_OUT(void)
                                 Receiver_OUT_VENT=1;
                                 break;
                      case 0x03:                       //vent+close
-                                Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                Receiver_LED_OUT=1;
                                 Receiver_OUT_STOP=0;
 				//Receiver_OUT_OPEN=0;
                                 LATACLR=0x0002;
@@ -460,7 +459,7 @@ void ID_Decode_OUT(void)
                                 Receiver_OUT_VENT=1;
                                 break;
                      case 0x0C:                    //open+stop
-                                Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                Receiver_LED_OUT=1;
                                 TIMER250ms_STOP=250;
                                 Receiver_OUT_CLOSE=0;
                                 Receiver_OUT_VENT=0;
@@ -469,7 +468,7 @@ void ID_Decode_OUT(void)
                                 if(TIME_OUT_OPEN_CLOSE==0)LATASET=0x0002;  //Receiver_OUT_OPEN=1;
                                 break;
                      case 0x06:                  //close+stop
-                                Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                Receiver_LED_OUT=1;
                                 TIMER250ms_STOP=250;
                                 //Receiver_OUT_OPEN=0;
                                 LATACLR=0x0002;
@@ -479,7 +478,7 @@ void ID_Decode_OUT(void)
                                 if(TIME_OUT_OPEN_CLOSE==0)Receiver_OUT_CLOSE=1;
                                 break;
                      case 0x01:                  //VENT
-                                Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                Receiver_LED_OUT=1;
                                 if(Freq_Scanning_CH_bak==1){             //429M   换气
                                     //Receiver_OUT_OPEN=1;
                                     LATASET=0x0002;
@@ -496,7 +495,7 @@ void ID_Decode_OUT(void)
                                 break;
                      case 0x20:
                                 if(Freq_Scanning_CH_bak==1){          //429M  角度调整（开）
-                                        Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                        Receiver_LED_OUT=1;
                                         //Receiver_OUT_OPEN=1;
                                         LATASET=0x0002;
                                         Receiver_OUT_STOP=0;
@@ -504,7 +503,7 @@ void ID_Decode_OUT(void)
                                 }
                                 break;
                      case 0x0A:                       //close+OPEN
-                                Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                Receiver_LED_OUT=1;
                                 Receiver_OUT_STOP=0;
 				Receiver_OUT_VENT=0;
                                 //Receiver_OUT_OPEN=1;
@@ -513,7 +512,7 @@ void ID_Decode_OUT(void)
                                 break;
                      case 0x40:
                                 if(Freq_Scanning_CH_bak==1){          //429M  角度调整（关）
-                                        Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                        Receiver_LED_OUT=1;
                                         //Receiver_OUT_OPEN=0;
                                         LATACLR=0x0002;
                                         Receiver_OUT_STOP=0;
@@ -521,7 +520,7 @@ void ID_Decode_OUT(void)
                                 }
                                 else{
                                     if((FG_auto_out==0)&&(Manual_override_TIMER==0)){                  //自动送信
-                                        Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                        Receiver_LED_OUT=1;
                                         TIMER250ms_STOP=0;
                                         Receiver_OUT_VENT=0;
                                         Receiver_OUT_CLOSE=0;
@@ -533,7 +532,7 @@ void ID_Decode_OUT(void)
                                 break;
 //                     case 0x10:
 //                                if(Freq_Scanning_CH_bak==1){             //429M   半开信号
-//                                    Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+//                                    Receiver_LED_OUT=1;
 //                                    Receiver_OUT_STOP=0;
 //                                    Receiver_OUT_CLOSE=0;
 //                                    //Receiver_OUT_OPEN=1;
@@ -549,7 +548,7 @@ void ID_Decode_OUT(void)
                                 if((DATA_Packet_Control&0xDF)<0xC0){
                                     FLAG__Semi_open_T=1;
                                     FLAG__Semi_close_T=0;
-                                    Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                    Receiver_LED_OUT=1;
                                     Receiver_OUT_STOP=0;
                                     Receiver_OUT_CLOSE=0;
                                     //Receiver_OUT_OPEN=1;
@@ -559,7 +558,7 @@ void ID_Decode_OUT(void)
                                 else {
                                     FLAG__Semi_open_T=0;
                                     FLAG__Semi_close_T=1;
-                                    Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;
+                                    Receiver_LED_OUT=1;
                                     Receiver_OUT_STOP=0;
                                     Receiver_OUT_CLOSE=1;
                                     //Receiver_OUT_OPEN=0;
@@ -582,7 +581,7 @@ void ID_Decode_OUT(void)
 
                }       
      else {
-               if((FG_auto_out==1)&&(TIME_auto_out==0)){FG_auto_out=0;TIME_auto_close=270;Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;}   //300
+               if((FG_auto_out==1)&&(TIME_auto_out==0)){FG_auto_out=0;TIME_auto_close=270;Receiver_LED_OUT=1;}   //300
                if(TIME_auto_close){
                     if(TIME_auto_close>180){Receiver_OUT_STOP=1;Receiver_OUT_CLOSE=0;}  //200
                     else if(TIME_auto_close>90){Receiver_OUT_STOP=0;Receiver_OUT_CLOSE=0;}   //100
@@ -593,12 +592,12 @@ void ID_Decode_OUT(void)
                LATACLR=0x0002;
                Receiver_OUT_VENT=0;
                if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1)||(TIME_auto_close));
-               else  if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;    //2015.3.23修改
-	       else Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;
+               else  if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=1;    //2015.3.23修改
+	       else Receiver_LED_OUT=0;
                if(FG_auto_open_time==1){FG_First_auto=0;FG_auto_out=1;FG_auto_open_time=0;}
                if((FLAG__Semi_open_T==1)||(FLAG__Semi_close_T==1)){
                    if(HA_Status==0x83)TIMER250ms_STOP=0;     //2015.12.29追加，在半开、半闭动作中，受信机的状态变成异常1的时候，让停止继电器不动作
-                   if((TIMER250ms_STOP<1000)&&(TIMER250ms_STOP>0)){Receiver_OUT_STOP=1;Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;}
+                   if((TIMER250ms_STOP<1000)&&(TIMER250ms_STOP>0)){Receiver_OUT_STOP=1;Receiver_LED_OUT=1;}
                    else if(TIMER250ms_STOP==0){Receiver_OUT_STOP=0;FLAG__Semi_open_T=0;FLAG__Semi_close_T=0;}
                }
                else if((TIMER250ms_STOP==0)&&(TIME_auto_close==0)){Receiver_OUT_STOP=0;FG_OUT_OPEN_CLOSE=0;}    //2015.3.23修改
@@ -625,13 +624,13 @@ void ID_Decode_OUT(void)
            }
            FLAG_Receiver_BEEP=0;
            //if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
-           //else Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;
+           //else Receiver_LED_OUT=0;
            //Receiver_OUT_OPEN=0;
            //LATACLR=0x0002;
            //Receiver_OUT_CLOSE=0;
            //if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
           }
-    if(TIMER300ms==0)Receiver_LED_RX=FLAG_PORT_LEDoutput_NOallow;
+    if(TIMER300ms==0)Receiver_LED_RX=0;
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
      if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));
@@ -841,8 +840,8 @@ void SendTxData(void)
 {
        FLAG_APP_RX=0;
  #if defined(__Product_PIC32MX2_Receiver__)
-      Receiver_LED_RX=FLAG_PORT_LEDoutput_NOallow;
-      Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;
+      Receiver_LED_RX=0;
+      Receiver_LED_OUT=0;
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
        WIFI_LED_RX=0;
@@ -850,7 +849,7 @@ void SendTxData(void)
        ADF7021_DATA_IO=0;           //测试
        dd_set_TX_mode();
  #if defined(__Product_PIC32MX2_Receiver__)
-       Receiver_LED_TX=FLAG_PORT_LEDoutput_allow;
+       Receiver_LED_TX=1;
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
        WIFI_LED_TX=1;
@@ -862,24 +861,56 @@ void SendTxData(void)
        FLAG_APP_TX=1;
 }
 
+//void SetTxData(void)
+//{
+//  uni_i unii,unij,unik;
+//  	/*	ID set	*/
+//        m_RFNormalBuf[22]=0x15;
+//	unii.ui = SetFixedLengthCode(ID_data.IDB[0]) ;
+//	m_RFNormalBuf[23] = unii.uc[1] ;
+//	m_RFNormalBuf[24] = unii.uc[0] ;
+//	unii.ui = SetFixedLengthCode(ID_data.IDB[1]) ;
+//	m_RFNormalBuf[25] = unii.uc[1] ;
+//	m_RFNormalBuf[26] = unii.uc[0] ;
+//	unii.ui = SetFixedLengthCode(ID_data.IDB[2]) ;
+//	m_RFNormalBuf[27] = unii.uc[1] ;
+//	m_RFNormalBuf[28] = unii.uc[0] ;
+//	/*	Control code set	*/
+//	unii.ui = SetFixedLengthCode(Control_code) ;
+//	m_RFNormalBuf[29] = unii.uc[1] ;
+//	m_RFNormalBuf[30] = unii.uc[0] ;
+//	/*	SUM set	*/
+//	unii.uc[0] = ID_data.IDB[2] ;
+//	unii.uc[1] = Control_code;
+//	unij.uc[0] = ID_data.IDB[0] ;
+//	unij.uc[1] = ID_data.IDB[1] ;
+//	unik.ui = unii.ui + unij.ui ;
+//	unii.ui = SetFixedLengthCode(unik.uc[0]) ;
+//	m_RFNormalBuf[31] = unii.uc[1] ;
+//	m_RFNormalBuf[32] = unii.uc[0] ;
+//	unii.ui = SetFixedLengthCode(unik.uc[1]) ;
+//	m_RFNormalBuf[33] = unii.uc[1] ;
+//	m_RFNormalBuf[34] = unii.uc[0] ;
+//}
+
 void SetTxData(void)
 {
   uni_i unii,unij,unik;
   	/*	ID set	*/
-        m_RFNormalBuf[22]=0x15;
+        m_RFNormalBuf[21]=0x15;
 	unii.ui = SetFixedLengthCode(ID_data.IDB[0]) ;
-	m_RFNormalBuf[23] = unii.uc[1] ;
-	m_RFNormalBuf[24] = unii.uc[0] ;
+	m_RFNormalBuf[22] = unii.uc[1] ;
+	m_RFNormalBuf[23] = unii.uc[0] ;
 	unii.ui = SetFixedLengthCode(ID_data.IDB[1]) ;
-	m_RFNormalBuf[25] = unii.uc[1] ;
-	m_RFNormalBuf[26] = unii.uc[0] ;
+	m_RFNormalBuf[24] = unii.uc[1] ;
+	m_RFNormalBuf[25] = unii.uc[0] ;
 	unii.ui = SetFixedLengthCode(ID_data.IDB[2]) ;
-	m_RFNormalBuf[27] = unii.uc[1] ;
-	m_RFNormalBuf[28] = unii.uc[0] ;
+	m_RFNormalBuf[26] = unii.uc[1] ;
+	m_RFNormalBuf[27] = unii.uc[0] ;
 	/*	Control code set	*/
 	unii.ui = SetFixedLengthCode(Control_code) ;
-	m_RFNormalBuf[29] = unii.uc[1] ;
-	m_RFNormalBuf[30] = unii.uc[0] ;
+	m_RFNormalBuf[28] = unii.uc[1] ;
+	m_RFNormalBuf[29] = unii.uc[0] ;
 	/*	SUM set	*/
 	unii.uc[0] = ID_data.IDB[2] ;
 	unii.uc[1] = Control_code;
@@ -887,12 +918,14 @@ void SetTxData(void)
 	unij.uc[1] = ID_data.IDB[1] ;
 	unik.ui = unii.ui + unij.ui ;
 	unii.ui = SetFixedLengthCode(unik.uc[0]) ;
-	m_RFNormalBuf[31] = unii.uc[1] ;
-	m_RFNormalBuf[32] = unii.uc[0] ;
+	m_RFNormalBuf[30] = unii.uc[1] ;
+	m_RFNormalBuf[31] = unii.uc[0] ;
 	unii.ui = SetFixedLengthCode(unik.uc[1]) ;
-	m_RFNormalBuf[33] = unii.uc[1] ;
-	m_RFNormalBuf[34] = unii.uc[0] ;
+	m_RFNormalBuf[32] = unii.uc[1] ;
+	m_RFNormalBuf[33] = unii.uc[0] ;
+	m_RFNormalBuf[34] = 0xFF ;    
 }
+
 
 UINT16 SetFixedLengthCode(UINT8 data )
 {

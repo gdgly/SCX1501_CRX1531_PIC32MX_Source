@@ -776,7 +776,7 @@ void dd_set_ADF7021_Power_on(void)
         Delay100us(200);             //delay 1ms
         m_RFNormalBuf[0]=0xFF;
         m_RFNormalBuf[1]=0xFF;
-        for(i=2;i<=21;i++)m_RFNormalBuf[i]=0x55;
+        for(i=2;i<=20;i++)m_RFNormalBuf[i]=0x55;
 }
 
 void dd_set_ADF7021_ReInitial(void)
@@ -926,9 +926,9 @@ void ADF7021_change_TXorRX(void)
    if((FLAG_SendTxData==0)&&(FLAG_APP_TX==0)){
        FLAG_SendTxData=1;
        FLAG_APP_RX=1;
-       Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;
-       Receiver_LED_TX=FLAG_PORT_LEDoutput_NOallow;
-       Receiver_LED_RX=FLAG_PORT_LEDoutput_NOallow;
+       Receiver_LED_OUT=0;
+       Receiver_LED_TX=0;
+       Receiver_LED_RX=0;
        ADF7021_DATA_IO=1;
        //dd_set_RX_mode();
        dd_set_ADF7021_Freq(0,1);

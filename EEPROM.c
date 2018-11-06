@@ -131,7 +131,7 @@ void ID_learn(void)
              TIME_Receiver_Login_led++;
              if(TIME_Receiver_Login_led>=45){              //2015.3.23修改
                  TIME_Receiver_Login_led=0;
-		 if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=FLAG_PORT_LEDoutput_allow;   //2015.3.23修改
+		 if(TIME_Receiver_LED_OUT>0)Receiver_LED_OUT=1;   //2015.3.23修改
                  else Receiver_LED_OUT=!Receiver_LED_OUT;
              }
              if((FLAG_ID_Login_OK==1)&&(FLAG_ID_Login_OK_bank==0)){
@@ -249,7 +249,7 @@ void ID_Login_EXIT_Initial(void)
      FLAG_ID_Login_OK_bank=0;
      FLAG_ID_Login=0;
      FLAG_ID_Erase_Login=0;
-     Receiver_LED_OUT=FLAG_PORT_LEDoutput_NOallow;
+     Receiver_LED_OUT=0;
      COUNT_Receiver_Login=0;     //2015.3.23修改
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -996,7 +996,7 @@ void EEPROM_write_0x00toID(void)
      Delay100us(100);            //写周期时间  24LC为5ms,24c或24wc为10ms
 
 }
-//#endif
+#endif
 
 //===================start_i2c()起动总线函数=======//
 void start_i2c(void)
@@ -1062,7 +1062,7 @@ void send_byte(UINT8 c)
 }
 
 
-//#if defined(__Product_PIC32MX2_WIFI__)
+#if defined(__Product_PIC32MX2_WIFI__)
 //==============Erase_page()  24lc32是32个字节为一个page=================//
 void Erase_page(UINT8 Erase_data,UINT8 page)
 {
@@ -1077,7 +1077,7 @@ void Erase_page(UINT8 Erase_data,UINT8 page)
  for (i = 0;i < 32;i++) send_byte(Erase_data); //发送字节数据
  stop_i2c(); //发送停止位
 }
-//#endif
+#endif
 
 
 //==============Write()写N字节数据=================//
@@ -1174,80 +1174,3 @@ void Read(UINT8 *s,UINT16 suba,UINT8 n)
  N0ack(1); //发送非应答位
  stop_i2c(); //发送停止位
 }
-#endif
-#if defined(__Product_PIC32MX2_Receiver__)
-
-#define NVM_PROGRAM_PAGE 0x9D007C00//0xbd007000   //flash存储的起始地址0xBD007000，flash中32K容量的后面2K作为EEPROM
-
-void Write(UINT8 *s,UINT16 suba,UINT8 n)
-{
-//    UINT16 num0,num1;
-//    unsigned int No_part;
-//    unsigned int data_part;
-//    uni_rom_id xn;
-//    
-//    if(suba!=0x7FE)
-//    {
-//        num0=(suba/32)*10;   //除去个位以外的数据
-//        num1=(suba %32)/3;  //个位
-//        No_part=(num0+num1)*3;   
-//
-//        xn.IDB[0]=s[0];
-//        xn.IDB[1]=s[1];
-//        xn.IDB[2]=s[2];
-//        xn.IDB[3]=0;
-//        data_part=xn.IDL;
-//        NVMWriteWord((void*)(NVM_PROGRAM_PAGE+No_part),data_part);
-//    }
-//    else {
-//        xn.IDB[0]=s[0];
-//        xn.IDB[1]=s[1];
-//        xn.IDB[2]=0;
-//        xn.IDB[3]=0;
-//        data_part=xn.IDL;
-//        NVMWriteWord((void*)(NVM_PROGRAM_PAGE+0xff0),data_part); 
-//    }
-    
-    
-    // Erase second page of Program Flash
-    NVMErasePage((void *)NVM_PROGRAM_PAGE);
-    
-    ID_Receiver_DATA[31]=ID_DATA_PCS;
-    // Write 128 words starting at Row Address NVM_PROGRAM_PAGE
-    NVMWriteRow((void *)NVM_PROGRAM_PAGE, (void*)ID_Receiver_DATA);
-    //NVMWriteRow((void *)(NVM_PROGRAM_PAGE+128), (void*)(ID_Receiver_DATA+128));
-
-      //  NVMErasePage((void *)NVM_PROGRAM_PAGE);
-    // Write ID_DATA_PCS to Address NVM_PROGRAM_PAGE + 0xff0
-    //NVMWriteWord((void*)(NVM_PROGRAM_PAGE+0x6f0),ID_DATA_PCS);
- 
-    
-}
-void Read(UINT8 *s,UINT16 suba,UINT8 n)
-{
-    UINT16 num0,num1;
-    unsigned int No_part;    
-    uni_rom_id xn;
-
-    if(suba!=0x7FE)
-    {    
-        num0=(suba/32)*10;   //除去个位以外的数据
-        num1=(suba %32)/3;  //个位
-        No_part=(num0+num1)*4;     
-        //data= (void *)KVA0_TO_KVA1(0xBD00F800);
-        xn.IDL=*(int *)(NVM_PROGRAM_PAGE + No_part);
-        s[0]=xn.IDB[0];
-        s[1]=xn.IDB[1];
-        s[2]=xn.IDB[2];   
-    }
-    else {
-        No_part=31*4;
-        xn.IDL=*(unsigned int *)(NVM_PROGRAM_PAGE + No_part);//*(int *)(NVM_PROGRAM_PAGE + 0x700);
-        s[0]=xn.IDB[0];
-        s[1]=xn.IDB[1];        
-    }
-}
-
-#endif
-
-
