@@ -50,6 +50,7 @@
   <sourceRootList>
     <Elem>../../linker_scripts/others</Elem>
     <Elem>D:/Program Files/Microchip/xc32/v1.20/pic32mx/include/proc</Elem>
+    <Elem>../../../../../Application Ver2.6.1/linker_scripts</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

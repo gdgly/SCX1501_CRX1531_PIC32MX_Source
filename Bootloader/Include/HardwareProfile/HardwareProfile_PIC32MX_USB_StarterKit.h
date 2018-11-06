@@ -114,6 +114,7 @@
 
 	// Switch S3 on USB Starter Kit.
 	#define ReadSwitchStatus() (PORTReadBits(IOPORT_C, BIT_7) & BIT_7)
+	#define ReadSwitchStatus1() (PORTReadBits(IOPORT_A, BIT_7) & BIT_7)
    // Error indication.
 	#define Error()   do{LATCbits.LATC8 = 0;LATCbits.LATC9 = 0;} while(0);
 

@@ -143,6 +143,7 @@ BYTE myData[512];
 size_t numBytes;
 UINT pointer = 0;
 UINT readBytes;
+UINT8 Bootloaders_ok=0;
 
 UINT8 asciiBuffer[1024];
 UINT8 asciiRec[200];
@@ -202,15 +203,16 @@ int main(void)
 	
 	InitLED();   
 
-//        TRISCbits.TRISC6=0;
-//        TRISCbits.TRISC7=0;
+        TRISAbits.TRISA7=1;
+        TRISCbits.TRISC7=1;
 //        LATCbits.LATC6=1;
 //        LATCbits.LATC7=0;
 
     // Initialize the switch on the
     // starter kit
- 
-    if(!CheckTrigger() && ValidAppPresent())
+      CheckTrigger();
+    //if(!CheckTrigger() && ValidAppPresent())
+      if( (Bootloaders_ok==0) && ValidAppPresent())
 	{
         // This means the switch is not pressed. Jump
         // directly to the application
@@ -231,7 +233,7 @@ int main(void)
         if(USBHostMSDSCSIMediaDetect())
         {
            
-
+           mLED=1;
             //now a device is attached
             //See if the device is attached and in the right format
             if(FSInit())
@@ -245,6 +247,7 @@ int main(void)
 //                    EraseFlash();
 //                    EraseFlash();
 //                    EraseFlash();
+                    mLED=1;
                     EraseFlash();
 //                        if(PORTReadBits(IOPORT_C, BIT_8) & BIT_8);
 //                          else {while(1)Error();}
@@ -347,19 +350,36 @@ int main(void)
 ********************************************************************/
 BOOL CheckTrigger(void)
 {
-	UINT SwitchStatus,i;
-	SwitchStatus = ReadSwitchStatus();
-	if(SwitchStatus == SWITCH_PRESSED)
-	{
-		// Switch is pressed
-		return TRUE;		
-	}	
-	else
-	{
-		// Switch is not pressed.
-		return FALSE;	
-	}
-
+	UINT SwitchStatus;
+        UINT SwitchStatus1;
+        UINT Bootloaders_count=0;
+        UINT8 Bootloaders_flag=0;
+	SwitchStatus = PORTCbits.RC7;//ReadSwitchStatus();
+        SwitchStatus1= PORTAbits.RA7;//ReadSwitchStatus1();
+        while((SwitchStatus==0)&&(SwitchStatus1==1)){
+            SwitchStatus = PORTCbits.RC7;//ReadSwitchStatus();
+            SwitchStatus1= PORTAbits.RA7;//ReadSwitchStatus1();
+            if(((ReadCoreTimer() & 0x0800000) != 0)&&(Bootloaders_flag==0)){
+                Bootloaders_flag=1;
+                Bootloaders_count++;
+            }
+            if((ReadCoreTimer() & 0x0800000) == 0)Bootloaders_flag=0;
+            if(Bootloaders_count>=12){Bootloaders_count=12;BlinkLED();Bootloaders_ok=1;}
+        }
+//	SwitchStatus = PORTCbits.RC7;//ReadSwitchStatus();
+//        SwitchStatus1= PORTAbits.RA7;//ReadSwitchStatus1();
+//	if((SwitchStatus==0)&&(SwitchStatus1==1))
+//	{
+//		// Switch is pressed
+//		//return TRUE;
+//                Bootloaders_ok=1;
+//	}
+//	else
+//	{
+//		// Switch is not pressed.
+//		//return FALSE;
+//                Bootloaders_ok=0;
+//	}
 }	
 
 

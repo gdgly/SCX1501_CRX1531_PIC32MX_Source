@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/PIC32_Bootloaders/Firmware/Bootloader/Source/USB/usb_msd_bootloader.c</file>
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/PIC32_Bootloaders/Firmware/Bootloader/Source/USB/usb_host_msd.c</file>
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/PIC32_Bootloaders/Firmware/Bootloader/Include/GenericTypeDefs.h</file>
-        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/PIC32_Bootloaders/Firmware/Bootloader/Source/USB/usb_host.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/PIC32_Bootloaders%20ES1/Firmware/Bootloader/Source/USB/usb_host_msd.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/PIC32_Bootloaders%20ES1/Firmware/Bootloader/Source/USB/usb_host.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/PIC32_Bootloaders%20ES1/Firmware/Bootloader/Source/NVMem.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/PIC32_Bootloaders%20ES1/Firmware/Bootloader/Source/MDD%20File%20System/FSIO.c</file>
+        <file>file:/F:/Source%20Code/bunka-s/Bunka%20PIC32MX%20Source/PIC32_Bootloaders%20ES1/Firmware/Bootloader/Source/USB/usb_msd_bootloader.c</file>
     </open-files>
 </project-private>
