@@ -152,7 +152,7 @@ void ID_learn(void)
               else ID_Login_EXIT_Initial();
          } //end if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1))
 
-    DIP_switch_Get();
+    //DIP_switch_Get();
  }
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
