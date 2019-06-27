@@ -251,7 +251,7 @@ void ID_Decode_IDCheck(void)
                     if(Freq_Scanning_CH_bak==0){
                        if((DATA_Packet_Control==0x40)&&(Manual_override_TIMER==0)){
                           FG_auto_manual_mode=1;
-                          TIME_auto_out=890;    // 900
+                          TIME_auto_out=3150;    // 900
                           if(FG_First_auto==0){
                               FG_First_auto=1;
                               TIMER1s=3000;    //2500
