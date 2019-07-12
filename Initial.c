@@ -144,6 +144,10 @@ UINT16 Manual_override_TIMER=0;
 UINT8 FG_auto_manual_mode=0;
 UINT8 FG_First_auto=0;
 UINT8 FG_auto_open_time=0;
+
+UINT16 TIME_auto_useful = 0;
+UINT8 FREQ_auto_useful = 0;
+UINT8 FREQ_auto_useful_count = 0;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
@@ -297,7 +301,9 @@ void VHF_GPIO_INIT(void){
     CNPUB=0xFFFF;
     CNPUC=0xFFFF;
     TRISBbits.TRISB10=1;
-    TRISBbits.TRISB14=1;
+    //TRISBbits.TRISB14=1;
+    AUTO_OR_MANUAL_IO=0;
+    AUTO_OR_MANUAL=0;
         //HA_Status=0x81;
         //FLAG_open=1;
  #endif

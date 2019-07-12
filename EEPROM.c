@@ -80,6 +80,10 @@ void ID_learn(void)
  if(FG_10ms){
      FG_10ms = 0;
 
+    if (TIME_auto_useful)
+        --TIME_auto_useful;
+    if(FREQ_auto_useful_count)
+        --FREQ_auto_useful_count;
 //     if(time_3sec)--time_3sec;
      if(TIME_EMC)--TIME_EMC;
 

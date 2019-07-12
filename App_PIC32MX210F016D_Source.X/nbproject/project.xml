@@ -12,6 +12,20 @@
             <sourceEncoding>GB18030</sourceEncoding>
             <asminc-extensions/>
             <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>../</sourceRootElem>
+                <sourceRootElem>D:/Program Files/Microchip/xc32/v1.20/pic32mx/include/proc</sourceRootElem>
+                <sourceRootElem>../../Bootloader/linker_scripts/others</sourceRootElem>
+            </sourceRootList>
+            <confList>
+                <confElem>
+                    <name>default</name>
+                    <type>2</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
         </data>
     </configuration>
 </project>
