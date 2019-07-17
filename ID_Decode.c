@@ -255,11 +255,12 @@ void ID_Decode_IDCheck(void)
                             {
                                 if (FREQ_auto_useful_count==0)
                                 {
-                                    if (DATA_Packet_ID_auto != DATA_Packet_ID)
+                                    if ((DATA_Packet_ID_auto != DATA_Packet_ID) ||(FREQ_auto_useful_continuous==0))
                                         FREQ_auto_useful = 0;
                                     DATA_Packet_ID_auto = DATA_Packet_ID;
                                     FREQ_auto_useful++;
                                     FREQ_auto_useful_count = 90;//90=1s
+                                    FREQ_auto_useful_continuous = 477; //477=5.3*90=5.3s
                                 }
                             }
                             else {

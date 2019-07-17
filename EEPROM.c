@@ -84,6 +84,8 @@ void ID_learn(void)
         --TIME_auto_useful;
     if(FREQ_auto_useful_count)
         --FREQ_auto_useful_count;
+    if(FREQ_auto_useful_continuous)
+        --FREQ_auto_useful_continuous;        
 //     if(time_3sec)--time_3sec;
      if(TIME_EMC)--TIME_EMC;
 

@@ -295,6 +295,7 @@ extern UINT8 FG_auto_open_time;
 extern UINT16 TIME_auto_useful;
 extern UINT8 FREQ_auto_useful;
 extern UINT8 FREQ_auto_useful_count;
+extern UINT16 FREQ_auto_useful_continuous;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)

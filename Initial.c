@@ -148,6 +148,7 @@ UINT8 FG_auto_open_time=0;
 UINT16 TIME_auto_useful = 0;
 UINT8 FREQ_auto_useful = 0;
 UINT8 FREQ_auto_useful_count = 0;
+UINT16 FREQ_auto_useful_continuous = 0;
 #endif
 
 #if defined(__Product_PIC32MX2_WIFI__)
