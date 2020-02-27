@@ -302,9 +302,9 @@ void VHF_GPIO_INIT(void){
     CNPUB=0xFFFF;
     CNPUC=0xFFFF;
     TRISBbits.TRISB10=1;
-    //TRISBbits.TRISB14=1;
-    AUTO_OR_MANUAL_IO=0;
-    AUTO_OR_MANUAL=0;
+    TRISBbits.TRISB14=1;
+    // AUTO_OR_MANUAL_IO=0;
+    // AUTO_OR_MANUAL=0;
         //HA_Status=0x81;
         //FLAG_open=1;
  #endif

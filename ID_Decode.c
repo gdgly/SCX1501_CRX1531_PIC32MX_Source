@@ -642,8 +642,8 @@ void ID_Decode_OUT(void)
            //if(TIMER250ms_STOP==0)Receiver_OUT_STOP=0;
           }
     if(TIMER300ms==0)Receiver_LED_RX=0;
-    if(FG_auto_manual_mode==1)AUTO_OR_MANUAL=1;
-    else AUTO_OR_MANUAL=0;
+    // if(FG_auto_manual_mode==1)AUTO_OR_MANUAL=1;
+    // else AUTO_OR_MANUAL=0;
  #endif
  #if defined(__Product_PIC32MX2_WIFI__)
      if((FLAG_ID_Erase_Login==1)||(FLAG_ID_Login==1));

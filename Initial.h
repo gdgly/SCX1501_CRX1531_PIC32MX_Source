@@ -422,7 +422,7 @@ extern void RF_test_mode(void );
     #define  DIP_switch2_IO         TRISBbits.TRISB5 // Input   DIP_switch2  低电平有效
     #define  DIP_switch3_IO         TRISAbits.TRISA0 // Input   DIP_switch3  低电平有效
 
-    #define  AUTO_OR_MANUAL_IO      TRISBbits.TRISB14 // Input   
+    //#define  AUTO_OR_MANUAL_IO      TRISBbits.TRISB14 // Input   
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
     /* ADF7021 register interface */
@@ -511,7 +511,7 @@ extern void RF_test_mode(void );
     #define  DIP_switch2         PORTBbits.RB5 // Input   DIP_switch2  低电平有效
     #define  DIP_switch3         PORTAbits.RA0 // Input   DIP_switch3  低电平有效
 
-   #define  AUTO_OR_MANUAL    LATBbits.LATB14   // Output    
+   //#define  AUTO_OR_MANUAL    LATBbits.LATB14   // Output    
 //特别注意，在追加I/O时，用到PA口，请不要用LATAbits寄存器，请使用LATACLR，LATASET。
 #endif
 #if defined(__Product_PIC32MX2_WIFI__)
