@@ -606,5 +606,6 @@ Application Ver7.8 PIC32MX250F128D        2016年10月17日，于日本文化在Applicatio
       
 Application Ver5.4 PIC32MX250F128D to hu_yongping test        工厂wifi dc收信机测试夹具，软件灵敏度降低30dBm（最小）
                                                               作为工厂测试文化降价板送信机
+                                                              
       
                                    
