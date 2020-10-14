@@ -91,22 +91,11 @@ UINT8 read_TIMER_Semi_open=0;
 //*********以下为测试代码所用变量****************
 UINT8 Tx_Rx_mode=0;
 FLAG FLAG_test;
-#if defined(__Product_PIC32MX2_Receiver__)
                             /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
-UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000010F};     //天线是内部天线
+UINT32 RF_SET_TX_carrier_test[6]={0x021B5021,0x2BFD85E3,0x01081B90,0x00466882,0x00292494,0x0000010F};     //天线是内部天线
                             /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
-UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000040F};    //天线是内部天线
-#endif
-#if defined(__Product_PIC32MX2_WIFI__)
-                            /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
-UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000010F};     //天线是内部天线
-//UINT32 RF_SET_TX_carrier_test[6]={0x031B5011,0x29915CD3,0x01575710,0x00571882,0x00289A14,0x0000010F};       //天线是外置天线
-                            /****说明 REG1     REG3         REG0      REG2       REG4      REGf******/
-UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00566882,0x00289A14,0x0000040F};    //天线是内部天线
-//UINT32 RF_SET_TX_1010pattern[6]={0x031B5011,0x29915CD3,0x01575710,0x00571882,0x00289A14,0x0000040F};      //天线是外置天线
-#endif
-                    /****说明 REG1      REG2        REG3        REG0    REG4    REGA******/
-UINT32 RF_SET_RX_test[6]={0x031B5011,0x00D00882,0x29920893,0x0954C7B0,0x8024E294,0x049668EA};
+UINT32 RF_SET_TX_1010pattern[6]={0x021B5021,0x2BFD85E3,0x01081B90,0x00466882,0x00292494,0x0000040F};    //天线是内部天线
+
 UINT16 X_COUNT = 0;
 UINT16 X_ERR  = 0 ;//记录错误的个数
 UINT8 X_HIS=0; //历史记录   误码率测试用
